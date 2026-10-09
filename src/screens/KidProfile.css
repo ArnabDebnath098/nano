@@ -31,6 +31,9 @@
 
 /* 56:42137 */
 .kid-profile__body {
+  /* Tuck 1px under the tab bar: its scaled height lands on a fractional pixel, which left a
+     hairline of the header image showing between the two white surfaces on phones */
+  margin-top: -1px;
   flex: 1;
   display: flex;
   flex-direction: column;

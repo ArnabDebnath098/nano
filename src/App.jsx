@@ -29,7 +29,11 @@ function App() {
         // First screen: noon Accounts, no child yet → "Invite your child" plays the intro
         <Accounts onInviteChild={() => navigate('/invite')} />
       ) : (
-        <ManageFamily onOpenKid={(profile) => navigate(`/kid/${profile.id}`)} onAddKid={() => navigate('/add-kid')} />
+        <ManageFamily
+          onBack={() => goBack('/')} // back to noon Accounts
+          onOpenKid={(profile) => navigate(`/kid/${profile.id}`)}
+          onAddKid={() => navigate('/add-kid')}
+        />
       )}
 
       <PushPage open={Boolean(kid)} labelledBy="kid-profile-title">

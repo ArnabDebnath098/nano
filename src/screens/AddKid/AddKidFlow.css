@@ -20,8 +20,9 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
-  /* room for the footer (76 + home bar 24) and its shadow, or the keyboard */
-  padding-bottom: calc(132px + var(--kb-height, 0px));
+  /* room for the footer (76 + home bar 24) and its shadow, or the keyboard; --typing-room lets a
+     short page scroll far enough to collapse the hero when a field is tapped (useCollapsingHero) */
+  padding-bottom: calc(132px + var(--kb-height, 0px) + var(--typing-room, 0px));
 }
 
 /* Head (background + top bar + hero) pins while the page scrolls; content slides under it.

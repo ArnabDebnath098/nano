@@ -12,7 +12,7 @@ import { parent, children, approvalRequests, tasks, profiles } from '../data/man
 import './ManageFamily.css'
 
 // Figma: Manage Family · Tasks added (2:2858)
-export default function ManageFamily({ onOpenKid, onAddKid }) {
+export default function ManageFamily({ onBack, onOpenKid, onAddKid }) {
   const root = useRef(null)
   const [switchOpen, setSwitchOpen] = useState(false)
   const closeSwitch = useCallback(() => setSwitchOpen(false), [])
@@ -41,7 +41,7 @@ export default function ManageFamily({ onOpenKid, onAddKid }) {
   return (
     <div ref={root} className="manage-family">
       <HeroBackground />
-      <TopBar onSwitchProfile={() => setSwitchOpen(true)} onAddKid={onAddKid} />
+      <TopBar onBack={onBack} onSwitchProfile={() => setSwitchOpen(true)} onAddKid={onAddKid} />
 
       <main className="manage-family__content">
         {/* Hi, Anmol · stack (2:2945) */}

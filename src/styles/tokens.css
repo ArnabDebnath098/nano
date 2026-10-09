@@ -26,6 +26,7 @@
 }
 
 :root {
+  color-scheme: light only; /* see index.html */
   /* White sticker outlines for gradient display titles (StickerText) — rings of white
      text-shadows on a copy of the text laid under the fill; text-stroke would give mitred,
      spiky corners. lg ≈ 8px (onboarding / invite titles), sm = 3px (kid profile name). */

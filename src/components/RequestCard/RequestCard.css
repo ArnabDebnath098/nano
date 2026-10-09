@@ -65,9 +65,9 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   font-weight: var(--font-weight-semibold);
-  font-size: var(--a17-size);
-  line-height: var(--a17-lh);
-  letter-spacing: var(--a17-ls);
+  font-size: var(--a16-size);
+  line-height: var(--a16-lh);
+  letter-spacing: var(--a16-ls);
   color: var(--colour-text-primary);
 }
 

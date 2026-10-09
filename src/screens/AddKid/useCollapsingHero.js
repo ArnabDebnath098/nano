@@ -14,6 +14,10 @@ import { HDR_SPRING, stepSpring } from '../../../animation-reference/noon-nano/m
 // spring chases it: quick to react, then settles with no wobble, and a fling or a wheel notch
 // glides instead of jumping. Uses the individual CSS `scale` / `translate` properties so it
 // composes with the GSAP step-transition tweens.
+// Typing: a tap into a text field collapses the hero the same way — the page scrolls up by exactly
+// the height the hero gives up, so the field stays just under the Compact head and the keyboard
+// has room, instead of the browser shoving the fields up under the head. Only a tap does it, so an
+// auto-focus on arrival (Email) leaves the hero alone.
 // Reduced motion: snaps between Default and Compact instead of morphing.
 const ILLO_SCALE = 145 / 235
 const ILLO_OVERLAP_COMPACT = 30
@@ -23,6 +27,7 @@ const SUB_SCALE = 13 / 14
 const GAP = 2 // title → subtitle
 const PAD_BOTTOM = 8
 const P_MAX = 1.02 // NANO lets the header overshoot Compact by 2% as it settles
+const TAP_TO_FOCUS_MS = 800 // a focus this soon after a pointerdown came from a tap
 
 const easeOutQuad = (t) => 1 - (1 - t) * (1 - t)
 
@@ -138,13 +143,52 @@ export function useCollapsingHero(scrollerRef, headRef, deps) {
       if (!raf) raf = requestAnimationFrame(tick)
     }
 
+    const isTextEntry = (el) =>
+      el?.matches?.('input:not([readonly]):not([type=checkbox]):not([type=radio]), textarea')
+    const collapseForTyping = () => {
+      if (!geo || scroller.scrollTop >= geo.distance) return
+      // A short page may not scroll that far — pad its bottom until it can (kept for the step).
+      // Re-measured after padding: a page shorter than the screen reports scrollHeight = height.
+      let room = 0
+      for (let i = 0; i < 3; i++) {
+        const short = geo.distance - (scroller.scrollHeight - scroller.clientHeight)
+        if (short <= 0) break
+        room += Math.ceil(short)
+        scroller.style.setProperty('--typing-room', `${room}px`)
+      }
+      scroller.scrollTo({ top: geo.distance, behavior: reduced.matches ? 'auto' : 'smooth' })
+    }
+    // Tapping into a field (focusin right after a pointerdown), or tapping one that's already
+    // focused (Email's auto-focused field — that tap is when a phone raises its keyboard; on
+    // release, as a scroll started while the finger is down gets cancelled by the touch)
+    let tappedAt = -Infinity
+    let downOnFocused = false
+    const onPointerDown = (e) => {
+      tappedAt = performance.now()
+      downOnFocused = isTextEntry(e.target) && e.target === document.activeElement
+    }
+    const onPointerUp = () => {
+      if (downOnFocused) collapseForTyping()
+      downOnFocused = false
+    }
+    const onFocusIn = (e) => {
+      if (performance.now() - tappedAt <= TAP_TO_FOCUS_MS && isTextEntry(e.target)) collapseForTyping()
+    }
+
     measure()
     scroller.addEventListener('scroll', onScroll, { passive: true })
+    scroller.addEventListener('pointerdown', onPointerDown, { passive: true })
+    scroller.addEventListener('pointerup', onPointerUp, { passive: true })
+    scroller.addEventListener('focusin', onFocusIn)
     const ro = new ResizeObserver(measure) // transforms don't change layout size, so no loop
     ro.observe(head)
     return () => {
       cancelAnimationFrame(raf)
       scroller.removeEventListener('scroll', onScroll)
+      scroller.removeEventListener('pointerdown', onPointerDown)
+      scroller.removeEventListener('pointerup', onPointerUp)
+      scroller.removeEventListener('focusin', onFocusIn)
+      scroller.style.removeProperty('--typing-room')
       ro.disconnect()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

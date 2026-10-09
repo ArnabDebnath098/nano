@@ -69,6 +69,11 @@
   color: var(--colour-text-primary);
 }
 
+/* Mobile Safari / Chrome can paint button text with their own fill; follow `color` */
+.kid-tabs__tab {
+  -webkit-text-fill-color: currentColor;
+}
+
 /* "Pill / <Tab>" — sits in the recess notch (top 7, same as the recess) */
 .kid-tabs__pill {
   position: absolute;
