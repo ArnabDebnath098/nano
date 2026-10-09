@@ -46,7 +46,7 @@ export const STEPS = [
     Body: AddAddress,
   },
   // `overlay`: the beat plays over the screen just left (Figma 18:15748 shows the chrome beneath)
-  { id: 'lets-go', fullscreen: true, overlay: true, Body: LetsGo },
+  { id: 'lets-go', fullscreen: true, overlay: true, haptic: 'success', Body: LetsGo }, // the setup-done celebration
   { id: 'invite', progress: 5, fullscreen: true, gyro: true, Body: InviteQR }, // card tilts with the gyro
 ]
 

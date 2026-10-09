@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { preloadLottie } from '../../../lib/preloadLottie.js'
 import { createPortal } from 'react-dom'
+import { haptic } from '../../../lib/haptics.js'
 import { useAddKid, useStepFooter } from '../AddKidContext.js'
 import TextField from '../../../components/AddKid/TextField.jsx'
 import NanoButton from '../../../components/AddKid/NanoButton.jsx'
@@ -110,6 +111,7 @@ export default function EmailId() {
         if (sh && !reduced) sh.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 200, easing: EASE_OUT_CSS })
         setChecking(false)
         setConfirmOpen(true)
+        haptic.success() // the email checked out
       },
       reduced ? 300 : CHECK_MS,
     )

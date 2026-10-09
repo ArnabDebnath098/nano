@@ -53,6 +53,7 @@ export default function InviteQR() {
   }
 
   const flash = (where) => {
+    haptic.success() // link copied / invite sent
     setCopied(where)
     clearTimeout(timer.current)
     timer.current = setTimeout(() => setCopied(null), COPIED_MS)

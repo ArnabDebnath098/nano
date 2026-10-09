@@ -89,17 +89,34 @@ export const haptic = {
   },
 }
 
-// Text-entry fields answer a tap with a soft `selection` tick (NANO skips fields entirely; we play
-// the lighter kind — the hidden-switch trick never steals focus, so the keyboard stays up).
+// What a tap plays, by what was tapped (iOS conventions: a choice changing is a selection tick,
+// committing a step is a firmer tap, everything else a plain tap):
+//   text field                                        → selection (never steals focus, so the
+//                                                       keyboard stays up)
+//   radio / checkbox / tab / switch / option, or any
+//   control with aria-checked / aria-pressed          → selection (gender, rule + address cards,
+//                                                       kid profile tabs, chips)
+//   primary nano button (Continue, Done, Share…)      → medium
+//   any other button / link                           → light
+//   data-haptic="<kind>" on an element overrides it; data-haptic="off" silences it.
 const FIELD = 'input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea, select, .text-field'
-// Everything else tappable answers with `light`, as in NANO.
 const TAPPABLE =
   'button, a[href], [role="button"], [role="tab"], [role="option"], [role="switch"], [role="checkbox"], [role="radio"], label, [data-haptic]'
+const CHOICE = '[role="radio"], [role="checkbox"], [role="tab"], [role="switch"], [role="option"], [aria-checked], [aria-pressed]'
+const PRIMARY = '.nano-btn--primary'
+
+function kindFor(el, field) {
+  const own = el.closest('[data-haptic]')?.dataset.haptic
+  if (own && own !== 'off' && haptic[own]) return own
+  if (field || el.matches(CHOICE)) return 'selection'
+  if (el.matches(PRIMARY)) return 'medium'
+  return 'light'
+}
 
 const isDisabled = (el) =>
   el.disabled || el.getAttribute('aria-disabled') === 'true' || el.closest('[aria-disabled="true"], fieldset:disabled')
 
-// One global listener, like NANO: a tap on a button or field plays a haptic unless the control's
+// One global listener, like NANO: a tap on a control plays its kind (kindFor) unless the control's
 // own handler already played one for that tap (checked right after the handlers run, still inside
 // the tap). A label's forwarded click to its input (same tap) is ignored via the 80ms window.
 export function installTapHaptics() {
@@ -113,10 +130,10 @@ export function installTapHaptics() {
     if (!el || isDisabled(el) || el.closest('[data-haptic="off"]')) return
     const at = performance.now()
     if (lastAt > at - 80) return
+    const kind = kindFor(el, !!field)
     setTimeout(() => {
-      if (lastAt >= at) return
-      if (field) haptic.selection()
-      else haptic.light()
+      if (lastAt >= at) return // the control's own handler already played one (e.g. an error)
+      haptic[kind]()
     }, 0)
   }
   document.addEventListener('click', onClick, true)

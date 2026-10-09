@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { gsap, Draggable, useGSAP } from '../../lib/gsap.js'
 import { lockScroll } from '../../lib/scrollLock.js'
+import { haptic } from '../../lib/haptics.js'
 import { CORNER_SMOOTHING, squirclePath } from '../../lib/squircle.js'
 import {
   FADE,
@@ -115,8 +116,10 @@ export default function BottomSheet({
         },
         onDragEnd() {
           if (this.y >= SWIPE_COMMIT_PX || tracker.velocity() > SWIPE_COMMIT_VELOCITY) {
+            haptic.light() // swiped away
             onClose?.()
           } else {
+            haptic.selection() // springs back into place
             gsap.to(panel.current, { y: 0, ...MOVE })
             gsap.to(scrim, { autoAlpha: 1, ...FADE })
           }

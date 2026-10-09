@@ -191,7 +191,12 @@ export default function AddKidFlow({ onExit, onComplete, initialStep }) {
     else transition(h)
   }, [history, transition])
 
-  const showToast = useCallback((message) => setToast({ id: Date.now(), message }), [])
+  // Every toast here is an A5 error state (red M-Toast) — answered with the `error` haptic. It
+  // plays inside the tap that caused it, so the tap listener stays quiet for that tap.
+  const showToast = useCallback((message) => {
+    haptic.error()
+    setToast({ id: Date.now(), message })
+  }, [])
   const requestClose = useCallback(() => setCloseOpen(true), [])
 
   const ctx = useMemo(
@@ -227,7 +232,7 @@ export default function AddKidFlow({ onExit, onComplete, initialStep }) {
       if (step.fullscreen) {
         // A firm bump as the beat lands — kept within ~1s of the tap that opened it, the window
         // iOS Safari allows a web haptic in
-        const bump = setTimeout(() => haptic.medium(), 280)
+        const bump = setTimeout(() => haptic[step.haptic ?? 'medium'](), 280) // step.haptic: e.g. Let's go → success
         const layer = scope.querySelector('[data-full-layer]:not([data-full-leaving])')
         // Hide the screen beneath only once the beat covers it (`overlay` beats keep it), and
         // drop an overlay beat still showing under this one
