@@ -39,8 +39,22 @@ function EmptyWalletProps() {
   )
 }
 
+// A skin's card image in its 404 × 286 frame: Figma's crop box, or cover / fill
+function WalletCardImage({ skin }) {
+  const crop = skin.cardCrop
+  if (typeof crop === 'string') return <img className={`ew-card__img ew-card__img--${crop}`} src={skin.card} alt="" />
+  return (
+    <img
+      className="ew-card__img ew-card__img--crop"
+      src={skin.card}
+      style={{ width: `${crop.w}%`, height: `${crop.h}%`, left: `${crop.left}%`, top: `${crop.top}%` }}
+      alt=""
+    />
+  )
+}
+
 // Figma: wallet (56:42138) — Wallet · Empty (first time)
-export default function EmptyWallet({ kidName, onTopUp }) {
+export default function EmptyWallet({ kidName, skin, onTopUp }) {
   return (
     <div className="empty-wallet">
       <div className="ew-header">
@@ -52,8 +66,9 @@ export default function EmptyWallet({ kidName, onTopUp }) {
 
       <EmptyWalletFloor />
 
+      {/* The kid's wallet card from Branding · Wallet Skins, placed in its frame as Figma does */}
       <div className="ew-card" aria-hidden="true">
-        <img src={`${A}/wallet-card.png`} alt="" />
+        <WalletCardImage skin={skin} />
       </div>
 
       <EmptyWalletProps />

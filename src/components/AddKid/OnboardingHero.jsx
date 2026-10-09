@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { gsap, useGSAP } from '../../lib/gsap.js'
 import { FADE, MOVE, PAGE_IN, POP_FROM, STAGGER, prefersReducedMotion } from '../../lib/motion.js'
 import HeroIllustration from './HeroIllustration.jsx'
+import StickerText from '../StickerText/StickerText.jsx'
 import './OnboardingHero.css'
 
 // Figma: Onboarding hero (55:1173) — illustration slot (overlapped −48 by the title),
@@ -133,10 +134,7 @@ export default function OnboardingHero({ illustration, title, subtitle, children
       </div>
       <div className="onboarding-hero__texts" key={title}>
         <h1 className="onboarding-hero__title" data-hero-text>
-          <span className="onboarding-hero__title-outline" aria-hidden="true">
-            {title}
-          </span>
-          <span className="onboarding-hero__title-fill">{title}</span>
+          <StickerText>{title}</StickerText>
         </h1>
         {subtitle && (
           <p className="onboarding-hero__subtitle" data-hero-text>

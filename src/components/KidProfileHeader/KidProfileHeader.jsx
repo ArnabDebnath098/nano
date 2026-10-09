@@ -1,6 +1,7 @@
 import StatusBar from '../StatusBar/StatusBar.jsx'
 import GlassButton from '../GlassButton/GlassButton.jsx'
 import KidAvatar from '../KidAvatar/KidAvatar.jsx'
+import StickerText from '../StickerText/StickerText.jsx'
 import './KidProfileHeader.css'
 
 const A = '/figma/kid-profile'
@@ -18,11 +19,11 @@ export default function KidProfileHeader({ kid, titleId, showStatusBar = true, o
       </nav>
 
       <div className="kid-header__profile">
-        <KidAvatar portrait={kid.portrait} fallbackAvatar={kid.avatar} />
+        <KidAvatar character={kid.character} />
 
         <div className="kid-header__identity">
           <h1 id={titleId} className="kid-header__name">
-            {kid.name}
+            <StickerText ring="sm">{kid.name}</StickerText>
           </h1>
           {kid.stats?.length > 0 && (
             <p className="kid-header__stats">

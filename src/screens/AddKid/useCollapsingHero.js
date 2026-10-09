@@ -1,5 +1,5 @@
 import { useLayoutEffect } from 'react'
-import { prefersReducedMotion } from '../../lib/motion.js'
+import { HDR_SPRING, stepSpring } from '../../../animation-reference/noon-nano/motion.js'
 
 // Figma: Onboarding hero Size=Default (55:1173) → Size=Compact (65:2667), "Add address · Scrolled"
 // (57:2431). The head (background, top bar, hero) is pinned; as the page scrolls, the hero morphs
@@ -8,8 +8,12 @@ import { prefersReducedMotion } from '../../lib/motion.js'
 //   title  H40 → H24 (×0.6), line box 48 → 32
 //   subtitle B14 → B13 (×0.929)
 // and the Scroll fade (66:2550: eased white gradient, layer-blurred) fades in at the compact bottom.
-// Scrubbed 1:1 with the scroll (no easing — it follows the finger). Uses the individual CSS
-// `scale` / `translate` properties so it composes with the GSAP step-transition tweens.
+// Motion: NANO's collapsing-header spring (HDR_SPRING — K (2π/0.34)², ζ 0.86, semi-implicit
+// Euler, keeps its velocity when the direction reverses). The scroll sets a target on an
+// ease-out (so the morph leads the finger — fast at the start, slow into Compact) and the
+// spring chases it: quick to react, then settles with no wobble, and a fling or a wheel notch
+// glides instead of jumping. Uses the individual CSS `scale` / `translate` properties so it
+// composes with the GSAP step-transition tweens.
 // Reduced motion: snaps between Default and Compact instead of morphing.
 const ILLO_SCALE = 145 / 235
 const ILLO_OVERLAP_COMPACT = 30
@@ -18,6 +22,9 @@ const TITLE_LINE_COMPACT = 32
 const SUB_SCALE = 13 / 14
 const GAP = 2 // title → subtitle
 const PAD_BOTTOM = 8
+const P_MAX = 1.02 // NANO lets the header overshoot Compact by 2% as it settles
+
+const easeOutQuad = (t) => 1 - (1 - t) * (1 - t)
 
 // Layout position relative to `root` (offsets ignore transforms, so tweens can't skew it)
 function offsetTopWithin(el, root) {
@@ -37,21 +44,21 @@ export function useCollapsingHero(scrollerRef, headRef, deps) {
     if (!scroller || !head) return
     let geo = null
     let raf = 0
+    let p = 0 // drawn progress, Default 0 → Compact 1
+    let v = 0 // its velocity (per second)
+    let last = 0
+    let els = {} // hero parts, looked up in measure() — off the per-frame path
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)')
 
-    const parts = () => ({
-      illo: head.querySelector('.onboarding-hero__illustration'),
-      title: head.querySelector('.onboarding-hero__title'),
-      sub: head.querySelector('.onboarding-hero__subtitle'),
-      fade: head.querySelector('[data-scroll-fade]'),
-    })
-
-    const apply = () => {
-      raf = 0
-      if (!geo) return
-      const { illo, title, sub, fade } = parts()
-      if (!illo || !title) return
+    const target = () => {
       const y = scroller.scrollTop
-      const p = prefersReducedMotion() ? (y > 4 ? 1 : 0) : Math.min(1, Math.max(0, y / geo.distance))
+      if (reduced.matches) return y > 4 ? 1 : 0
+      return easeOutQuad(Math.min(1, Math.max(0, y / geo.distance)))
+    }
+
+    const draw = () => {
+      const { illo, title, sub, fade } = els
+      if (!illo || !title) return
       const lerp = (from, to) => from + (to - from) * p
       illo.style.scale = String(lerp(1, ILLO_SCALE))
       title.style.scale = String(lerp(1, TITLE_SCALE))
@@ -62,11 +69,47 @@ export function useCollapsingHero(scrollerRef, headRef, deps) {
       }
       // Content slips under the head as soon as it moves, so the fade is at full strength within
       // the first quarter of the collapse (it sits on plain white at rest, so it can't show early)
-      if (fade) fade.style.opacity = String(Math.min(1, p * 4))
+      if (fade) fade.style.opacity = String(Math.min(1, Math.max(0, p * 4)))
+    }
+
+    // One spring frame; keeps running until the hero is at rest on the scroll's target
+    const tick = (now) => {
+      raf = 0
+      if (!geo) return
+      const to = target()
+      const dt = last ? Math.min(HDR_SPRING.maxDt, (now - last) / 1000) : 1 / 60
+      last = now
+      ;({ x: p, v } = stepSpring(HDR_SPRING, p, v, to, dt))
+      p = Math.min(P_MAX, Math.max(0, p))
+      if (Math.abs(p - to) < HDR_SPRING.eps && Math.abs(v) < HDR_SPRING.vEps) {
+        p = to
+        v = 0
+        last = 0
+      } else {
+        raf = requestAnimationFrame(tick)
+      }
+      draw()
+    }
+
+    // New geometry (step change, resize): land on the target with no animation
+    const snap = () => {
+      if (!geo) return
+      cancelAnimationFrame(raf)
+      raf = 0
+      last = 0
+      v = 0
+      p = target()
+      draw()
     }
 
     const measure = () => {
-      const { illo, title, sub, fade } = parts()
+      els = {
+        illo: head.querySelector('.onboarding-hero__illustration'),
+        title: head.querySelector('.onboarding-hero__title'),
+        sub: head.querySelector('.onboarding-hero__subtitle'),
+        fade: head.querySelector('[data-scroll-fade]'),
+      }
+      const { illo, title, sub, fade } = els
       if (!illo || !title) return
       const illoTop = offsetTopWithin(illo, head)
       const illoH = illo.offsetHeight
@@ -87,11 +130,12 @@ export function useCollapsingHero(scrollerRef, headRef, deps) {
         distance: Math.max(1, defaultBottom - compactBottom),
       }
       if (fade) fade.style.top = `${compactBottom.toFixed(2)}px`
-      apply()
+      snap()
     }
 
     const onScroll = () => {
-      if (!raf) raf = requestAnimationFrame(apply)
+      if (reduced.matches) return snap()
+      if (!raf) raf = requestAnimationFrame(tick)
     }
 
     measure()

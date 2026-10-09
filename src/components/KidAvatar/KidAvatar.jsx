@@ -1,32 +1,17 @@
-import ProfileAvatar from '../ProfileAvatar/ProfileAvatar.jsx'
+import NanoAvatar from '../NanoAvatar/NanoAvatar.jsx'
 import './KidAvatar.css'
 
 const A = '/figma/kid-profile'
 
-// Figma: Kid profile header "Top" (94:4941) — 231×80 composition:
-// ring + masked portrait, a badge, and a tilted star — in Figma's layer order.
-// Kids without a large portrait fall back to their list avatar, scaled to the 66px slot.
-export default function KidAvatar({ portrait, fallbackAvatar }) {
+// Figma: Kid profile header "Top" (94:4941) — 231×80 composition: the kid's nano avatar
+// (Branding 18:386, Size=80, Background=On — the same avatar as their Manage Family card),
+// a badge, and a tilted star — in Figma's layer order.
+export default function KidAvatar({ character }) {
   return (
     <div className="kid-avatar" aria-hidden="true">
-      {/* 94:4942 — portrait */}
+      {/* 94:4942 — avatar */}
       <div className="kid-avatar__profile">
-        <div className="kid-avatar__ring">
-          <img src={`${A}/avatar-ring.png`} width="71.32" height="71.32" alt="" />
-        </div>
-
-        {portrait ? (
-          <div
-            className="kid-avatar__portrait"
-            style={{ maskImage: `url("${A}/avatar-mask.svg")`, WebkitMaskImage: `url("${A}/avatar-mask.svg")` }}
-          >
-            <img src={portrait} alt="" />
-          </div>
-        ) : (
-          <div className="kid-avatar__fallback">
-            <ProfileAvatar avatar={fallbackAvatar} />
-          </div>
-        )}
+        <NanoAvatar character={character} size={80} />
       </div>
 
       {/* 94:4947 — badge */}

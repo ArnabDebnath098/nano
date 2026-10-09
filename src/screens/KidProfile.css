@@ -7,36 +7,21 @@
   background: var(--colour-surface-primary);
 }
 
-/* 56:42127 — 348px tall; the body's white surface covers its lower part.
-   Shifted up 8px: the 66px tab bar (noon Kids 10048:281155) puts its recess at
-   y=253 vs y=261 in the page frame, so the artwork keeps the same relation to it. */
+/* Wallet-skin background frame (375 × 580, its dark top overlay baked in), pinned to the top
+   at full width; the body's white surface covers its lower part. */
 .kid-profile__bg {
-  position: absolute;
-  top: -8px;
-  left: 0;
-  width: 100%;
-  height: 348px;
-  overflow: hidden;
-}
-
-.kid-profile__bg-gradient {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  height: 294.967px;
-  background: linear-gradient(to bottom, #b693fd 8.884%, #f9f3fc 114.99%);
+  aspect-ratio: 375 / 580;
+  overflow: hidden;
 }
 
-/* Centre sits 63.3px below the box centre (Figma) */
 .kid-profile__bg-skin {
-  position: absolute;
-  left: 0;
-  top: calc(50% + 63.3px);
   width: 100%;
-  height: 666.312px;
+  height: 100%;
   max-width: none;
-  translate: 0 -50%;
   object-fit: cover;
 }
 

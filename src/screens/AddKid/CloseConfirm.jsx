@@ -12,7 +12,7 @@ const A = '/figma/add-kid/child'
 // Reduced motion: the sheet fades, the contents don't move.
 export default function CloseConfirm({ open, onCancel, onConfirm }) {
   return (
-    <BottomSheet open={open} onClose={onCancel} labelledBy="close-confirm-title" cornerSmoothing={0.6}>
+    <BottomSheet open={open} onClose={onCancel} labelledBy="close-confirm-title">
       <div className="close-confirm">
         <div className="close-confirm__asset-row">
           <div className="close-confirm__asset" aria-hidden="true">

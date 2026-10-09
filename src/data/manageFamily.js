@@ -1,4 +1,12 @@
 // Mock content for the "Manage Family · Tasks added" screen (Figma 2:2858)
+import { getAvatar } from './avatars.js'
+
+// Each kid's nano avatar (src/data/avatars.js) — one source for their cards, profile, switch row
+// and tasks
+const CHARACTER = {
+  kiaan: '11-headphones', // boy
+  aisha: '20-curly-hair-2', // girl
+}
 
 export const parent = {
   name: 'Anmol',
@@ -12,8 +20,8 @@ export const children = [
     name: 'Kiaan Khalid',
     status: 'Add Kiaan’s first wallet balance',
     balance: 0,
-    character: '11-headphones', // nano avatar (src/data/avatars.js) — boy
-    walletSkin: '14-purple-neon', // the skin the kid chose (src/data/walletSkins.js)
+    character: CHARACTER.kiaan,
+    walletSkin: '01-blue-pixel', // the skin the kid chose (src/data/walletSkins.js) — Branding 156:27
     walletDimmed: false,
   },
   {
@@ -22,15 +30,15 @@ export const children = [
     name: 'Aisha Khalid', // Kiaan's sister — same surname
     status: '3 active tasks',
     balance: 1200,
-    character: '20-curly-hair-2', // girl
-    walletSkin: '01-blue-pixel',
+    character: CHARACTER.aisha,
+    walletSkin: '04-pink', // Branding 156:41
     walletDimmed: true,
   },
 ]
 
 const request = {
   childName: 'Kiaan',
-  character: '11-headphones',
+  character: CHARACTER.kiaan,
   date: '16 April 26',
   itemCount: 3,
   message: 'Could I please have these? I really need them for my upcoming school trip.',
@@ -41,7 +49,7 @@ const request = {
 
 export const approvalRequests = [
   { id: 'req-1', ...request },
-  { id: 'req-2', ...request, childName: 'Aisha', character: '20-curly-hair-2' },
+  { id: 'req-2', ...request, childName: 'Aisha', character: CHARACTER.aisha },
   { id: 'req-3', ...request },
 ]
 
@@ -49,7 +57,7 @@ const task = {
   title: 'Clean up your bedroom and organise your desk',
   image: '/figma/task-image.png',
   reward: 48,
-  assignee: { name: 'Kiaan', avatar: '/figma/task-profile.png' },
+  assignee: { name: 'Kiaan', avatar: getAvatar(CHARACTER.kiaan).image },
   dueLabel: 'due by 6 Sep',
 }
 
@@ -62,32 +70,17 @@ export const tasks = [
 const SP = '/figma/switch-profile'
 
 export const profiles = [
+  // Kids show their nano character (as on their Manage Family card); the adults keep Figma's art
   {
     id: 'kiaan',
     name: 'Kiaan Khalid',
-    avatar: {
-      flip: true,
-      circle: `${SP}/avatar-circle-kiaan.png`,
-      sprite: `${SP}/avatar-sprite-a.png`,
-      mask: { src: `${SP}/avatar-mask-kiaan.svg`, x: 12.022, y: 1.222 },
-      frame: { x: -6.21, y: -1.22, w: 62.235, h: 126.463 },
-      layer: { w: 50.869, h: 122.187, transform: 'rotate(-174.55deg) scaleY(-1)' },
-      crop: { left: '-204.87%', top: '-16.57%', width: '526.57%', height: '119.48%' },
-    },
+    character: CHARACTER.kiaan,
   },
-  // Kiaan's sister (same surname); the switch sheet has no Figma art for her yet, so it reuses Kiaan's
+  // Kiaan's sister (same surname)
   {
     id: 'aisha',
     name: 'Aisha Khalid',
-    avatar: {
-      flip: true,
-      circle: `${SP}/avatar-circle-kiaan.png`,
-      sprite: `${SP}/avatar-sprite-a.png`,
-      mask: { src: `${SP}/avatar-mask-kiaan.svg`, x: 12.022, y: 1.222 },
-      frame: { x: -6.21, y: -1.22, w: 62.235, h: 126.463 },
-      layer: { w: 50.869, h: 122.187, transform: 'rotate(-174.55deg) scaleY(-1)' },
-      crop: { left: '-204.87%', top: '-16.57%', width: '526.57%', height: '119.48%' },
-    },
+    character: CHARACTER.aisha,
   },
   {
     id: 'arnab',
@@ -115,11 +108,9 @@ export const profiles = [
   },
 ]
 
-// Kid profile page (Figma 56:42126). Only Kiaan has a large portrait and stats in the design;
-// other kids fall back to their list avatar and show no stats line.
+// Kid profile page (Figma 56:42126). Only Kiaan has stats in the design; other kids show none.
 const KID_DETAILS = {
   kiaan: {
-    portrait: '/figma/kid-profile/avatar-kiaan.png',
     stats: ['13 yrs', 'Joined Jun 17, 2026'],
   },
 }
@@ -127,7 +118,9 @@ const KID_DETAILS = {
 export function getKid(id) {
   const profile = profiles.find((p) => p.id === id)
   if (!profile) return null
-  return { ...profile, firstName: profile.name.split(' ')[0], ...KID_DETAILS[id] }
+  // Same wallet skin as the kid's card in Manage Family
+  const walletSkin = children.find((c) => c.profileId === id)?.walletSkin
+  return { ...profile, firstName: profile.name.split(' ')[0], walletSkin, ...KID_DETAILS[id] }
 }
 
 // Tab widths from Figma (97:4660)

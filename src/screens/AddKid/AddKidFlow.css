@@ -109,6 +109,10 @@
   will-change: opacity, transform;
 }
 
+.add-kid__full.is-leaving.is-under {
+  z-index: 9; /* beneath the beat that replaced it, which fades in over it */
+}
+
 .add-kid__full {
   position: absolute;
   inset: 0;

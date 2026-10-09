@@ -4,13 +4,14 @@ import BottomSheet from '../../../../components/BottomSheet/BottomSheet.jsx'
 import { prefersReducedMotion } from '../../../../lib/motion.js'
 import { haptic } from '../../../../lib/haptics.js'
 import NanoButton from '../../../../components/AddKid/NanoButton.jsx'
-import { ageFrom } from '../../steps.js'
+import SquircleSurface from '../../../../components/SquircleSurface/SquircleSurface.jsx'
+import { ageInRange } from '../../steps.js'
 import './BirthdayPicker.css'
 
-// Birthday entry (desktop / web — phones open the real system picker, ChildDetails.jsx): a
-// date wheel in the app's M-BottomSheet, styled with the app's own type + tokens rather than
-// imitating iOS chrome. Head: "Birthday" + a live line with the date and the child's age, which
-// turns red with the 7–18 rule when the age is out of range (you see it while scrolling, not as
+// Birthday entry — the same on iOS, Android and web: a date wheel in the app's M-BottomSheet
+// (smoothed corners, as the app's other sheets), styled with the app's own type + tokens rather
+// than imitating iOS chrome. Head: "Your kid’s date of birth" + the 7–18 age rule, which
+// turns red when the picked date is out of range (you see it while scrolling, not as
 // a toast after Done). Three columns, day · month · year, under one selection band; a full-width
 // nano Done commits. The band is a lens: a flat, bold copy of each column is clipped to it and
 // the drum underneath is masked out there, so the selected value reads crisp (as UIPickerView's
@@ -62,29 +63,25 @@ export default function BirthdayPicker({ open, value, onClose, onDone }) {
   const days = Array.from({ length: maxDay }, (_, i) => i + 1)
   const day = Math.min(sel.d, maxDay)
   const iso = `${sel.y}-${pad(sel.m)}-${pad(day)}`
-  const age = ageFrom(iso, today)
-  const ageInRange = age !== null && age >= 7 && age <= 18
+  const inRange = ageInRange(iso, today)
 
   return createPortal(
     <BottomSheet open={open} onClose={onClose} labelledBy="birthday-picker-title">
       <div className="birthday-picker">
         <div className="birthday-picker__head">
           <h2 id="birthday-picker-title" className="birthday-picker__title">
-            Birthday
+            Your kid’s date of birth
           </h2>
-          <p className={`birthday-picker__value ${ageInRange ? '' : 'is-error'}`} aria-live="polite">
-            {ageInRange ? (
-              <>
-                {day} {MONTHS[sel.m - 1]} {sel.y} · {age} {age === 1 ? 'year' : 'years'} old
-              </>
-            ) : (
-              'nano is for kids aged 7 to 18'
-            )}
+          {/* The age rule, always shown; turns red while the picked date is outside it */}
+          <p className={`birthday-picker__value ${inRange ? '' : 'is-error'}`} aria-live="polite">
+            Your kid should be between 7 and 18 years old
           </p>
         </div>
 
         <div className="birthday-picker__wheels">
-          <div className="birthday-picker__band" aria-hidden="true" />
+          <div className="birthday-picker__band" aria-hidden="true">
+            <SquircleSurface />
+          </div>
           <Wheel
             label="Day"
             items={days}

@@ -92,39 +92,12 @@
   transition-duration: var(--nn-dur-press);
 }
 
-.child-birthday__field:focus-visible,
-.child-birthday__field:has(.child-birthday__native:focus-visible) {
+.child-birthday__field:focus-visible {
   outline: 2px solid var(--colour-primary);
   outline-offset: 2px;
 }
 
-/* iOS / Android: native date input stretched invisibly over the field — a tap lands on it
-   directly, which is what opens the system picker. 16px text stops iOS zooming in. */
-.child-birthday__native {
-  position: absolute;
-  inset: -1px; /* cover the 1px border too */
-  z-index: 1;
-  width: calc(100% + 2px);
-  height: calc(100% + 2px);
-  margin: 0;
-  padding: 0;
-  border: 0;
-  opacity: 0;
-  font-size: 16px;
-  cursor: pointer;
-  -webkit-appearance: none;
-  appearance: none;
-}
-
-.child-birthday__native::-webkit-calendar-picker-indicator {
-  position: absolute;
-  inset: 0;
-  width: auto;
-  height: auto;
-  cursor: pointer;
-}
-
-/* Selected while picking (sheet open on web, system picker open on iOS / Android) — same as
+/* Selected while the birthday sheet is open — same as
    a focused name field: radius 16 and a light purple border; the fill stays #f5f7fa */
 .child-birthday__field.is-selected {
   --surface-stroke: var(--colour-tertiary);

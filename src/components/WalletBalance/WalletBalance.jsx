@@ -5,7 +5,7 @@ import './WalletBalance.css'
 
 // Figma: "dhm0 · row" / "dhm1200 · row" — wallet balance with textured card background.
 // `dimmed` adds the 20% black overlay used on the second card.
-// The textured background is clipped to a 60%-smoothed squircle (Figma corner smoothing).
+// The textured background is clipped to a smoothed squircle (Figma corner smoothing).
 export default function WalletBalance({ amount, background, dimmed = false, onTopUp }) {
   const bg = useRef(null)
   useSquircleClip(bg)

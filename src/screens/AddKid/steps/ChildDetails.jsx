@@ -1,28 +1,19 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useAddKid, useStepFooter } from '../AddKidContext.js'
-import { ageFrom } from '../steps.js'
+import { ageInRange } from '../steps.js'
 import { preloadLottie } from '../../../lib/preloadLottie.js'
 import TextField from '../../../components/AddKid/TextField.jsx'
 import SquircleSurface from '../../../components/SquircleSurface/SquircleSurface.jsx'
 import BirthdayPicker from './child/BirthdayPicker.jsx'
-import { isAndroid, isNativeMobile } from '../../../lib/platform.js'
 import './ChildDetails.css'
 
 const AGE_COPY = 'nano is for kids aged 7 to 18'
-// ISO yyyy-mm-dd (the stored / native date input value) → dd-mm-yyyy
+// ISO yyyy-mm-dd (the stored value) → dd-mm-yyyy
 const isoToDisplay = (iso) => (iso ? iso.split('-').reverse().join('-') : '')
-const todayIso = () => {
-  const d = new Date()
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-}
-const ageOk = (iso) => {
-  const age = ageFrom(iso)
-  return age !== null && age >= 7 && age <= 18
-}
 
 // Figma: Child details · Empty (57:1182) / Filled (18:14867) / Last name missing (18:15059) /
 // Age outside 7–18 (57:1926). Name (two M-Input-alt boxes), Birthday (M-Input-alt + calendar,
-// opens the system date picker on phones), Gender (two option cards with hex avatars + M-Radio).
+// opens the date-wheel sheet), Gender (two option cards with hex avatars + M-Radio).
 // Continue (stacked) stays disabled until everything is valid; the A5 errors fire as the parent
 // moves on: picking a birthday outside 7–18, or moving past an empty last name, shows the red
 // toast, marks the field and replays the NANO field shake.
@@ -41,7 +32,7 @@ export default function ChildDetails() {
 
   const first = data.firstName.trim()
   const last = data.lastName.trim()
-  const birthdayError = !!data.birthday && !ageOk(data.birthday)
+  const birthdayError = !!data.birthday && !ageInRange(data.birthday)
   const lastNameError = lastError && !last
   const complete = !!first && !!last && !!data.birthday && !birthdayError && !!data.gender
 
@@ -58,14 +49,10 @@ export default function ChildDetails() {
     showToast(`Add ${first}’s last name`)
   }
 
-  // Birthday — iOS / Android (Safari, Chrome or the native wrapper's WKWebView): the real system
-  // date picker (a native <input type="date"> laid invisibly over the field, so a real tap lands
-  // on it). Desktop: the HTML iOS-style wheel bottom sheet.
-  // Either way the field shows the selected state while picking (`pickerOpen`).
-  const valueAtOpen = useRef('')
-
+  // Birthday — the date-wheel bottom sheet on every platform (iOS, Android, web), with its
+  // detent / settle haptics. The field shows the selected state while picking (`pickerOpen`).
   const checkAge = (iso) => {
-    if (iso && !ageOk(iso)) {
+    if (iso && !ageInRange(iso)) {
       setBirthdayShake((n) => n + 1)
       showToast(AGE_COPY)
     }
@@ -82,41 +69,6 @@ export default function ChildDetails() {
     setPickerOpen(false)
     update({ birthday: iso })
     checkAge(iso)
-  }
-
-  // Native: the value updates live (iOS updates it as the wheel spins), so on iOS picking ends
-  // on blur (Done / tapping away). Android's dialog commits once on OK but can keep focus, so
-  // the commit itself ends picking there. The age check runs only when picking ends, and only
-  // if the date changed — an error shake (which rebuilds the field) never fires mid-spin.
-  const endPicking = (value) => {
-    setPickerOpen(false)
-    if (value !== valueAtOpen.current) {
-      valueAtOpen.current = value
-      checkAge(value)
-    }
-  }
-  const nativeHandlers = {
-    onFocus: (e) => {
-      valueAtOpen.current = e.target.value
-      setKeyboard(null)
-      checkLastName()
-      setPickerOpen(true)
-    },
-    onBlur: (e) => endPicking(e.target.value),
-    onClick: (e) => {
-      try {
-        e.currentTarget.showPicker?.()
-      } catch {
-        /* already open */
-      }
-    },
-    onChange: (e) => {
-      update({ birthday: e.target.value })
-      if (isAndroid) {
-        endPicking(e.target.value)
-        e.target.blur()
-      }
-    },
   }
 
   const pickGender = (gender) => {
@@ -164,46 +116,23 @@ export default function ChildDetails() {
           <p className="child-details__helper">We'll make sure to make it special for them.</p>
         </div>
         <div className={`child-birthday ${birthdayError ? 'is-error' : ''}`}>
-          {isNativeMobile ? (
-            <div
-              className={`child-birthday__field ${data.birthday ? 'is-filled' : ''} ${pickerOpen ? 'is-selected' : ''}`}
-              data-shake={birthdayShake || undefined}
-              key={birthdayShake}
-            >
-              <SquircleSurface />
-              <span className="child-birthday__value" aria-hidden="true">
-                {data.birthday ? isoToDisplay(data.birthday) : 'DD-MM-YYYY'}
-              </span>
-              <img src="/figma/add-kid/child/calendar.svg" width="20" height="20" alt="" />
-              <input
-                type="date"
-                className="child-birthday__native"
-                value={data.birthday ?? ''}
-                max={todayIso()}
-                aria-labelledby="child-birthday-label"
-                aria-invalid={birthdayError || undefined}
-                {...nativeHandlers}
-              />
-            </div>
-          ) : (
-            <button
-              type="button"
-              className={`child-birthday__field ${data.birthday ? 'is-filled' : ''} ${pickerOpen ? 'is-selected' : ''}`}
-              data-shake={birthdayShake || undefined}
-              key={birthdayShake}
-              aria-labelledby="child-birthday-label child-birthday-value"
-              aria-invalid={birthdayError || undefined}
-              aria-haspopup="dialog"
-              aria-expanded={pickerOpen}
-              onClick={openPicker}
-            >
-              <SquircleSurface />
-              <span className="child-birthday__value" id="child-birthday-value">
-                {data.birthday ? isoToDisplay(data.birthday) : 'DD-MM-YYYY'}
-              </span>
-              <img src="/figma/add-kid/child/calendar.svg" width="20" height="20" alt="" />
-            </button>
-          )}
+          <button
+            type="button"
+            className={`child-birthday__field ${data.birthday ? 'is-filled' : ''} ${pickerOpen ? 'is-selected' : ''}`}
+            data-shake={birthdayShake || undefined}
+            key={birthdayShake}
+            aria-labelledby="child-birthday-label child-birthday-value"
+            aria-invalid={birthdayError || undefined}
+            aria-haspopup="dialog"
+            aria-expanded={pickerOpen}
+            onClick={openPicker}
+          >
+            <SquircleSurface />
+            <span className="child-birthday__value" id="child-birthday-value">
+              {data.birthday ? isoToDisplay(data.birthday) : 'DD-MM-YYYY'}
+            </span>
+            <img src="/figma/add-kid/child/calendar.svg" width="20" height="20" alt="" />
+          </button>
           {birthdayError && <p className="child-birthday__support">{AGE_COPY}</p>}
         </div>
       </section>
@@ -219,9 +148,7 @@ export default function ChildDetails() {
         </div>
       </section>
 
-      {!isNativeMobile && (
-        <BirthdayPicker open={pickerOpen} value={data.birthday} onClose={() => setPickerOpen(false)} onDone={pickBirthday} />
-      )}
+      <BirthdayPicker open={pickerOpen} value={data.birthday} onClose={() => setPickerOpen(false)} onDone={pickBirthday} />
     </div>
   )
 }

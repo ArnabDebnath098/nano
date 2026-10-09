@@ -1,6 +1,6 @@
 import { useRef } from 'react'
 import { gsap, useGSAP } from '../../lib/gsap.js'
-import { bottomSquirclePath } from '../../lib/squircle.js'
+import { CORNER_SMOOTHING, bottomSquirclePath } from '../../lib/squircle.js'
 import StatusBar from '../StatusBar/StatusBar.jsx'
 import ManageFamilyHeader from '../ManageFamilyHeader/ManageFamilyHeader.jsx'
 import HeroBackground from '../HeroBackground/HeroBackground.jsx'
@@ -9,7 +9,6 @@ import './TopBar.css'
 // Figma 306:30909 — collapsed bar shows the hero artwork offset by -84px
 const COLLAPSE_DISTANCE = 84
 const COLLAPSED_RADIUS = 20
-const CORNER_SMOOTHING = 0.6 // Figma "iOS" corner smoothing (60%)
 
 // Figma: Top bar (38:4215 expanded → 306:30909 collapsed) — pinned status bar + header.
 // The bar carries its own clipped copy of the hero background. For the first 84px of

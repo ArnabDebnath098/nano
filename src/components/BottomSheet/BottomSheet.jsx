@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { gsap, Draggable, useGSAP } from '../../lib/gsap.js'
 import { lockScroll } from '../../lib/scrollLock.js'
-import { squirclePath } from '../../lib/squircle.js'
+import { CORNER_SMOOTHING, squirclePath } from '../../lib/squircle.js'
 import {
   FADE,
   MOVE,
@@ -19,14 +19,14 @@ import './BottomSheet.css'
 // the scrim uses NANO's overlay curves. Drag the grabber/header down — release past 70px
 // or flick faster than 0.45px/ms to dismiss, otherwise it springs back on PP Move.
 // Reduced motion: no travel, PP Fade only.
-// cornerSmoothing (0–1, e.g. 0.6 for Figma's "iOS" preset) clips the sheet to a squircle
-// at its CSS border-radius; the shadow then moves to a drop-shadow so it follows the clip.
+// cornerSmoothing (0–1, default the app's CORNER_SMOOTHING; 0 = plain radius) clips the sheet to a
+// squircle at its CSS border-radius; the shadow then moves to a drop-shadow so it follows the clip.
 export default function BottomSheet({
   open,
   onClose,
   labelledBy,
   showHomeIndicator = true,
-  cornerSmoothing = 0,
+  cornerSmoothing = CORNER_SMOOTHING,
   children,
 }) {
   // Stay mounted until the close animation has finished

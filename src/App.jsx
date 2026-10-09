@@ -40,7 +40,7 @@ function App() {
 
       {/* From the intro the flow is revealed in place under the dissolving video (no slide-up) */}
       <PushPage open={route.name === 'add-kid'} from="bottom" enter={route.intro ? 'none' : 'slide'} labelledBy="add-kid-title">
-        <AddKidFlow initialStep={route.step} onExit={() => goBack('/')} />
+        <AddKidFlow initialStep={route.step} onExit={() => goBack('/')} onComplete={() => replace('/family')} />
       </PushPage>
 
       {/* Parent onboarding intro → replaces itself with the Add a child flow when it ends */}

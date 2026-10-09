@@ -1,14 +1,16 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
 import lottie from 'lottie-web'
 import { prefersReducedMotion } from '../../lib/motion.js'
+import { haptic } from '../../lib/haptics.js'
 
-// Thin lottie-web wrapper. Canvas renderer by default: the image-led comps here re-layout an
-// SVG tree every frame under the SVG renderer, which stutters on iOS Safari / Android WebView;
-// canvas just blits bitmaps. Some comps use what lottie-web's canvas renderer draws wrong —
-// matte strokes (parent-education) — so those stay on SVG (verified frame-by-frame against
-// SVG). Canvas can't draw AE effects or gradient fills with alpha stops either: bake them into
-// images, as parent-education's mascot shadow and age-reveal's rays/stars/plate are.
-const SVG_ONLY = new Set(['parent-education'])
+// Thin lottie-web wrapper, canvas renderer: the SVG renderer re-lays-out an SVG tree every frame,
+// which stutters on iOS Safari / Android WebView; canvas just blits bitmaps. Comps must be
+// canvas-safe — lottie-web's canvas renderer can't draw AE effects or gradients whose alpha
+// stops don't line up with their colour stops, and every track matte costs several full-canvas
+// copies per frame (and leaves edge artefacts inside precomps). So those get baked into images
+// (parent-education's mascot shadow, coin flips and card shine; age-reveal's rays and stars) and
+// mattes that are plain wipes become masks (parent-education's pill labels). Verified
+// frame-by-frame against the SVG renderer.
 
 // Decode every image of a loaded comp before its first played frame. lottie-web only waits
 // for `load`; the decode itself then happens on the main thread on first draw, which on a
@@ -31,19 +33,26 @@ function decodeImages(a) {
 //   playing   — true plays from frame 0 (after `delay` ms); false holds frame 0
 //   loop      — loop forever
 //   fit       — 'contain' (default) letterboxes the comp; 'cover' fills the box, cropping the edges
-//   renderer  — 'canvas' | 'svg'; defaults to canvas unless the comp is in SVG_ONLY
+//   renderer  — 'canvas' (default) | 'svg', for checking a comp against the reference renderer
+//   cues      — [{ frame, kind } | { frame, run }] fired once from the comp's own frame clock
+//               (enterFrame), so they stay on the frame even if playback stalls. `kind` is a
+//               haptic — skipped rather than played late when more than STALE_FRAMES behind (a
+//               hiccup / tab switch); `run` is a callback, always run (late beats never).
 // Reduced motion: no playback, jumps straight to the last frame (NANO: goToAndStop(totalFrames-1)).
 // The ref exposes { replay(), anim } for one-off triggers.
+const STALE_FRAMES = 15 // 250ms at 60fps
+const NO_CUES = []
+
 const Lottie = forwardRef(function Lottie(
-  { name, playing = true, loop = false, delay = 0, fit = 'contain', renderer: rendererProp, onComplete, className, style },
+  { name, playing = true, loop = false, delay = 0, fit = 'contain', renderer = 'canvas', cues = NO_CUES, onComplete, className, style },
   ref,
 ) {
   const container = useRef(null)
   const anim = useRef(null)
   const completeRef = useRef(onComplete)
   completeRef.current = onComplete
-
-  const renderer = rendererProp ?? (SVG_ONLY.has(name) ? 'svg' : 'canvas')
+  const cuesRef = useRef(cues)
+  cuesRef.current = cues
 
   useEffect(() => {
     const a = lottie.loadAnimation({
@@ -67,8 +76,25 @@ const Lottie = forwardRef(function Lottie(
     anim.current = a
     const done = () => completeRef.current?.()
     a.addEventListener('complete', done)
+    // Frame-synced cues: fire each once as playback crosses its frame
+    let next = 0
+    let last = -1
+    const onFrame = () => {
+      const list = cuesRef.current
+      if (!list.length) return
+      const f = a.currentFrame
+      if (f < last) next = 0 // replayed / looped
+      last = f
+      while (next < list.length && list[next].frame <= f) {
+        const cue = list[next++]
+        if (cue.run) cue.run()
+        else if (f - cue.frame <= STALE_FRAMES) haptic[cue.kind]?.()
+      }
+    }
+    a.addEventListener('enterFrame', onFrame)
     return () => {
       a.removeEventListener('complete', done)
+      a.removeEventListener('enterFrame', onFrame)
       a.destroy()
       anim.current = null
     }

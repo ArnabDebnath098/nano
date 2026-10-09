@@ -1,12 +1,14 @@
 import { useEffect } from 'react'
 import { prefersReducedMotion } from '../../../../lib/motion.js'
+import { requestMotionPermission } from '../../../../lib/motionPermission.js'
 
 // Gyro tilt for the invite card — the phone's tilt (DeviceOrientation β / γ, relative to how it
 // was held when the screen opened) leans the card in 3D, slides its holographic sheen and drifts
 // the sparkles the other way for parallax. On desktop the pointer stands in for the gyro.
 // Smoothed with a critically-damped follow (no overshoot, no jitter from sensor noise) on rAF,
 // writing transforms straight onto the elements (never via a parent CSS variable).
-// iOS asks for motion permission, which needs a gesture — requested on the first tap.
+// iOS motion permission is requested by the tap that opens this screen (AddKidFlow); if that
+// didn't happen, a tap on the card asks (on click — iOS rejects requests from pointerdown).
 // Reduced motion: off.
 const MAX_TILT = 9 // deg
 const RANGE = 22 // deg of phone tilt for full lean
@@ -68,21 +70,18 @@ export function useGyroTilt(rootRef, { card, sheen, sparkles }) {
       kick()
     }
 
+    // Always listen: without iOS permission no events arrive, and once it's granted they start
     const listenOrientation = () => window.addEventListener('deviceorientation', onOrientation)
-    const needsPermission = typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function'
-    const askOnce = () => {
-      DeviceOrientationEvent.requestPermission()
-        .then((state) => state === 'granted' && listenOrientation())
-        .catch(() => {})
-    }
+    // Fallback ask from a tap on the card; stops listening once iOS has answered
+    const askOnce = () =>
+      requestMotionPermission().then((s) => s !== 'prompt' && root.removeEventListener('click', askOnce))
 
     if (fine) {
       root.addEventListener('pointermove', onPointer)
       root.addEventListener('pointerleave', onLeave)
-    } else if (needsPermission) {
-      root.addEventListener('pointerdown', askOnce, { once: true })
     } else {
       listenOrientation()
+      root.addEventListener('click', askOnce)
     }
 
     return () => {
@@ -90,7 +89,7 @@ export function useGyroTilt(rootRef, { card, sheen, sparkles }) {
       window.removeEventListener('deviceorientation', onOrientation)
       root.removeEventListener('pointermove', onPointer)
       root.removeEventListener('pointerleave', onLeave)
-      root.removeEventListener('pointerdown', askOnce)
+      root.removeEventListener('click', askOnce)
     }
   }, [rootRef, card, sheen, sparkles])
 }

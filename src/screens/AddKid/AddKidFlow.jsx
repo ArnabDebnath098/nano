@@ -1,6 +1,7 @@
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { gsap, useGSAP } from '../../lib/gsap.js'
 import { haptic } from '../../lib/haptics.js'
+import { requestMotionPermission } from '../../lib/motionPermission.js'
 import { BLEND_IN, BLEND_OUT, FADE, MOVE, PAGE_BACK_OUT, PAGE_IN, PAGE_OUT, STAGGER, prefersReducedMotion } from '../../lib/motion.js'
 import OnboardingBackground from '../../components/AddKid/OnboardingBackground.jsx'
 import AddKidHeader from '../../components/AddKid/AddKidHeader.jsx'
@@ -33,7 +34,7 @@ import './AddKidFlow.css'
 //     the beat — still mounted on its last frame — dissolves on top (fade + blur(8px) + 1.04,
 //     600ms in-out) while the step's hero and content settle in under it.
 // Reduced motion: no travel or blur, PP Fade only.
-export default function AddKidFlow({ onExit, initialStep }) {
+export default function AddKidFlow({ onExit, onComplete, initialStep }) {
   const root = useRef(null)
   const scroller = useRef(null)
   const [history, setHistory] = useState(() =>
@@ -70,6 +71,11 @@ export default function AddKidFlow({ onExit, initialStep }) {
     (nextHistory) => {
       if (busy.current) return
       busy.current = true
+      // A gyro screen next — or right after the beat this tap opens (address → Let's go → invite):
+      // ask iOS for motion permission now, inside the tap (a no-op once answered / off iOS)
+      const nextId = nextHistory.at(-1)
+      const next = getStep(nextId)
+      if (next.gyro || (next.fullscreen && getStep(NEXT[nextId])?.gyro)) requestMotionPermission()
       document.activeElement?.blur?.()
       setKeyboardState(null)
       const fromFull = getStep(history.at(-1)).fullscreen
@@ -95,6 +101,14 @@ export default function AddKidFlow({ onExit, initialStep }) {
       // on top (on its last frame) to dissolve over it
       if (fromFull && !nextStep.fullscreen) {
         haptic.light() // the beat hands over (also answers a tap-to-skip, so the tap listener stays quiet)
+        setLeavingFull(history.at(-1))
+        commit()
+        return
+      }
+      // Out of an overlay beat into another beat (Let's go → invite): mount the next beat now
+      // and keep the overlay beneath it, still on screen, so the next one fades in over the
+      // overlay rather than over the step it was covering
+      if (fromFull && getStep(history.at(-1)).overlay) {
         setLeavingFull(history.at(-1))
         commit()
         return
@@ -153,12 +167,13 @@ export default function AddKidFlow({ onExit, initialStep }) {
       setKeyboard,
       keyboard,
       requestClose,
-      exit: onExit, // finish the flow without the close confirmation (invite → Done)
+      exit: onExit, // leave the flow without the close confirmation (invite → ✕)
+      complete: onComplete, // the flow is done (invite shared) → Manage Family
       setFooter,
       setHeroOverride,
       fillName: (text) => fillName(text, data),
     }),
-    [data, update, id, goNext, goBack, goTo, showToast, setKeyboard, keyboard, requestClose, onExit],
+    [data, update, id, goNext, goBack, goTo, showToast, setKeyboard, keyboard, requestClose, onExit, onComplete],
   )
 
   // Arrival
@@ -174,8 +189,13 @@ export default function AddKidFlow({ onExit, initialStep }) {
         // iOS Safari allows a web haptic in
         const bump = setTimeout(() => haptic.medium(), 280)
         const layer = scope.querySelector('[data-full-layer]:not([data-full-leaving])')
-        // Hide the screen beneath only once the beat covers it (`overlay` beats keep it)
-        const cover = () => !step.overlay && gsap.set(chrome, { autoAlpha: 0 })
+        // Hide the screen beneath only once the beat covers it (`overlay` beats keep it), and
+        // drop an overlay beat still showing under this one
+        const cover = () => {
+          if (step.overlay) return
+          gsap.set(chrome, { autoAlpha: 0 })
+          setLeavingFull(null)
+        }
         // Overlay beats build themselves in; fading/blurring the layer would also stop their
         // backdrop-filter from seeing the screen beneath
         if (step.overlay) gsap.set(layer, { autoAlpha: 1, clearProps: 'filter' })
@@ -318,9 +338,11 @@ export default function AddKidFlow({ onExit, initialStep }) {
         {fullIds.map((fid) => {
           const Full = getStep(fid).Body
           const isLeaving = fid === leavingFull && fid !== id
+          // A beat leaving into another beat stays beneath it (Let's go → invite)
+          const isUnder = isLeaving && step.fullscreen
           return (
             <div
-              className={`add-kid__full${isLeaving ? ' is-leaving' : ''}`}
+              className={`add-kid__full${isLeaving ? ' is-leaving' : ''}${isUnder ? ' is-under' : ''}`}
               data-full-layer={fid}
               data-full-leaving={isLeaving || undefined}
               aria-hidden={isLeaving || undefined}

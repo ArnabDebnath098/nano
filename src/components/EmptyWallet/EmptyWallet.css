@@ -1,8 +1,11 @@
-/* 375 × 464 stage, centred; layers positioned exactly as in Figma */
+/* 375 × 488 stage, centred; layers positioned as in Figma, with everything below the header
+   pushed 24px further down */
 .empty-wallet {
   position: relative;
   width: 375px;
-  height: 464.156px;
+  /* Everything under the header copy sits 24px lower than in Figma (464.156 tall there) */
+  --ew-shift: 24px;
+  height: calc(464.156px + var(--ew-shift));
   margin: 0 auto;
 }
 
@@ -50,7 +53,7 @@
 
 /* ---- Floor (103:9745) ---- */
 .ew-floor {
-  top: 248.03px;
+  top: calc(248.03px + var(--ew-shift)); /* Figma 248.03 */
   left: 0;
   width: 375px;
   height: 220px;
@@ -106,22 +109,39 @@
 /* ---- Card skin (56:42142) ---- */
 .ew-card {
   left: 51.5px;
-  top: 132.03px;
+  top: calc(132.03px + var(--ew-shift)); /* Figma 132.03 */
   width: 272.009px;
   height: 192.157px;
-  /* Shadow follows the PNG alpha (Figma 22px blur ≈ CSS drop-shadow 11px) */
+  /* Clips the card image to its 404 × 286-proportioned frame (Figma crops it there); the
+     shadow follows the clipped image's alpha (Figma 22px blur ≈ CSS drop-shadow 11px) */
+  overflow: hidden;
   filter: drop-shadow(0 0 11px rgba(0, 0, 0, 0.15));
 }
-.ew-card img {
+.ew-card__img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   max-width: none;
+}
+
+.ew-card__img--cover {
   object-fit: cover;
+}
+
+.ew-card__img--fill {
+  object-fit: fill;
+  object-position: bottom;
+}
+
+/* Figma crop box — size and offset set inline, in % of the frame */
+.ew-card__img--crop {
+  inset: auto;
 }
 
 /* ---- Props (105:4680) ---- */
 .ew-props {
-  top: 248.03px;
+  top: calc(248.03px + var(--ew-shift)); /* Figma 248.03 */
   left: 0;
   width: 375px;
   height: 220px;
@@ -162,7 +182,7 @@
 
 /* ---- CTA (56:42164) ---- */
 .ew-cta {
-  top: 355.49px;
+  top: calc(355.49px + var(--ew-shift)); /* Figma 355.49 */
   left: 50%;
   translate: -50% 0;
   width: 165px;

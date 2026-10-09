@@ -5,7 +5,7 @@ import { getWalletSkin } from '../../data/walletSkins.js'
 import './ChildCard.css'
 
 // Figma: Child card (2:3286) — avatar, name, status line and wallet balance.
-// The white card is drawn as a 60%-smoothed squircle behind the content (SquircleSurface), not
+// The white card is drawn as a smoothed squircle behind the content (SquircleSurface), not
 // clipped — the avatar deliberately overhangs the card's top edge.
 // The wallet strip shows the background of the skin the kid chose (Branding · Wallet Skins).
 export default function ChildCard({ child, onOpen, onTopUp }) {
@@ -13,7 +13,7 @@ export default function ChildCard({ child, onOpen, onTopUp }) {
     <article className="child-card">
       <SquircleSurface />
       <div className="child-card__identity">
-        {/* Profile cards use the transparent-background nano avatar (Branding 18:386) */}
+        {/* Profile cards use the transparent-background nano avatar (Branding 18:386, Background=Off) */}
         <NanoAvatar character={child.character} size={64} background="off" className="child-card__avatar" />
 
         <div className="child-card__name-block">

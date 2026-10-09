@@ -1,10 +1,10 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import { gsap } from '../../lib/gsap.js'
 import { FADE, prefersReducedMotion } from '../../lib/motion.js'
-import { squirclePath } from '../../lib/squircle.js'
+import { CORNER_SMOOTHING, squirclePath } from '../../lib/squircle.js'
 import './SquircleSurface.css'
 
-// Figma corner smoothing (default 60% — Figma's "iOS" preset) for a box with a fill and a
+// Figma corner smoothing (default CORNER_SMOOTHING = 100%) for a box with a fill and a
 // border. CSS border-radius can't smooth corners and clip-path would cut through the border,
 // so the fill and a 1px stroke are drawn as an SVG squircle behind the content, sized to the
 // parent with a ResizeObserver. Style it from CSS through these custom properties:
@@ -12,7 +12,7 @@ import './SquircleSurface.css'
 // The radius follows the parent's CSS border-radius (re-read on focus changes and animated
 // on PP Fade), so per-context and per-state overrides carry over.
 // The parent must be positioned; content above it paints normally.
-export default function SquircleSurface({ radius, smoothing = 0.6, strokeWidth = 1 }) {
+export default function SquircleSurface({ radius, smoothing = CORNER_SMOOTHING, strokeWidth = 1 }) {
   const ref = useRef(null)
   const [size, setSize] = useState(null)
 

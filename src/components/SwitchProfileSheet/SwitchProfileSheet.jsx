@@ -68,7 +68,7 @@ function SheetBackground() {
 // Figma: Switch profile · Pick a child (2:5334) — bottom sheet content
 export default function SwitchProfileSheet({ open, onClose, profiles, onSelect }) {
   return (
-    <BottomSheet open={open} onClose={onClose} labelledBy="switch-profile-title" cornerSmoothing={0.6}>
+    <BottomSheet open={open} onClose={onClose} labelledBy="switch-profile-title">
       <SheetBackground />
 
       {/* Switch profile · stack (2:5532) — also a drag handle */}

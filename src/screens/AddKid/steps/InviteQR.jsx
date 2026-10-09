@@ -1,5 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { Flip } from 'gsap/Flip'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { gsap, useGSAP } from '../../../lib/gsap.js'
 import { FADE, MOVE, POP_FROM, SETTLE, STAGGER, prefersReducedMotion } from '../../../lib/motion.js'
 import { useAddKid } from '../AddKidContext.js'
@@ -13,21 +12,22 @@ import InviteQRCode from './address/InviteQRCode.jsx'
 import { useGyroTilt } from './address/useGyroTilt.js'
 import '../../../components/AddKid/OnboardingHero.css' // shared sticker title
 import '../../../components/AddKid/AddKidHeader.css' // shared close button
+import StickerText from '../../../components/StickerText/StickerText.jsx'
 import './InviteQR.css'
-
-gsap.registerPlugin(Flip)
 
 const ASSETS = '/figma/add-kid/invite'
 const COPIED_MS = 1800
+const SENT_HOLD_MS = 900 // "Invite sent" reads before the flow hands over to Manage Family
 
 // Figma: Invite · Share QR (18:16204) — full screen with its own BG (900:47847, Figma's render),
 // a plain top bar (✕ only — no progress), "Share Invite" (H40 gradient with the white sticker
 // outline, like every step title) + subtitle, the holographic card with a real QR
 // for a single-use link (valid for 7 days) and the child's name, then "OR" + the link field
-// (tap to copy) and "Share invite". Once the invite has gone out (shared or copied) the row
-// action bar's hidden secondary slot ("Sounds good" in Figma, labelled "Done") FLIPs in and
-// finishes the flow. ✕ also exits straight away — the child is already created, so there is
-// nothing to discard and no close confirmation.
+// (tap to copy) and "Share invite". Share invite opens the share sheet (or copies the link when
+// the Web Share API isn't available), then takes the parent to Manage Family: after a beat on
+// "Invite sent" / "Link copied" if it went out, straight away if the sheet was dismissed. No
+// Done button. ✕ also exits straight away — the child is already created, so there is nothing
+// to discard and no close confirmation.
 //
 // Motion: on arrival the title settles up 8px (blur 4 → 0, no overshoot), the card lifts and
 // settles from .96 with the sparkles popping after it. Then the gyro (useGyroTilt) leans the card
@@ -35,15 +35,13 @@ const COPIED_MS = 1800
 // see InviteQRCode). Copy success morphs the field label "invite.noon.com/…" → "Link copied"
 // (and the copy glyph → a check) through a 2px blur on PP Fade; Share runs the same morph on its
 // own label — "Invite sent" once the share sheet completes, or "Link copied" when the Web Share
-// API isn't available. Reduced motion: fades only (Done fades in instead of FLIPping).
+// API isn't available. Reduced motion: fades only.
 export default function InviteQR() {
-  const { data, exit, requestClose } = useAddKid()
+  const { data, exit, complete, requestClose } = useAddKid()
   const root = useRef(null)
   const name = data.firstName?.trim() || 'Kiaan'
   const invite = useMemo(() => makeInvite(name), [name])
   const [copied, setCopied] = useState(null) // 'field' | 'share' | 'shared' | null
-  const [sent, setSent] = useState(false)
-  const flipState = useRef(null)
   const timer = useRef(null)
   const closePress = usePress(0.94) // same press as the flow's close button
 
@@ -51,11 +49,11 @@ export default function InviteQR() {
   useGyroTilt(root, { card: '.invite__tilt', sheen: '.invite__sheen-band', sparkles: '.invite__spark-drift' })
 
   const finish = () => (exit ? exit() : requestClose?.())
-
-  const markSent = () => {
-    if (sent) return
-    flipState.current = Flip.getState(root.current.querySelectorAll('[data-invite-btn]'))
-    setSent(true)
+  // On to Manage Family, where the new child now lives — after a beat on the "Invite sent" /
+  // "Link copied" morph when the invite went out
+  const toFamily = (hold = SENT_HOLD_MS) => {
+    clearTimeout(timer.current)
+    timer.current = setTimeout(() => (complete ? complete() : finish()), hold)
   }
 
   const flash = (where) => {
@@ -71,7 +69,6 @@ export default function InviteQR() {
       // Clipboard can be blocked (insecure origin / permissions) — the feedback still shows
     }
     flash(where)
-    markSent()
   }
 
   const share = async () => {
@@ -83,32 +80,14 @@ export default function InviteQR() {
           url: invite.url,
         })
         flash('shared')
-        markSent()
+        toFamily()
       } catch {
-        // dismissed — nothing to do
+        toFamily(0) // dismissed — still on to Manage Family
       }
       return
     }
-    copy('share')
+    copy('share').then(toFamily)
   }
-
-  // Done FLIPs into the row, Share invite slides over to make room
-  useLayoutEffect(() => {
-    const state = flipState.current
-    flipState.current = null
-    if (!state) return
-    if (prefersReducedMotion()) {
-      // No travel: Done just fades in where it lands
-      gsap.fromTo(root.current.querySelector('[data-invite-btn="done"]'), { autoAlpha: 0 }, { autoAlpha: 1, ...FADE })
-      return
-    }
-    Flip.from(state, {
-      targets: root.current.querySelectorAll('[data-invite-btn]'),
-      ...MOVE,
-      scale: false,
-      onEnter: (els) => gsap.fromTo(els, { autoAlpha: 0, scale: 0.96 }, { autoAlpha: 1, scale: 1, ...FADE }),
-    })
-  }, [sent])
 
   // Arrival
   useGSAP(
@@ -164,10 +143,7 @@ export default function InviteQR() {
 
       <div className="invite__texts">
         <h1 className="invite__title onboarding-hero__title" data-invite-text>
-          <span className="onboarding-hero__title-outline" aria-hidden="true">
-            Share Invite
-          </span>
-          <span className="onboarding-hero__title-fill">Share Invite</span>
+          <StickerText>Share Invite</StickerText>
         </h1>
         <p className="invite__subtitle" data-invite-text>
           Download the app, then scan to get started
@@ -239,12 +215,7 @@ export default function InviteQR() {
 
         <div data-invite-rise>
           <ActionBar layout="row">
-            {sent && (
-              <NanoButton variant="secondary" data-invite-btn="done" onClick={finish}>
-                Done
-              </NanoButton>
-            )}
-            <NanoButton variant="primary" data-invite-btn="share" onClick={share}>
+            <NanoButton variant="primary" onClick={share}>
               <span className={`invite__share ${copied === 'share' || copied === 'shared' ? 'is-copied' : ''}`}>
                 <span className="invite__share-icon" aria-hidden="true">
                   <img className="invite__morph-off" src={`${ASSETS}/upload.svg`} width="20" height="20" alt="" />

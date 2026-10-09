@@ -11,7 +11,7 @@ const A = '/figma/accounts/'
 // Behind the copy (over NanoBannerBackground): yellow ribbon 2:8297, nano logo 2:8298, sparkle marks 2:8317/2:8318
 const BACK = [
   { id: 'ribbon', src: 'widget-yellow-ribbon.svg', w: 155.544, h: 163.931 },
-  { id: 'nano', src: 'widget-nano-logo.svg', w: 116.235, h: 49.2125 },
+  { id: 'nano', src: 'widget-nano-logo.png', w: 116.235, h: 41.34 },
   { id: 'sparkle', src: 'widget-sparkle.svg', w: 18.6299, h: 19.0592 },
   { id: 'sparkle-line', src: 'widget-sparkle-line.svg', w: 5.01427, h: 2 },
 ]

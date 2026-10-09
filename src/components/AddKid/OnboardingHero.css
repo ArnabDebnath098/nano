@@ -38,8 +38,8 @@
   text-align: center;
 }
 
-/* 55:1171 — H40 ExtraBold (Bold is the heaviest Noontree cut shipped), gradient fill.
-   drop-shadow instead of text-shadow: text-shadow would paint over a background-clip:text fill. */
+/* 55:1171 — H40 ExtraBold (Bold is the heaviest Noontree cut shipped): gradient fill over the
+   8px white sticker outline (StickerText) */
 .onboarding-hero__title {
   display: grid;
   font-weight: var(--font-weight-bold);
@@ -47,93 +47,7 @@
   line-height: var(--h40-lh);
   letter-spacing: var(--h40-ls);
   white-space: nowrap;
-}
-
-.onboarding-hero__title > span {
-  grid-area: 1 / 1;
-}
-
-/* White sticker outline (~8px, round) — a copy of the text ringed with white shadows.
-   text-stroke would give mitred, spiky corners; this keeps the outline round like a sticker. */
-.onboarding-hero__title-outline {
-  color: #fff;
-  /* the soft shadow sits under the sticker — on this layer, so the h1 stays free for the
-     blur tween without the shadow dropping out mid-transition */
-  filter: drop-shadow(0 1px 7px rgba(0, 0, 0, 0.15));
-  text-shadow:
-    8.00px 0.00px 0 #fff,
-    7.85px 1.56px 0 #fff,
-    7.39px 3.06px 0 #fff,
-    6.65px 4.44px 0 #fff,
-    5.66px 5.66px 0 #fff,
-    4.44px 6.65px 0 #fff,
-    3.06px 7.39px 0 #fff,
-    1.56px 7.85px 0 #fff,
-    0.00px 8.00px 0 #fff,
-    -1.56px 7.85px 0 #fff,
-    -3.06px 7.39px 0 #fff,
-    -4.44px 6.65px 0 #fff,
-    -5.66px 5.66px 0 #fff,
-    -6.65px 4.44px 0 #fff,
-    -7.39px 3.06px 0 #fff,
-    -7.85px 1.56px 0 #fff,
-    -8.00px 0.00px 0 #fff,
-    -7.85px -1.56px 0 #fff,
-    -7.39px -3.06px 0 #fff,
-    -6.65px -4.44px 0 #fff,
-    -5.66px -5.66px 0 #fff,
-    -4.44px -6.65px 0 #fff,
-    -3.06px -7.39px 0 #fff,
-    -1.56px -7.85px 0 #fff,
-    -0.00px -8.00px 0 #fff,
-    1.56px -7.85px 0 #fff,
-    3.06px -7.39px 0 #fff,
-    4.44px -6.65px 0 #fff,
-    5.66px -5.66px 0 #fff,
-    6.65px -4.44px 0 #fff,
-    7.39px -3.06px 0 #fff,
-    7.85px -1.56px 0 #fff,
-    5.50px 0.00px 0 #fff,
-    5.23px 1.70px 0 #fff,
-    4.45px 3.23px 0 #fff,
-    3.23px 4.45px 0 #fff,
-    1.70px 5.23px 0 #fff,
-    0.00px 5.50px 0 #fff,
-    -1.70px 5.23px 0 #fff,
-    -3.23px 4.45px 0 #fff,
-    -4.45px 3.23px 0 #fff,
-    -5.23px 1.70px 0 #fff,
-    -5.50px 0.00px 0 #fff,
-    -5.23px -1.70px 0 #fff,
-    -4.45px -3.23px 0 #fff,
-    -3.23px -4.45px 0 #fff,
-    -1.70px -5.23px 0 #fff,
-    -0.00px -5.50px 0 #fff,
-    1.70px -5.23px 0 #fff,
-    3.23px -4.45px 0 #fff,
-    4.45px -3.23px 0 #fff,
-    5.23px -1.70px 0 #fff,
-    3.00px 0.00px 0 #fff,
-    2.60px 1.50px 0 #fff,
-    1.50px 2.60px 0 #fff,
-    0.00px 3.00px 0 #fff,
-    -1.50px 2.60px 0 #fff,
-    -2.60px 1.50px 0 #fff,
-    -3.00px 0.00px 0 #fff,
-    -2.60px -1.50px 0 #fff,
-    -1.50px -2.60px 0 #fff,
-    -0.00px -3.00px 0 #fff,
-    1.50px -2.60px 0 #fff,
-    2.60px -1.50px 0 #fff;
-}
-
-/* Gradient fill on top */
-.onboarding-hero__title-fill {
-  position: relative;
-  background-image: linear-gradient(28.68deg, #000 52.835%, #7924ff 104.2%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  --sticker-fill: linear-gradient(28.68deg, #000 52.835%, #7924ff 104.2%);
 }
 
 /* 55:1172 — B14 Medium, 311 wide */

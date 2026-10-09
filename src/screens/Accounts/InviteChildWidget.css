@@ -50,7 +50,8 @@
 /* 2:8301 — nano logo: inset 40.23% 10.78% 32.98% 59.59% of 351×138 */
 .icw__box--nano { left: 209.16px; top: 55.517px; width: 104px; height: 36.97px; }
 .icw__box--nano .icw__shape { width: 104px; height: 36.97px; }
-.icw__box--nano img { left: -6.115px; top: -1.224px; }
+/* PNG logo (1015×361) at the old export's width, centred on its old spot */
+.icw__box--nano img { left: -6.115px; top: 2.71px; }
 
 /* 2:8317 — sparkle */
 .icw__box--sparkle { left: 134.71px; top: 71.85px; width: 16.738px; height: 17.818px; }

@@ -1,0 +1,28 @@
+.sticker-text__outline,
+.sticker-text__fill {
+  grid-area: 1 / 1;
+}
+
+.sticker-text__outline {
+  color: #fff;
+  /* the soft shadow sits under the sticker — on this layer, so the heading stays free for
+     blur tweens without the shadow dropping out mid-transition */
+  filter: drop-shadow(0 1px 7px rgba(0, 0, 0, 0.15));
+}
+
+.sticker-text__outline--lg {
+  text-shadow: var(--sticker-outline);
+}
+
+.sticker-text__outline--sm {
+  text-shadow: var(--sticker-outline-sm);
+}
+
+/* Gradient fill on top — drop-shadow/text-shadow would paint over a background-clip:text fill */
+.sticker-text__fill {
+  position: relative;
+  background-image: var(--sticker-fill);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}

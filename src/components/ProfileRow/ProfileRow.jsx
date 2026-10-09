@@ -7,7 +7,7 @@ export default function ProfileRow({ profile, onSelect }) {
   return (
     <button type="button" className="profile-row" onClick={() => onSelect?.(profile)}>
       <span className="profile-row__identity">
-        <ProfileAvatar avatar={profile.avatar} />
+        <ProfileAvatar avatar={profile.avatar} character={profile.character} />
         <span className="profile-row__name">{profile.name}</span>
       </span>
 

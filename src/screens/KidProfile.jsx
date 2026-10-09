@@ -3,18 +3,21 @@ import KidProfileHeader from '../components/KidProfileHeader/KidProfileHeader.js
 import KidProfileTabs from '../components/KidProfileTabs/KidProfileTabs.jsx'
 import EmptyWallet from '../components/EmptyWallet/EmptyWallet.jsx'
 import { kidTabs } from '../data/manageFamily.js'
+import { getWalletSkin } from '../data/walletSkins.js'
 import './KidProfile.css'
 
 // Figma: Wallet · Empty (first time) (56:42126)
 export default function KidProfile({ kid, titleId, onBack }) {
   const [tab, setTab] = useState('wallet')
+  // The kid's wallet skin: its background behind the header, its card in the wallet
+  const skin = getWalletSkin(kid.walletSkin)
 
   return (
     <div className="kid-profile">
-      {/* 56:42127 — Header background */}
+      {/* Header background — the kid's wallet-skin background (Branding · Wallet Skins, the same
+          image as their wallet strip in Manage Family) */}
       <div className="kid-profile__bg" aria-hidden="true">
-        <div className="kid-profile__bg-gradient" />
-        <img className="kid-profile__bg-skin" src="/figma/kid-profile/skin-pattern.png" alt="" />
+        <img className="kid-profile__bg-skin" src={skin.background} alt="" />
       </div>
 
       <KidProfileHeader kid={kid} titleId={titleId} onBack={onBack} />
@@ -27,7 +30,7 @@ export default function KidProfile({ kid, titleId, onBack }) {
         id={`kid-${kid.id}-panel`}
         aria-labelledby={`kid-${kid.id}-tab-${tab}`}
       >
-        {tab === 'wallet' && <EmptyWallet kidName={kid.firstName} />}
+        {tab === 'wallet' && <EmptyWallet kidName={kid.firstName} skin={skin} />}
       </div>
     </div>
   )

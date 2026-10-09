@@ -15,6 +15,6 @@ export const isIOS =
   (/iP(hone|ad|od)/.test(ua) && appleWebKit) || (platform === 'MacIntel' && navigator.maxTouchPoints > 1)
 export const isAndroid = /Android/i.test(ua) && !/Win|Mac|Linux x86|Linux i[3-6]86/.test(platform)
 
-// Phones / tablets that should use system-native controls (e.g. the OS date picker);
+// Phones / tablets that should use system-native chrome (e.g. the intro video's header);
 // everything else — desktop browsers, including phone emulation — gets the web components.
 export const isNativeMobile = isIOS || isAndroid

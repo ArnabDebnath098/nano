@@ -1,9 +1,12 @@
+import NanoAvatar from '../NanoAvatar/NanoAvatar.jsx'
 import './ProfileAvatar.css'
 
 // Figma: profile "Image" groups in Switch profile (2:5539 / 2:5551 / 2:5562).
 // A 44×44 avatar: coloured circle + illustration cropped from a sprite and clipped
 // by a 44×44 alpha mask. All offsets come straight from Figma via `avatar` config.
-export default function ProfileAvatar({ avatar }) {
+// Profiles without Figma art (the kids) show their nano `character` instead.
+export default function ProfileAvatar({ avatar, character }) {
+  if (!avatar) return <NanoAvatar character={character} size={44} />
   const { circle, sprite, mask, frame, layer, crop, flip } = avatar
 
   return (

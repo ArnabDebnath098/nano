@@ -16,7 +16,7 @@
 
 .birthday-picker__title {
   margin: 0;
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-bold);
   font-size: var(--h18-size);
   line-height: var(--h18-lh);
   letter-spacing: var(--h18-ls);
@@ -53,9 +53,11 @@
   right: var(--space-12);
   height: 40px;
   translate: 0 -50%;
-  border-radius: var(--radius-12, 12px);
-  background: var(--colour-surface-tertiary);
+  border-radius: var(--radius-12);
   pointer-events: none;
+  /* Drawn as a smoothed squircle by SquircleSurface (CSS border-radius can't smooth) */
+  --surface-fill: var(--colour-surface-tertiary);
+  --surface-stroke: transparent;
 }
 
 .birthday-wheel-col {

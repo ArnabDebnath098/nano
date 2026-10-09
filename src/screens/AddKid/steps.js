@@ -47,7 +47,7 @@ export const STEPS = [
   },
   // `overlay`: the beat plays over the screen just left (Figma 18:15748 shows the chrome beneath)
   { id: 'lets-go', fullscreen: true, overlay: true, Body: LetsGo },
-  { id: 'invite', progress: 5, fullscreen: true, Body: InviteQR },
+  { id: 'invite', progress: 5, fullscreen: true, gyro: true, Body: InviteQR }, // card tilts with the gyro
 ]
 
 // The linear "Continue" order. `login` is the no-email branch, reached with goTo('login');
@@ -90,4 +90,10 @@ export function ageFrom(iso, today = new Date()) {
   let age = today.getFullYear() - y
   if (today.getMonth() + 1 < m || (today.getMonth() + 1 === m && today.getDate() < d)) age -= 1
   return age
+}
+
+// nano is for kids aged 7–18
+export function ageInRange(iso, today) {
+  const age = ageFrom(iso, today)
+  return age !== null && age >= 7 && age <= 18
 }

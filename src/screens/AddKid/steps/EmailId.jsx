@@ -175,12 +175,7 @@ export default function EmailId() {
       </p>
 
       {createPortal(
-        <BottomSheet
-          open={confirmOpen}
-          onClose={() => setConfirmOpen(false)}
-          labelledBy="confirm-email-title"
-          cornerSmoothing={0.6}
-        >
+        <BottomSheet open={confirmOpen} onClose={() => setConfirmOpen(false)} labelledBy="confirm-email-title">
           <div className="confirm-email">
             <div className="confirm-email__art" aria-hidden="true">
               {/* The email page's Email-Pop Lottie, placed exactly as in the hero (235 × 125 slot) */}
