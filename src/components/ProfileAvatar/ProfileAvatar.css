@@ -1,0 +1,45 @@
+.profile-avatar {
+  position: relative;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+}
+
+/* Figma wraps one avatar in scaleY(-1) rotate(180deg), i.e. a horizontal mirror */
+.profile-avatar--flip {
+  transform: scaleX(-1);
+}
+
+.profile-avatar__circle {
+  position: absolute;
+  left: 0.23px;
+  top: 0.39px;
+  max-width: none;
+}
+
+/* Bounding box of the (possibly rotated) illustration layer */
+.profile-avatar__frame {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-avatar__layer {
+  position: relative;
+  flex: none;
+  overflow: hidden;
+  mask-mode: alpha;
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  mask-size: 44px 44px;
+  -webkit-mask-size: 44px 44px;
+  mask-clip: no-clip;
+  -webkit-mask-clip: no-clip;
+  mask-composite: intersect;
+}
+
+.profile-avatar__layer img {
+  position: absolute;
+  max-width: none;
+}

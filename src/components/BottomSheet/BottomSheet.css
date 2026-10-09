@@ -1,0 +1,97 @@
+/* Fixed to the viewport, capped to the app shell width */
+.bottom-sheet {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  z-index: 50;
+  width: min(100%, 480px);
+  translate: -50% 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* 02 · Scrim (overlay) */
+.bottom-sheet__scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8); /* colour/surface/overlay-bold */
+}
+
+.bottom-sheet__panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-height: 100%;
+  padding-bottom: env(safe-area-inset-bottom);
+  outline: none;
+  will-change: transform;
+}
+
+.bottom-sheet__grabber {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: var(--space-12) 0;
+  cursor: grab;
+  touch-action: none;
+}
+
+.bottom-sheet__grabber-bar {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.64); /* base/colour/alpha-light/64 */
+}
+
+.bottom-sheet__wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-height: 0;
+  padding: 0 var(--space-12);
+}
+
+.bottom-sheet__sheet {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-16);
+  background: #f3ecff; /* colour/tertiary */
+  box-shadow: 0 -2px 16px 0 rgba(0, 0, 0, 0.12);
+}
+
+/* Squircle-clipped sheet: clip-path would cut off box-shadow, so the wrapper casts an
+   equivalent drop-shadow that follows the clipped shape */
+.bottom-sheet__wrapper--smooth {
+  filter: drop-shadow(0 -2px 8px rgba(0, 0, 0, 0.12));
+}
+
+.bottom-sheet__wrapper--smooth .bottom-sheet__sheet {
+  box-shadow: none;
+}
+
+.bottom-sheet__home-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: var(--space-20) 0 var(--space-8);
+}
+
+.bottom-sheet__home-indicator-bar {
+  width: 134px;
+  height: 5px;
+  border-radius: 9999px;
+  background: var(--colour-surface-primary);
+}

@@ -1,0 +1,59 @@
+/* Figma 18:15748 — the whole screen is the tap target; the 375 × 812 comp fills it
+   (transparent at the top, so the screen just left shows through like the Overlay) */
+.lets-go {
+  position: absolute;
+  inset: 0;
+  display: block;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Blurs the screen beneath where the wash is (BG_PURPLE: clear for the top ~85px, then
+   building down). Fades with the wash — in over frames 0–10, out over 80–90 of the 1.5s comp. */
+.lets-go__blur {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  -webkit-mask-image: linear-gradient(180deg, transparent 85px, #000 45%);
+  mask-image: linear-gradient(180deg, transparent 85px, #000 45%);
+  animation: lets-go-blur 1500ms both;
+}
+
+@keyframes lets-go-blur {
+  0% {
+    opacity: 0;
+    animation-timing-function: cubic-bezier(0, 0, 0, 1);
+  }
+  11.1% {
+    opacity: 1;
+  }
+  88.9% {
+    opacity: 1;
+    animation-timing-function: cubic-bezier(0, 0, 0, 1);
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Reduced motion holds a built frame (wash on), so keep the blur on with it */
+@media (prefers-reduced-motion: reduce) {
+  .lets-go__blur {
+    animation: none;
+  }
+}
+
+.lets-go__anim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.lets-go__anim svg {
+  display: block;
+}

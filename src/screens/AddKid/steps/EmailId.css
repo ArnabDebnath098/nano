@@ -1,0 +1,231 @@
+/* Figma 18:15388 — body column, 15 gap */
+.email-step {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.email-step__field {
+  position: relative;
+}
+
+/* NANO .field__shimmer — the skeleton wave over the field while the email is checked.
+   Multiplied over the field so the typed value stays readable on top of the grey. The grey
+   is static; only the light band (a field-wide strip) travels, on transform, clipped here. */
+.email-step__shimmer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  overflow: hidden;
+  border-radius: var(--radius-12);
+  background: #e7e9ee;
+  mix-blend-mode: multiply;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.email-step__shimmer-band {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #e7e9ee 0%, #ffffff 50%, #e7e9ee 100%);
+  transform: translateX(-100%);
+}
+
+.email-step__field.is-checking .text-field__input {
+  cursor: progress;
+}
+
+/* 18:15393 — green info card: green/100 fill, green/200 stroke, 12 padding, 12 gap */
+.email-step__info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  padding: var(--space-12);
+  border: 1px solid #cbf6e5; /* base/colour/green/200 */
+  border-radius: var(--radius-12);
+  background: #e3fcf2; /* base/colour/green/100 */
+}
+
+.email-step__info img {
+  flex-shrink: 0;
+}
+
+.email-step__info p {
+  flex: 1;
+  margin: 0;
+  font-size: var(--b13-size);
+  line-height: var(--b13-lh);
+  letter-spacing: var(--b13-ls);
+  color: var(--colour-text-secondary);
+}
+
+/* 18:15396 — "Don't have an email? Create a username" */
+.email-step__switch {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  margin: 0;
+  padding: 0 var(--space-4);
+  font-size: var(--b14-size);
+  line-height: var(--b14-lh);
+  letter-spacing: var(--b14-ls);
+  color: var(--colour-text-tertiary);
+  white-space: nowrap;
+}
+
+.email-step__link {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: var(--font-weight-semibold);
+  color: var(--colour-text-primary);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: scale var(--nn-pp-move-ms) var(--nn-pp-move), opacity var(--nn-pp-fade-ms) var(--nn-pp-fade);
+}
+
+.email-step__link:active {
+  scale: var(--press-scale);
+  opacity: 0.7;
+  transition-duration: var(--nn-dur-press);
+}
+
+/* ---- Confirm email sheet (18:15509) — white sheet inside M-BottomSheet ---- */
+.confirm-email {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  background: var(--colour-surface-primary);
+}
+
+.confirm-email__art {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-24, 24px) 0 var(--space-12);
+}
+
+/* Email Asset (18:15511) draws the art 1.306× the hero's (envelope 182.26 vs 139.53 wide).
+   Scaling the hero Lottie about (119.44, 20) lands its envelope on Figma's box:
+   centre x 119.44, top −6.37, bottom ≈125.8 in the 235 × 125 slot. */
+.confirm-email__art .hero-illo {
+  scale: 1.306;
+  transform-origin: 119.44px 20px;
+}
+
+
+/* 18:15524 — H20 Bold title + B14 tertiary body, centred */
+.confirm-email__message {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-8) var(--space-12);
+  text-align: center;
+}
+
+.confirm-email__message h2 {
+  margin: 0;
+  font-weight: var(--font-weight-bold);
+  font-size: 20px; /* font/heading/h20 */
+  line-height: 28px;
+  letter-spacing: -0.25px;
+  color: var(--colour-text-primary);
+}
+
+.confirm-email__message p {
+  margin: 0;
+  font-size: var(--b14-size);
+  line-height: var(--b14-lh);
+  letter-spacing: var(--b14-ls);
+  color: var(--colour-text-tertiary);
+}
+
+/* 18:15527 — the email in a 48-tall pill */
+.confirm-email__box {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-20) var(--space-12);
+}
+
+.confirm-email__box span {
+  display: flex;
+  align-items: center;
+  max-width: 100%;
+  height: 48px;
+  padding: var(--space-8) var(--space-24, 24px);
+  overflow: hidden;
+  border: 1px solid var(--colour-border-subtle);
+  border-radius: var(--radius-pill);
+  background: var(--colour-surface-primary);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--b14-size);
+  line-height: var(--b14-lh);
+  letter-spacing: var(--b14-ls);
+  color: var(--colour-text-primary);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* 63:7078 — M-StackedActionBar */
+.confirm-email__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  padding: var(--space-12);
+}
+
+.confirm-email__actions .nano-btn {
+  flex: none;
+  width: 100%;
+}
+
+/* Contents settle in just after the panel lands (as the close sheet) — 8px rise on PP Move +
+   fade on PP Fade, 40ms stagger. Reduced motion: fade only, no delay. */
+.confirm-email__art,
+.confirm-email__message,
+.confirm-email__box,
+.confirm-email__actions {
+  animation:
+    confirm-email-rise var(--nn-pp-move-ms) var(--nn-pp-move) both,
+    confirm-email-fade var(--nn-pp-fade-ms) var(--nn-pp-fade) both;
+}
+
+.confirm-email__art {
+  animation-delay: 140ms;
+}
+
+.confirm-email__message {
+  animation-delay: 180ms;
+}
+
+.confirm-email__box {
+  animation-delay: 220ms;
+}
+
+.confirm-email__actions {
+  animation-delay: 260ms;
+}
+
+@keyframes confirm-email-rise {
+  from {
+    transform: translateY(8px);
+  }
+}
+
+@keyframes confirm-email-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .confirm-email__art,
+  .confirm-email__message,
+  .confirm-email__box,
+  .confirm-email__actions {
+    animation: confirm-email-fade var(--nn-pp-fade-ms) var(--nn-pp-fade) both;
+  }
+}

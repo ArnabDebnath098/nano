@@ -1,0 +1,78 @@
+.add-kid-header {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  transition:
+    background-color var(--nn-pp-fade-ms) var(--nn-pp-fade),
+    box-shadow var(--nn-pp-fade-ms) var(--nn-pp-fade);
+}
+
+/* Scrolled state (Figma D · Scroll states): solid top bar */
+.add-kid-header.is-solid {
+  background-color: var(--colour-surface-primary);
+  box-shadow: 0 1px 0 var(--colour-border-subtle);
+}
+
+/* 55:1125 — 56 tall, 16 side padding, gap 12 */
+.add-kid-header__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  height: 56px;
+  padding: var(--space-8) var(--space-16);
+}
+
+/* 55:1118 — 40px white glass circle */
+.add-kid-header__close {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--colour-border-primary);
+  border-radius: var(--radius-pill);
+  background: var(--colour-surface-primary);
+  backdrop-filter: blur(26px);
+  -webkit-backdrop-filter: blur(26px);
+  /* press scale is driven by usePress (GSAP) so quick taps always show it */
+  touch-action: manipulation;
+}
+
+.add-kid-header__content {
+  display: flex;
+  flex: 1 0 0;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  padding-right: 48px;
+}
+
+/* 55:1122 — Figma draws track and fill both white, which hides progress on the lilac
+   background; the track gets a light purple tint so the white fill reads */
+.add-kid-header__progress {
+  position: relative;
+  width: 72px;
+  height: 4px;
+  overflow: hidden;
+  border-radius: var(--radius-8);
+  background: rgba(121, 36, 255, 0.16);
+}
+
+.add-kid-header__fill {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-8);
+  background: var(--colour-surface-primary);
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.9);
+  transform-origin: 0 50%;
+  transform: scaleX(var(--progress, 0.2));
+  /* Responds on the tap, then glides so the travel reads: Emil's strong ease-out, 700ms */
+  transition: transform 700ms var(--ease-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .add-kid-header__fill {
+    transition: none;
+  }
+}

@@ -1,0 +1,84 @@
+/* Figma 18:14954 — whole screen, tap anywhere to move on */
+.age-reveal {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: linear-gradient(223.77deg, rgba(99, 35, 199, 0.7) 9.93%, #4e16a4 99.22%);
+  cursor: pointer;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.age-reveal__lottie {
+  position: absolute;
+  inset: 0;
+}
+
+/* Copy sits on the comp's 375 × 812 stage (centres from 18:15046 / 18:15047) */
+.age-reveal__copy {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Line wrappers place + tilt; the inner [data-line] is what animates */
+.age-reveal__line {
+  position: absolute;
+  left: 50%;
+  rotate: -4deg;
+  white-space: nowrap;
+}
+
+/* "Alex is" — H32 Bold white, centre (179, 371) */
+.age-reveal__line--name {
+  top: 45.69%;
+  translate: calc(-50% - 8.45px) -50%;
+}
+
+/* "10 Years Old" — H40 gradient fill over a white sticker outline, centre (187, 412) */
+.age-reveal__line--age {
+  top: 50.7%;
+  translate: calc(-50% - 0.53px) -50%;
+}
+
+.age-reveal__name,
+.age-reveal__age {
+  margin: 0;
+  will-change: transform, opacity, filter;
+}
+
+.age-reveal__name {
+  font-weight: var(--font-weight-bold);
+  font-size: 32px;
+  line-height: 40px;
+  letter-spacing: -0.25px;
+  color: var(--colour-text-on-surface-bold);
+}
+
+.age-reveal__age {
+  display: grid;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--h40-size);
+  line-height: var(--h40-lh);
+  letter-spacing: var(--h40-ls);
+  text-align: center;
+}
+
+.age-reveal__age > span {
+  position: relative;
+  grid-area: 1 / 1;
+}
+
+.age-reveal__age-outline {
+  color: #fff;
+  -webkit-text-stroke: 8px #fff;
+  filter: drop-shadow(0 1.44px 10px rgba(0, 0, 0, 0.15));
+}
+
+.age-reveal__age-fill {
+  z-index: 1;
+  background-image: linear-gradient(42.03deg, #000 52.835%, #7924ff 104.2%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}

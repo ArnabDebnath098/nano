@@ -1,0 +1,104 @@
+@import './styles/tokens.css';
+/* noon NANO motion tokens (--nn-*) — see animation-reference/noon-nano */
+@import '../animation-reference/noon-nano/motion.css';
+
+/* Mobile-first reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Phone prototype: no visible scrollbars anywhere (page, pushed pages, sheets, carousels).
+   Scrolling still works — touch, trackpad, wheel, keyboard. */
+* {
+  scrollbar-width: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  min-height: 100dvh;
+  background: var(--colour-surface-secondary);
+  color: var(--colour-text-primary);
+  font-family: var(--font-primary);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior-y: none;
+}
+
+img,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* No focus outline after a tap/click; keyboard focus (:focus-visible) keeps one */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+ul {
+  list-style: none;
+}
+
+#root {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* App shell: full width on mobile, capped on larger screens */
+.app {
+  flex: 1;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding-right: env(safe-area-inset-right);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  background: var(--colour-surface-secondary);
+}
+
+/* Noontree turns "dhm" into the dirham symbol via its `liga` ligature.
+   Browsers drop ligatures when letter-spacing is set, so reset it on the symbol. */
+.dirham {
+  letter-spacing: 0;
+  font-variant-ligatures: common-ligatures;
+  font-feature-settings: 'liga' 1;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

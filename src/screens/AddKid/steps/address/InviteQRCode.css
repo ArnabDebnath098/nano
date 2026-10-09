@@ -1,0 +1,14 @@
+.invite-qr {
+  position: relative;
+  overflow: hidden;
+}
+
+.invite-qr__svg {
+  display: block;
+  fill: #fff;
+}
+
+.invite-qr__logo {
+  position: absolute;
+  display: block;
+}

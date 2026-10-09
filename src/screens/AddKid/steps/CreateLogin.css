@@ -1,0 +1,202 @@
+/* Figma 57:1498 — fields block, then the switch link 32 below */
+.login-step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-32);
+}
+
+.login-step__fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+}
+
+.login-step__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* _SupportingText (57:2099) — B12 error, 4 side padding */
+.login-step__support {
+  margin: 0;
+  padding: 0 var(--space-4);
+  font-size: var(--b12-size);
+  line-height: var(--b12-lh);
+  letter-spacing: var(--b12-ls);
+  color: var(--colour-text-error);
+  /* Arrives rather than appearing: 4px rise on PP Move + fade on PP Fade */
+  transition:
+    translate var(--nn-pp-move-ms) var(--nn-pp-move),
+    opacity var(--nn-pp-fade-ms) var(--nn-pp-fade);
+}
+
+@starting-style {
+  .login-step__support {
+    translate: 0 4px;
+    opacity: 0;
+  }
+}
+
+/* outline/eye (18 × 18) — tap target 40 × 40 around it; slash draws across when shown */
+.login-step__eye {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin: -11px -11px -11px 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: scale var(--nn-pp-move-ms) var(--nn-pp-move);
+}
+
+.login-step__eye:active {
+  scale: var(--press-scale);
+  transition-duration: var(--nn-dur-press);
+}
+
+.login-step__eye img {
+  display: block;
+}
+
+.login-step__eye-slash {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 1.5px;
+  margin: -0.75px 0 0 -10px;
+  border-radius: 1px;
+  background: #666d85;
+  box-shadow: 0 0 0 1.5px var(--colour-surface-primary);
+  transform: rotate(-45deg) scaleX(0);
+  transition: transform 200ms var(--ease-out);
+}
+
+.login-step__eye.is-shown .login-step__eye-slash {
+  transform: rotate(-45deg) scaleX(1);
+}
+
+/* 57:1512 — rules: header row, then chips (wrap, 8 row / 4 column gap) */
+.login-rules {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+}
+
+.login-rules__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-10);
+}
+
+.login-rules__head p {
+  margin: 0;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--b14-size);
+  line-height: var(--b14-lh);
+  letter-spacing: var(--b14-ls);
+  color: var(--colour-text-secondary);
+}
+
+.login-rules__strength {
+  font-weight: var(--font-weight-medium);
+  font-size: var(--b12-size);
+  line-height: var(--b12-lh);
+  letter-spacing: var(--b12-ls);
+  color: var(--colour-text-error);
+  white-space: nowrap;
+  transition: color var(--nn-pp-fade-ms) var(--nn-pp-fade);
+}
+
+.login-rules__strength.is-strong {
+  color: #0f8857; /* colour/text-n-icon/success */
+}
+
+.login-rules__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-8) var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Chip — 24 tall, radius 20, 8 side padding; met → success-subtle fill, success label + tick */
+.login-rule {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  height: 24px;
+  padding: var(--space-4) var(--space-8);
+  border-radius: var(--radius-20);
+  background-color: var(--colour-surface-secondary);
+  font-size: var(--b12-size);
+  line-height: var(--b12-lh);
+  letter-spacing: var(--b12-ls);
+  color: var(--colour-text-tertiary);
+  white-space: nowrap;
+  transition:
+    background-color var(--nn-pp-fade-ms) var(--nn-pp-fade),
+    color var(--nn-pp-fade-ms) var(--nn-pp-fade);
+}
+
+.login-rule.is-met {
+  background-color: #e3fcf2; /* colour/surface/success-subtle */
+  color: #0f8857; /* colour/text-n-icon/success */
+}
+
+.login-rule__tick {
+  display: block;
+  flex-shrink: 0;
+}
+
+/* 57:1532 — "Prefer to use an email? Use email instead" */
+.login-step__switch {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  margin: 0;
+  padding: 0 var(--space-4);
+  font-size: var(--b14-size);
+  line-height: var(--b14-lh);
+  letter-spacing: var(--b14-ls);
+  color: var(--colour-text-tertiary);
+  white-space: nowrap;
+}
+
+.login-step__link {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: var(--font-weight-semibold);
+  color: var(--colour-text-primary);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: scale var(--nn-pp-move-ms) var(--nn-pp-move), opacity var(--nn-pp-fade-ms) var(--nn-pp-fade);
+}
+
+.login-step__link:active {
+  scale: var(--press-scale);
+  opacity: 0.7;
+  transition-duration: var(--nn-dur-press);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-step__eye-slash {
+    transition: none;
+  }
+
+  /* Error text: fade only */
+  @starting-style {
+    .login-step__support {
+      translate: none;
+    }
+  }
+}

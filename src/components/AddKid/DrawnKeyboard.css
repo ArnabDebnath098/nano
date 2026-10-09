@@ -1,0 +1,36 @@
+.drawn-keyboard {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 6;
+  pointer-events: none;
+}
+
+.drawn-keyboard__img {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 100%;
+  max-width: 480px;
+  height: auto;
+  translate: -50% 100%;
+  visibility: hidden;
+  transition:
+    translate var(--nn-kb-dur) var(--nn-kb-ease),
+    visibility 0s linear var(--nn-kb-dur);
+}
+
+.drawn-keyboard__img.is-up {
+  translate: -50% 0;
+  visibility: visible;
+  transition:
+    translate var(--nn-kb-dur) var(--nn-kb-ease),
+    visibility 0s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drawn-keyboard__img {
+    transition: none;
+  }
+}

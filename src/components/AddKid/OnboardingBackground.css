@@ -1,0 +1,16 @@
+.onboarding-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 235px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Stretch horizontally on wider phones, keep the 235 height (Figma render of 64:2356, stretched) */
+.onboarding-bg img {
+  width: 100%;
+  max-width: none;
+  height: 235px;
+}

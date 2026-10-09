@@ -1,0 +1,63 @@
+.add-kid-toast-layer {
+  position: absolute;
+  top: 68px;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  display: flex;
+  justify-content: center;
+  padding: 0 var(--space-16);
+  pointer-events: none;
+}
+
+/* 18:15457 — the wrapper holds the pill's real size (layout + tap target); the red pill
+   itself is the blob behind the content, so it can start as a falling drop and spread. */
+.add-kid-toast {
+  position: relative;
+  max-width: 100%;
+  padding: var(--space-12);
+  border: 1px solid transparent;
+  pointer-events: auto;
+  will-change: transform;
+  /* hidden until the timeline has shaped it into the drop (no full-pill flash on frame 1) */
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* Error-bold fill, 8% white hairline, radius 14, soft drop shadow. inset 0 + margin auto keeps
+   it centred at any width / height without a transform; GSAP animates its size and scale. */
+.add-kid-toast__blob {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 100%;
+  height: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  background: var(--colour-text-error);
+  box-shadow: 0 12px 14px rgba(11, 12, 14, 0.1);
+  will-change: transform, width, height;
+}
+
+.add-kid-toast__content {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  min-width: 0;
+}
+
+.add-kid-toast img {
+  flex-shrink: 0;
+}
+
+.add-kid-toast__text {
+  overflow: hidden;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--b14-size);
+  line-height: var(--b14-lh);
+  letter-spacing: var(--b14-ls);
+  color: var(--colour-text-on-surface-bold);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

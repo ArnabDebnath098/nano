@@ -1,0 +1,335 @@
+/* Figma: Set rules body — Option Container (18:15943): cards 16 apart */
+.set-rules {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+}
+
+/* Option card: white, 1px subtle border, radius 16, 12 padding */
+.rule-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--colour-border-subtle);
+  border-radius: var(--radius-16);
+  background-color: var(--colour-surface-primary);
+  isolation: isolate;
+  transition:
+    border-color var(--nn-pp-fade-ms) var(--nn-pp-fade),
+    scale var(--nn-pp-move-ms) var(--nn-pp-move);
+}
+
+/* Selected fill (gradients can't interpolate, so it fades in as a layer) */
+.rule-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, #fff 0%, #fdf5ff 100%);
+  opacity: 0;
+  transition: opacity var(--nn-pp-fade-ms) var(--nn-pp-fade);
+}
+
+.rule-card--manual::before {
+  background: linear-gradient(180deg, #fff 0%, #fbf0ff 100%);
+}
+
+.rule-card.is-selected {
+  border-color: var(--colour-tertiary);
+}
+
+.rule-card.is-selected::before {
+  opacity: 1;
+}
+
+/* Press feedback on the header only — typing in the expanded part shouldn't squash the card */
+.rule-card:has(.rule-card__head:active) {
+  scale: var(--press-scale-card);
+  transition-duration: var(--nn-pp-fade-ms), var(--nn-dur-press);
+}
+
+.rule-card__head {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: var(--space-12);
+  padding: var(--space-12);
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.rule-card__head:focus-visible,
+.rule-option:focus-visible {
+  outline: none;
+}
+
+.rule-card__action {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+/* 56px image slot; the art is cropped 116% inside it (Figma image fill) */
+.rule-card__img {
+  position: relative;
+  overflow: hidden;
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+}
+
+.rule-card__img img {
+  position: absolute;
+  width: 116.67%;
+  height: 116.67%;
+  max-width: none;
+}
+
+.rule-card__text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.rule-card__title {
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--h16-size);
+  line-height: var(--h16-lh);
+  letter-spacing: var(--h16-ls);
+  color: var(--colour-text-primary);
+}
+
+.rule-card__desc {
+  font-weight: var(--font-weight-regular);
+  font-size: var(--b13-size);
+  line-height: var(--b13-lh);
+  letter-spacing: var(--b13-ls);
+  color: var(--colour-text-secondary);
+}
+
+/* Expansion: grid rows 0fr → 1fr (PP Move); content fades + rises 8px a beat behind it.
+   Collapse is quicker (exit faster than enter). */
+.rule-card__expand {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 300ms var(--nn-ease-out-cubic);
+}
+
+.rule-card.is-open .rule-card__expand {
+  grid-template-rows: 1fr;
+  transition: grid-template-rows var(--nn-pp-move-ms) var(--nn-pp-move);
+}
+
+.rule-card__expand-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.rule-card__more {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-12) var(--space-12) var(--space-12);
+  opacity: 0;
+  translate: 0 -8px;
+  filter: blur(2px);
+  transition:
+    opacity 140ms var(--nn-ease-out-cubic),
+    translate 300ms var(--nn-ease-out-cubic),
+    filter 140ms var(--nn-ease-out-cubic);
+}
+
+.rule-card.is-open .rule-card__more {
+  opacity: 1;
+  translate: 0 0;
+  filter: blur(0);
+  transition:
+    opacity var(--nn-pp-fade-ms) var(--nn-pp-fade) 80ms,
+    translate var(--nn-pp-move-ms) var(--nn-pp-move) 40ms,
+    filter var(--nn-pp-fade-ms) var(--nn-pp-fade) 80ms;
+}
+
+/* Figma: card gap 24 → divider sits 12 below the header's padding, "More Actions" 24 below it */
+.rule-card__divider {
+  display: block;
+  width: 100%;
+  height: 1px;
+}
+
+.rule-card__select {
+  margin: var(--space-24, 24px) 0 var(--space-8);
+  font-weight: var(--font-weight-regular);
+  font-size: var(--b14-size);
+  line-height: var(--b14-lh);
+  letter-spacing: var(--b14-ls);
+  color: var(--colour-text-secondary);
+}
+
+/* Inputs (18:15963): white panel, radius 12, 16 padding, rows 12 apart */
+.rule-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  padding: var(--space-16);
+  border-radius: var(--radius-12);
+  background-color: var(--colour-surface-primary);
+}
+
+.rule-inputs__limit {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Order-limit field: collapses away unless "Above an order limit" is selected. Same pattern
+   and timing as the manual card's expand — grid row 0fr ⇄ 1fr (layout-correct, no measuring);
+   opening rides PP Move with the field fading / un-blurring in just after; closing is quicker
+   (300ms ease-out). The 12px gap lives inside, so nothing is left behind when collapsed. */
+.rule-limit-collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 300ms var(--nn-ease-out-cubic);
+}
+
+.rule-limit-collapse.is-open {
+  grid-template-rows: 1fr;
+  transition: grid-template-rows var(--nn-pp-move-ms) var(--nn-pp-move);
+}
+
+.rule-limit-collapse__inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.rule-limit-collapse .rule-limit {
+  padding-top: var(--space-12);
+  opacity: 0;
+  translate: 0 -6px;
+  scale: 0.98;
+  filter: blur(2px);
+  transform-origin: 50% 0;
+  transition:
+    opacity 140ms var(--nn-ease-out-cubic),
+    translate 300ms var(--nn-ease-out-cubic),
+    scale 300ms var(--nn-ease-out-cubic),
+    filter 140ms var(--nn-ease-out-cubic);
+}
+
+.rule-limit-collapse.is-open .rule-limit {
+  opacity: 1;
+  translate: 0 0;
+  scale: 1;
+  filter: blur(0);
+  transition:
+    opacity var(--nn-pp-fade-ms) var(--nn-pp-fade) 80ms,
+    translate var(--nn-pp-move-ms) var(--nn-pp-move) 40ms,
+    scale var(--nn-pp-move-ms) var(--nn-pp-move) 40ms,
+    filter var(--nn-pp-fade-ms) var(--nn-pp-fade) 80ms;
+}
+
+.rule-inputs__divider {
+  display: block;
+  width: 100%;
+  height: 1px;
+}
+
+.rule-option {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: var(--space-8);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--colour-text-primary);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: scale var(--nn-pp-move-ms) var(--nn-pp-move);
+}
+
+.rule-option:active {
+  scale: var(--press-scale-card);
+  transition-duration: var(--nn-dur-press);
+}
+
+.rule-option--card {
+  gap: var(--space-12);
+  padding: var(--space-8) 0;
+}
+
+.rule-option__label {
+  flex: 1 0 0;
+  min-width: 0;
+  overflow: hidden;
+  font-weight: var(--font-weight-semibold);
+  font-size: 14px;
+  line-height: var(--b14-lh);
+  letter-spacing: var(--b14-ls);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Limit field (18:15968): secondary surface, 1px primary border, radius 16, no label row —
+   the value (dhm prefix) sits centred */
+/* Order limit — same surface and states as First name (TextField defaults: #f5f7fa, no
+   border; selected = radius 16 + light purple border; error = red). The dirham symbol is always
+   shown in black, followed by a muted "Amount" placeholder; 16px SemiBold like the name
+   placeholders. */
+.rule-limit .text-field__label {
+  display: none;
+}
+
+.rule-limit .text-field__body {
+  justify-content: center;
+}
+
+.rule-limit .text-field__content {
+  opacity: 1; /* symbol + placeholder visible before focus */
+  height: 24px;
+}
+
+.rule-limit .text-field__prefix,
+.rule-limit .text-field__input {
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: var(--b16-ls);
+}
+
+.rule-limit .text-field__input {
+  height: 24px;
+}
+
+.rule-limit .text-field__prefix {
+  padding-right: 4px;
+  color: var(--colour-text-primary);
+}
+
+/* Reduced motion keeps the press scale (no travel) */
+@media (prefers-reduced-motion: reduce) {
+  .rule-limit-collapse,
+  .rule-limit-collapse.is-open {
+    transition: none;
+  }
+  .rule-limit-collapse .rule-limit,
+  .rule-limit-collapse.is-open .rule-limit {
+    translate: none;
+    scale: none;
+    filter: none;
+    transition: opacity var(--nn-pp-fade-ms) var(--nn-pp-fade);
+  }
+  .rule-card__expand,
+  .rule-card.is-open .rule-card__expand {
+    transition: none;
+  }
+  .rule-card__more,
+  .rule-card.is-open .rule-card__more {
+    translate: none;
+    filter: none;
+    transition: opacity var(--nn-pp-fade-ms) var(--nn-pp-fade);
+  }
+}

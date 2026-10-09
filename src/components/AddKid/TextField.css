@@ -1,0 +1,174 @@
+.text-field {
+  width: 100%;
+}
+
+/* Field — 56 tall, 12 radius with Figma 60% corner smoothing, 12 side padding.
+   Fill and border are drawn by <SquircleSurface> (SVG) from these two colours; the 1px
+   border is kept as transparent space so the content box is unchanged. */
+.text-field__field {
+  --surface-fill: var(--colour-surface-field); /* #f5f7fa — every input in the Add a child flow */
+  --surface-stroke: transparent;
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  height: 56px;
+  padding: var(--space-8) var(--space-12);
+  border: 1px solid transparent;
+  border-radius: var(--radius-12);
+  cursor: text;
+}
+
+/* Selected (focused): radius 16 and a light purple border; the fill stays #f5f7fa */
+.text-field:focus-within .text-field__field {
+  --surface-stroke: var(--colour-tertiary);
+  border-radius: var(--radius-16);
+}
+
+.text-field.is-error .text-field__field {
+  --surface-stroke: var(--colour-text-error);
+}
+
+.text-field__body {
+  position: relative;
+  display: flex;
+  flex: 1 0 0;
+  min-width: 0;
+  height: 40px;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+/* Label: centred placeholder when empty, floats to the top row when focused / filled */
+.text-field__label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--b12-size);
+  line-height: var(--b12-lh);
+  letter-spacing: var(--b12-ls);
+  color: var(--colour-text-secondary);
+  white-space: nowrap;
+  transform: translateY(11px);
+  transition: transform var(--nn-pp-move-ms) var(--nn-pp-move);
+}
+
+.text-field:focus-within .text-field__label,
+.text-field.is-filled .text-field__label,
+.text-field.is-error .text-field__label {
+  transform: translateY(0);
+}
+
+.text-field__required {
+  color: var(--colour-text-error);
+}
+
+.text-field__content {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 20px;
+  opacity: 0;
+  transition: opacity var(--nn-pp-fade-ms) var(--nn-pp-fade);
+}
+
+.text-field:focus-within .text-field__content,
+.text-field.is-filled .text-field__content {
+  opacity: 1;
+}
+
+.text-field__prefix,
+.text-field__input {
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--b14-size);
+  line-height: var(--b14-lh);
+  letter-spacing: var(--b14-ls);
+  color: var(--colour-text-primary);
+}
+
+.text-field__input {
+  flex: 1;
+  min-width: 0;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  caret-color: var(--colour-primary);
+}
+
+/* Native placeholder (inputPlaceholder) — same muted SemiBold as the placeholder mode */
+.text-field__input::placeholder {
+  font-weight: var(--font-weight-semibold);
+  color: var(--colour-text-muted);
+  opacity: 1;
+}
+
+.text-field.is-readonly .text-field__field,
+.text-field.is-readonly .text-field__input {
+  cursor: pointer;
+}
+
+.text-field__right {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+/* Placeholder mode: the label is a plain placeholder. It stays while the field is focused
+   (the caret blinks in front of it, like a native placeholder) and only leaves once the
+   first character is typed — fading out with a small drift and a 2px blur so it melts into
+   the typed text rather than blinking off (Emil). Comes back the same way when cleared. */
+.text-field.is-placeholder .text-field__body {
+  justify-content: center;
+}
+
+/* Placeholder text — 16 SemiBold, muted */
+.text-field.is-placeholder .text-field__label,
+.text-field.is-placeholder:focus-within .text-field__label,
+.text-field.is-placeholder.is-error .text-field__label {
+  font-weight: var(--font-weight-semibold);
+  font-size: 16px;
+  line-height: 20px;
+  letter-spacing: var(--b16-ls);
+  color: var(--colour-text-muted);
+  opacity: 1;
+  filter: blur(0);
+  transform: translate(0, 10px);
+  pointer-events: none;
+  transition:
+    opacity 220ms var(--ease-out),
+    transform 220ms var(--ease-out),
+    filter 220ms var(--ease-out);
+}
+
+.text-field.is-placeholder.is-filled .text-field__label {
+  opacity: 0;
+  filter: blur(2px);
+  transform: translate(8px, 10px);
+  /* leaving is quicker than coming back */
+  transition-duration: 160ms;
+}
+
+.text-field.is-placeholder .text-field__content {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .text-field.is-placeholder .text-field__label,
+  .text-field.is-placeholder.is-filled .text-field__label {
+    filter: none;
+    transform: translate(0, 10px);
+    transition: opacity 160ms ease-out;
+  }
+}
+
+/* The NANO field shake is played with WAAPI from TextField.jsx (no remount) */
+
+@media (prefers-reduced-motion: reduce) {
+  .text-field__label {
+    transition: none;
+  }
+}

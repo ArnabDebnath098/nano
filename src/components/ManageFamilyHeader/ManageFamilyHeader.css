@@ -1,0 +1,15 @@
+.mf-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  width: 100%;
+  padding: var(--space-8) var(--space-16);
+}
+
+.mf-header__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+}

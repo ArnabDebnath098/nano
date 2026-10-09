@@ -1,0 +1,45 @@
+.rule-radio {
+  position: relative;
+  display: block;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border: 1px solid #d0d4dd;
+  border-radius: 50%;
+  background-color: var(--colour-surface-primary);
+  transition: border-color var(--nn-pp-fade-ms) var(--nn-pp-fade);
+}
+
+.rule-radio::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background-color: #9b3dff;
+  opacity: 0;
+  scale: var(--pop-from);
+  /* deselect is quicker than select (exit faster than enter) */
+  transition:
+    scale var(--pop-out-dur) var(--ease-out),
+    opacity var(--pop-out-dur) var(--ease-out);
+}
+
+.rule-radio.is-checked {
+  border-color: #9b3dff;
+}
+
+.rule-radio.is-checked::after {
+  opacity: 1;
+  scale: 1;
+  transition:
+    scale var(--nn-pp-move-ms) var(--nn-pp-move),
+    opacity var(--nn-pp-fade-ms) var(--nn-pp-fade);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rule-radio::after,
+  .rule-radio.is-checked::after {
+    scale: 1;
+    transition: opacity var(--nn-pp-fade-ms) var(--nn-pp-fade);
+  }
+}

@@ -1,0 +1,111 @@
+/* White sheet body (the shared sheet defaults to the tertiary tint) */
+.birthday-picker {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background: var(--colour-surface-primary);
+}
+
+.birthday-picker__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: var(--space-20) var(--space-16) var(--space-8);
+}
+
+.birthday-picker__title {
+  margin: 0;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--h18-size);
+  line-height: var(--h18-lh);
+  letter-spacing: var(--h18-ls);
+  color: var(--colour-text-primary);
+}
+
+.birthday-picker__value {
+  margin: 0;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--b14-size);
+  line-height: var(--b14-lh);
+  letter-spacing: var(--b14-ls);
+  font-variant-numeric: tabular-nums;
+  color: var(--colour-text-tertiary);
+}
+
+/* Three wheels over one centre band, faded top / bottom like UIDatePicker */
+.birthday-picker__wheels {
+  position: relative;
+  display: flex;
+  gap: var(--space-4);
+  padding: var(--space-8) var(--space-12);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 22%, #000 78%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 22%, #000 78%, transparent 100%);
+}
+
+.birthday-picker__band {
+  position: absolute;
+  top: 50%;
+  left: var(--space-12);
+  right: var(--space-12);
+  height: 40px;
+  translate: 0 -50%;
+  border-radius: var(--radius-8);
+  background: var(--colour-surface-tertiary);
+  pointer-events: none;
+}
+
+/* Each column is a drum: perspective on the scroll container keeps the vanishing point fixed
+   at the wheel's centre while its content scrolls (rows are placed by BirthdayPicker.jsx) */
+.birthday-wheel {
+  position: relative;
+  flex: 0 0 72px;
+  height: var(--wheel-h);
+  perspective: 700px;
+  perspective-origin: 50% 50%;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.birthday-wheel::-webkit-scrollbar {
+  display: none;
+}
+
+.birthday-wheel--grow {
+  flex: 1 1 0;
+}
+
+.birthday-wheel:focus-visible {
+  border-radius: var(--radius-8);
+  box-shadow: inset 0 0 0 2px var(--colour-primary);
+}
+
+.birthday-wheel__spacer {
+  height: calc((var(--wheel-h) - var(--row)) / 2);
+}
+
+.birthday-wheel__row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--row);
+  scroll-snap-align: center;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--b16-size);
+  line-height: var(--b16-lh);
+  letter-spacing: var(--b16-ls);
+  font-variant-numeric: tabular-nums;
+  color: var(--colour-text-primary);
+  cursor: pointer;
+  user-select: none;
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+}
+
+.birthday-picker__actions {
+  display: flex;
+  padding: var(--space-12);
+}

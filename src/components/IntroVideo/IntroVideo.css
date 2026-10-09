@@ -1,0 +1,47 @@
+/* Full-screen, capped to the app shell; above pushed pages so it can dissolve onto them.
+   The brand purple sits behind the video so there's no black flash before the first frame. */
+.intro-video {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  z-index: 60;
+  width: min(100%, 480px);
+  translate: -50% 0;
+  overflow: hidden;
+  background: #5f14d6;
+  will-change: opacity, transform, filter;
+}
+
+/* The video is a 375 × 812 phone frame — fill the screen */
+.intro-video__media {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+
+/* Skip — frosted dark-purple glass, like the header buttons */
+.intro-video__skip {
+  position: absolute;
+  top: calc(env(safe-area-inset-top) + 66px);
+  right: var(--space-16);
+  height: 32px;
+  padding: 0 var(--space-14);
+  border: 1px solid rgba(255, 255, 255, 0.56);
+  border-radius: var(--radius-pill);
+  background: rgba(40, 8, 100, 0.32);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--b13-size);
+  line-height: var(--b13-lh);
+  color: #fff;
+  transition: transform var(--nn-pp-move-ms) var(--nn-pp-move);
+}
+
+.intro-video__skip:active {
+  transform: scale(var(--nn-press-icon-btn));
+  transition-duration: var(--nn-dur-press);
+}

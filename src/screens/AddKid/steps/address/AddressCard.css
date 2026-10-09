@@ -1,0 +1,227 @@
+/* Figma 69:3286 — radius 16, 1px border; Default #f9f9fb / #eaecf0, Selected #f3ecff / #f3ecff */
+.address-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow: hidden;
+  padding: 0;
+  border: 1px solid var(--colour-border-primary);
+  border-radius: var(--radius-16);
+  background-color: var(--colour-surface-secondary);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    border-color var(--nn-pp-fade-ms) var(--nn-pp-fade),
+    scale var(--nn-pp-move-ms) var(--nn-pp-move);
+}
+
+.address-card:active {
+  scale: var(--press-scale-card);
+  transition-duration: var(--nn-pp-fade-ms), var(--nn-dur-press);
+}
+
+.address-card:focus-visible {
+  outline: 2px solid var(--colour-primary);
+  outline-offset: 2px;
+}
+
+.address-card.is-selected {
+  border-color: var(--colour-tertiary);
+}
+
+/* Top unit — 45 tall, 8 left / 4 right */
+.address-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 45px;
+  padding: var(--space-8) var(--space-4) var(--space-8) var(--space-8);
+  background-color: var(--colour-surface-secondary);
+  transition: background-color var(--nn-pp-fade-ms) var(--nn-pp-fade);
+}
+
+.address-card.is-selected .address-card__top {
+  background-color: var(--colour-tertiary);
+}
+
+.address-card__info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  min-width: 0;
+}
+
+/* Card icon — 29px white tile, #f2f3f7 border, radius 8 */
+.address-card__icon {
+  position: relative;
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 29px;
+  height: 29px;
+  border: 1px solid var(--colour-border-subtle);
+  border-radius: var(--radius-8);
+  background: var(--colour-surface-primary);
+  filter: drop-shadow(0 12.889px 14.844px rgba(0, 0, 0, 0.02));
+}
+
+.address-card__glyph {
+  grid-area: 1 / 1;
+  transition: opacity var(--nn-pp-fade-ms) var(--nn-pp-fade);
+}
+
+.address-card__glyph--on {
+  opacity: 0;
+}
+
+.address-card.is-selected .address-card__glyph--on {
+  opacity: 1;
+}
+
+/* Label3 Medium 14/18 */
+.address-card__label {
+  overflow: hidden;
+  font-weight: var(--font-weight-medium);
+  font-size: 14px;
+  line-height: 18px;
+  letter-spacing: -0.14px;
+  color: #0e0e0e;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Card distance — white chip, radius 6, Bold 14/18 (no text below 14px for now) */
+.address-card__distance {
+  flex-shrink: 0;
+  min-width: 37px;
+  padding: 3px 6px 4px 7px;
+  border-radius: 6px;
+  background: #fff;
+  font-weight: var(--font-weight-bold);
+  font-size: 14px;
+  line-height: 18px;
+  color: var(--colour-text-secondary);
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Circular checkbox H24 in an 8px side-padded slot */
+.address-card__check {
+  display: grid;
+  flex-shrink: 0;
+  padding: 0 var(--space-8);
+}
+
+.address-check {
+  display: block;
+  overflow: visible;
+}
+
+/* Unchecked: 1.5px ring (Figma M-Checkbox off #666D85) */
+.address-check__ring {
+  fill: var(--colour-surface-primary);
+  stroke: #666d85;
+  stroke-width: 1.5;
+  transition: stroke var(--nn-pp-fade-ms) var(--nn-pp-fade);
+}
+
+/* Checked disc (#9B3DFF) — pops from 0.9, never from 0 */
+.address-check__disc {
+  fill: #9b3dff;
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0;
+  scale: var(--pop-from);
+  /* uncheck: quicker than check */
+  transition:
+    scale var(--pop-out-dur) var(--ease-out),
+    opacity var(--pop-out-dur) var(--ease-out);
+}
+
+/* Tick — drawn with stroke-dashoffset (pathLength 1 → 0 hidden, 1 → 0 drawn) */
+.address-check__tick {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  opacity: 0;
+  /* uncheck: fade out with the disc, then reset the stroke unseen */
+  transition:
+    opacity var(--pop-out-dur) var(--ease-out),
+    stroke-dashoffset 0s linear var(--pop-out-dur);
+}
+
+.address-card.is-selected .address-check__ring {
+  stroke: #9b3dff;
+}
+
+.address-card.is-selected .address-check__disc {
+  opacity: 1;
+  scale: 1;
+  transition:
+    scale var(--nn-pp-move-ms) var(--nn-pp-move),
+    opacity var(--nn-pp-fade-ms) var(--nn-pp-fade);
+}
+
+.address-card.is-selected .address-check__tick {
+  opacity: 1;
+  stroke-dashoffset: 0;
+  /* a gentler ease-out than --ease-out so the stroke is seen travelling, not just appearing */
+  transition:
+    opacity 60ms linear 80ms,
+    stroke-dashoffset 320ms var(--nn-ease-out-cubic) 80ms;
+}
+
+/* Bottom unit — white, 12 padding, 8 gap */
+.address-card__bottom {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  padding: 12px;
+  background: var(--colour-surface-primary);
+}
+
+.address-card__lines {
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: -0.05px;
+  color: var(--colour-text-primary);
+}
+
+.address-card__divider {
+  display: block;
+  max-width: 100%;
+}
+
+.address-card__contact {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: -0.05px;
+  color: var(--colour-text-primary);
+  white-space: nowrap;
+}
+
+/* Reduced motion keeps the press scale (no travel); disc and tick only fade */
+@media (prefers-reduced-motion: reduce) {
+  .address-check__disc,
+  .address-card.is-selected .address-check__disc {
+    scale: 1;
+    transition: opacity var(--nn-pp-fade-ms) var(--nn-pp-fade);
+  }
+
+  .address-check__tick,
+  .address-card.is-selected .address-check__tick {
+    stroke-dashoffset: 0;
+    transition: opacity var(--nn-pp-fade-ms) var(--nn-pp-fade);
+  }
+}

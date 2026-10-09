@@ -1,0 +1,45 @@
+.glass-button {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  /* Frosted glass, darker purple tint: a translucent deep-purple fill over a blurred background,
+     with a lighter 56% white hairline */
+  border: 1px solid rgba(255, 255, 255, 0.56);
+  border-radius: var(--radius-pill);
+  background: rgba(40, 8, 100, 0.32);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  overflow: hidden;
+  /* noon NANO press: down in 90ms, release on PP Move (.av__back, round icon button) */
+  transition: transform var(--nn-pp-move-ms) var(--nn-pp-move);
+}
+
+.glass-button:active {
+  transform: scale(var(--nn-press-icon-btn));
+  transition-duration: var(--nn-dur-press);
+}
+
+.glass-button img {
+  flex-shrink: 0;
+}
+
+.glass-button--icon {
+  width: 40px;
+  gap: var(--space-2);
+}
+
+.glass-button--label {
+  gap: var(--space-4);
+  padding: 0 var(--space-16) 0 var(--space-12);
+}
+
+.glass-button__label {
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--b12-size);
+  line-height: var(--b12-lh);
+  letter-spacing: var(--b12-ls);
+  color: var(--colour-text-on-surface-bold);
+  white-space: nowrap;
+}

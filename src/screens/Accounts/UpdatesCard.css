@@ -1,0 +1,117 @@
+/* 2:8206 — 8px vertical padding around the card */
+.updates {
+  width: 100%;
+  padding: var(--space-8) 0;
+}
+
+/* 2:8207 — purple-200 border + 14px glow */
+.updates__card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-16);
+  background: var(--colour-surface-primary);
+  box-shadow: 0 0 14px 0 #f5defd;
+}
+
+/* Figma inside stroke (purple-200): over the content, no layout impact */
+.updates__card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid #f5defd;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.updates__title {
+  padding: var(--space-12);
+}
+
+.updates__title h2 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--h16-size);
+  line-height: var(--h16-lh);
+  letter-spacing: var(--h16-ls);
+  color: var(--colour-text-primary);
+}
+
+.updates__body {
+  padding: 0 var(--space-4) var(--space-4);
+}
+
+/* 2:8219 — secondary surface, radius 14, 10px padding; row gap 8 */
+.updates__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  width: 100%;
+  padding: var(--space-10);
+  border-radius: 14px;
+  background: var(--colour-surface-secondary);
+  text-align: left;
+}
+
+/* 39.997×53.33, brand-blue-900, radius 6 */
+.updates__thumb {
+  position: relative;
+  flex-shrink: 0;
+  width: 39.997px;
+  height: 53.33px;
+  overflow: hidden;
+  border-radius: 6px;
+  background: #082f8c;
+}
+
+.updates__thumb img {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + 0.38px);
+  width: 24.998px;
+  height: 34.081px;
+  max-width: none;
+  object-fit: cover;
+  transform: translate(-50%, -50%);
+}
+
+.updates__info {
+  flex: 1 0 0;
+  min-width: 1px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.updates__heading {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--b14-size);
+  line-height: var(--b14-lh);
+  letter-spacing: var(--b14-ls);
+  color: var(--colour-text-primary);
+}
+
+.updates__sub {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: var(--font-weight-regular);
+  font-size: var(--b13-size);
+  line-height: var(--b13-lh);
+  letter-spacing: var(--b13-ls);
+  color: var(--colour-text-tertiary);
+}
+
+/* M-IconButton 32px: secondary fill, subtle border, 9px padding */
+.updates__chevron {
+  flex-shrink: 0;
+  display: flex;
+  padding: 9px;
+  border: 1px solid var(--colour-border-subtle);
+  border-radius: 1000px;
+  background: var(--colour-surface-secondary);
+}

@@ -1,0 +1,112 @@
+/* 2:8329 — 56px tall, 16/12 padding, radius 12, warm radial glow */
+.free-delivery {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-8);
+  width: 100%;
+  padding: var(--space-16) var(--space-12);
+  overflow: hidden;
+  border-radius: var(--radius-12);
+  text-align: left;
+  background-image:
+    url("data:image/svg+xml;utf8,<svg viewBox='0 0 351 56' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none'><rect x='0' y='0' height='100%' width='100%' fill='url(%23grad)' opacity='0.5'/><defs><radialGradient id='grad' gradientUnits='userSpaceOnUse' cx='0' cy='0' r='10' gradientTransform='matrix(0.55 -8 27.22 1.4786 35.5 80)'><stop stop-color='rgba(255,168,45,1)' offset='0'/><stop stop-color='rgba(255,168,45,0)' offset='1'/></radialGradient></defs></svg>"),
+    linear-gradient(#fefeeb, #fefeeb);
+  background-size: 100% 100%;
+}
+
+/* 2:8187 — compact variant inside the profile card: 44px, 10/12 padding, no radius */
+.free-delivery--compact {
+  padding: var(--space-10) var(--space-12);
+  border-radius: 0;
+  background-image:
+    url("data:image/svg+xml;utf8,<svg viewBox='0 0 351 44' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none'><rect x='0' y='0' height='100%' width='100%' fill='url(%23grad)' opacity='0.5'/><defs><radialGradient id='grad' gradientUnits='userSpaceOnUse' cx='0' cy='0' r='10' gradientTransform='matrix(0.55 -6.2857 27.22 1.1618 35.5 62.857)'><stop stop-color='rgba(255,168,45,1)' offset='0'/><stop stop-color='rgba(255,168,45,0)' offset='1'/></radialGradient></defs></svg>"),
+    linear-gradient(#fefeeb, #fefeeb);
+}
+
+/* "lines" texture: 346×709 at (0, -54) */
+.free-delivery__lines {
+  position: absolute;
+  left: 0;
+  top: -54px;
+  max-width: none;
+  pointer-events: none;
+}
+
+.free-delivery__row {
+  position: relative;
+  flex: 1 0 0;
+  min-width: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.free-delivery__lead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+/* Icon: 40×24, clipped */
+.free-delivery__logo {
+  position: relative;
+  flex-shrink: 0;
+  width: 40px;
+  height: 24px;
+  overflow: hidden;
+}
+
+.free-delivery__logo-base,
+.free-delivery__logo-word {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.free-delivery__logo-base {
+  left: 0.03px;
+  top: 0.99px;
+  width: 39.042px;
+  height: 21.176px;
+}
+
+.free-delivery__logo-base img {
+  flex: none;
+  max-width: none;
+  transform: rotate(-1.31deg) skewX(1.58deg);
+}
+
+.free-delivery__logo-word {
+  left: 6.1px;
+  top: 6.9px;
+  width: 25.845px;
+  height: 8.113px;
+}
+
+.free-delivery__logo-word img {
+  flex: none;
+  max-width: none;
+  transform: rotate(-1.31deg) skewX(1.57deg);
+}
+
+.free-delivery__label {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--h16-size);
+  line-height: var(--h16-lh);
+  letter-spacing: var(--h16-ls);
+  color: var(--colour-text-primary);
+  white-space: nowrap;
+}
+
+.free-delivery--compact .free-delivery__label {
+  font-size: var(--b14-size);
+  line-height: var(--b14-lh);
+  letter-spacing: var(--b14-ls);
+}
+
+.free-delivery__chevron {
+  flex-shrink: 0;
+}

@@ -1,0 +1,40 @@
+/* Same geometry + motion as .gender-option__radio (ChildDetails.css) */
+.rule-checkbox {
+  position: relative;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+
+.rule-checkbox img {
+  position: absolute;
+  inset: 0;
+}
+
+.rule-checkbox__on {
+  opacity: 0;
+  scale: 0.6;
+  transition:
+    opacity var(--nn-pp-fade-ms) var(--nn-pp-fade),
+    scale var(--nn-pp-move-ms) var(--nn-pp-move);
+}
+
+.rule-checkbox.is-checked .rule-checkbox__on {
+  opacity: 1;
+  scale: 1;
+}
+
+.rule-checkbox__off {
+  transition: opacity var(--nn-pp-fade-ms) var(--nn-pp-fade);
+}
+
+.rule-checkbox.is-checked .rule-checkbox__off {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rule-checkbox__on {
+    scale: 1;
+    transition: opacity var(--nn-pp-fade-ms) var(--nn-pp-fade);
+  }
+}

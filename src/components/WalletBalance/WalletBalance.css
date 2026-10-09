@@ -1,0 +1,57 @@
+.wallet-balance {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  width: 100%;
+  padding: var(--space-12) var(--space-12) var(--space-12) var(--space-16);
+  border-radius: var(--radius-16);
+}
+
+.wallet-balance__bg {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-16);
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.wallet-balance__bg img {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  /* skin backgrounds are 375 × 580 with a dark band over their top 200px (for a full-screen
+     status bar) — crop the strip from the lit middle of the skin instead */
+  object-position: 50% 58%;
+}
+
+.wallet-balance__dim {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.wallet-balance__text {
+  position: relative;
+  flex: 1 0 0;
+  min-width: 1px;
+  display: flex;
+  flex-direction: column;
+}
+
+.wallet-balance__amount {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--h18-size);
+  line-height: var(--h18-lh);
+  letter-spacing: var(--h18-ls);
+  color: var(--colour-text-on-surface-bold);
+}
+
+.wallet-balance__label {
+  font-weight: var(--font-weight-medium);
+  font-size: var(--b12-size);
+  line-height: var(--b12-lh);
+  letter-spacing: var(--b12-ls);
+  color: var(--colour-text-on-surface-subtle);
+}

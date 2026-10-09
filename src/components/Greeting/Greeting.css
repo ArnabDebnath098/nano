@@ -1,0 +1,36 @@
+.greeting {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  padding: 0 var(--space-8);
+}
+
+.greeting__stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+  color: var(--colour-text-on-surface-bold);
+  white-space: nowrap;
+}
+
+.greeting__title,
+.greeting__subtitle {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.greeting__title {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--h28-size);
+  line-height: var(--h28-lh);
+  letter-spacing: var(--h28-ls);
+}
+
+.greeting__subtitle {
+  font-weight: var(--font-weight-regular);
+  font-size: var(--b14-size);
+  line-height: var(--b14-lh);
+  letter-spacing: var(--b14-ls);
+}

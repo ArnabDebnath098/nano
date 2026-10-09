@@ -1,0 +1,112 @@
+/* 2:8171 — 2px white border, radius 16, clipped */
+.profile-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-16);
+  background: var(--colour-surface-primary);
+}
+
+/* Figma inside stroke: drawn over the content, doesn't affect layout */
+.profile-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 2px solid var(--colour-surface-primary);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* Profile (2:8172): 16/12 padding, 12 gap */
+.profile-card__profile {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  width: 100%;
+  padding: var(--space-16) var(--space-12);
+  background: var(--colour-surface-primary);
+}
+
+/* A · block (2:8173): 48px circle, H24 bold initial */
+.profile-card__avatar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 37.647px;
+  background: var(--colour-surface-primary);
+  font-weight: var(--font-weight-bold);
+  font-size: 24px;
+  line-height: 32px;
+  letter-spacing: -0.25px;
+  font-feature-settings: 'case' 1;
+  color: var(--colour-text-primary);
+}
+
+.profile-card__info {
+  flex: 1 0 0;
+  min-width: 1px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.profile-card__name,
+.profile-card__email {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-card__name {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--h18-size);
+  line-height: var(--h18-lh);
+  letter-spacing: var(--h18-ls);
+  color: var(--colour-text-primary);
+}
+
+.profile-card__email {
+  font-weight: var(--font-weight-regular);
+  font-size: var(--b12-size);
+  line-height: var(--b12-lh);
+  letter-spacing: var(--b12-ls);
+  color: var(--colour-text-tertiary);
+}
+
+/* Edit (2:8178): 36px pill, 1px subtle border, 9px padding, 18px icon */
+.profile-card__edit {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px;
+  border: 1px solid var(--colour-border-subtle);
+  border-radius: 1000px;
+  transition: transform var(--nn-pp-move-ms) var(--nn-pp-move);
+}
+
+.profile-card__edit:active {
+  transform: scale(var(--nn-press-icon-btn));
+  transition-duration: var(--nn-dur-press);
+}
+
+.profile-card__edit-icon {
+  position: relative;
+  width: 18px;
+  height: 18px;
+}
+
+/* LIne RAW: inset 17.33% 18.55% 17.7% 12.7% */
+.profile-card__edit-icon img {
+  position: absolute;
+  left: 12.7%;
+  top: 17.33%;
+  max-width: none;
+}

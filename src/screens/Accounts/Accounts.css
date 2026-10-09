@@ -1,0 +1,60 @@
+/* Figma 2:8167 — 375 design, fluid to the .app shell width */
+.accounts {
+  position: relative;
+  min-height: 100dvh;
+  overflow-x: clip;
+  background: var(--colour-surface-tertiary);
+}
+
+/* Top bar (38:4094): 62px status bar pinned at the top */
+.accounts__top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  width: 100%;
+  background: var(--colour-surface-tertiary);
+}
+
+/* A · stack (2:8170): starts at y=62, 4px / 12px padding, 12px gaps */
+.accounts__stack {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-12);
+  width: 100%;
+  /* bottom: 4px + the 25px home bar so the footer clears it */
+  padding: var(--space-4) var(--space-12) calc(var(--space-4) + 25px);
+}
+
+/* M-Home bar (2:8169): 375×25, 124×5 indicator, 12px top / 8px bottom */
+.accounts__home-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: var(--space-12) 0 var(--space-8);
+  pointer-events: none;
+}
+
+.accounts__home-bar span {
+  width: 124px;
+  height: 5px;
+  border-radius: var(--radius-8);
+  background: var(--colour-text-primary);
+}
+
+/* Shared NANO press for every tappable row / card on this screen */
+.accounts-press {
+  transition: transform var(--nn-pp-move-ms) var(--nn-pp-move);
+}
+
+.accounts-press:active {
+  transform: scale(var(--nn-press-nano-btn));
+  transition-duration: var(--nn-dur-press);
+}

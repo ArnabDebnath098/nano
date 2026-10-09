@@ -1,0 +1,61 @@
+/* 2:8267 — 60px, 12px padding, radius 16 */
+.credits-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--space-12);
+  border-radius: var(--radius-16);
+  background: var(--colour-surface-primary);
+  text-align: left;
+}
+
+.credits-row__lead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+/* Icons: 28px box, 4px padding, 20px glyph */
+.credits-row__icon {
+  flex-shrink: 0;
+  display: flex;
+  padding: var(--space-4);
+  border-radius: var(--radius-8);
+}
+
+.credits-row__label {
+  font-weight: var(--font-weight-medium);
+  font-size: var(--b14-size);
+  line-height: var(--b14-lh);
+  letter-spacing: var(--b14-ls);
+  color: var(--colour-text-primary);
+  white-space: nowrap;
+}
+
+/* Close (2:8272): 94px pill, 12 left / 8 right / 8 vertical */
+.credits-row__pill {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 94px;
+  padding: var(--space-8) var(--space-8) var(--space-8) var(--space-12);
+  border-radius: var(--radius-pill);
+  background: var(--colour-surface-secondary);
+}
+
+/* A14 SemiBold */
+.credits-row__amount {
+  font-weight: var(--font-weight-semibold);
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0;
+  font-feature-settings: 'case' 1;
+  color: var(--colour-text-primary);
+  white-space: nowrap;
+}
+
+.credits-row__pill img {
+  flex-shrink: 0;
+}

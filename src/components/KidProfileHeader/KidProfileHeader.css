@@ -1,0 +1,81 @@
+.kid-header {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.kid-header--native {
+  padding-top: env(safe-area-inset-top);
+}
+
+/* 94:4934 — Nav header */
+.kid-header__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 56px;
+  padding: var(--space-8) var(--space-16);
+}
+
+/* 94:4940 — Profile Image block */
+.kid-header__profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-8);
+  width: 100%;
+  height: 128px;
+  padding-bottom: var(--space-16);
+  border-radius: 0 0 var(--radius-24) var(--radius-24);
+}
+
+.kid-header__identity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+/* H32/Bold with Figma's gradient fill */
+.kid-header__name {
+  width: 100%;
+  text-align: center;
+  font-weight: var(--font-weight-bold);
+  font-size: 32px;
+  line-height: 40px;
+  letter-spacing: -0.25px;
+  background-image: linear-gradient(27.1deg, #000 41.842%, #7924ff 77.963%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 1px 7px rgba(0, 0, 0, 0.15);
+}
+
+.kid-header__stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-8);
+  width: 100%;
+  white-space: nowrap;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--b13-size);
+  line-height: var(--b13-lh);
+  letter-spacing: var(--b13-ls);
+  color: var(--colour-text-on-surface-bold);
+}
+
+.kid-header__stat {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.kid-header__stat img {
+  flex-shrink: 0;
+}

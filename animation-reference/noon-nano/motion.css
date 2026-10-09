@@ -1,0 +1,159 @@
+/* ==========================================================================
+   noon NANO — motion tokens (extracted, not authored)
+   Source: github.com/saswata2002/noon-NANO @ f137e63, index.html
+   Every value is copied verbatim from the source; the comment on each line gives
+   the source line(s) in index.html ("L123"). Names prefixed --nn- are ours; the
+   original variable / constant name is given in the comment.
+
+   READ THIS FIRST: at runtime the prototype re-times almost every WAAPI
+   element.animate() call to --nn-pp-move-ms / --nn-pp-move (anything that moves)
+   or --nn-pp-fade-ms / --nn-pp-fade (opacity / filter / colour only), unless the
+   call passes { pp: false } (index.html L1889–1910). So the two PP tokens below
+   are THE system; the other curves are what the opt-out (pp:false) choreography
+   and the CSS literals use. See animations.md → "Global motion layer".
+   ========================================================================== */
+
+:root {
+  /* ---- The two system curves (ProtoPie "Test01" recording) ---------------- */
+  /* :root --pp-move-ms (L33) · JS PP.MOVE_MS (L1875) */
+  --nn-pp-move-ms: 540ms;
+  /* :root --pp-move (L34) · JS PP.MOVE (L1875) — recorded spring: 50 % at 75 ms, 90 % by 165 ms, 1.3 % overshoot at ~300 ms (comments L31–32, L1865–1866) */
+  --nn-pp-move: linear(0.0000 0.00%, 0.0771 1.64%, 0.1684 4.55%, 0.2831 7.64%, 0.3949 10.55%, 0.5091 13.64%, 0.6130 16.73%, 0.6986 19.64%, 0.7758 22.73%, 0.8731 27.82%, 0.9136 30.73%, 0.9418 33.27%, 0.9673 36.36%, 0.9855 39.45%, 0.9979 42.55%, 1.0055 45.45%, 1.0101 48.36%, 1.0126 51.45%, 1.0133 54.55%, 1.0129 57.64%, 1.0119 60.55%, 1.0105 63.64%, 1.0089 66.73%, 1.0074 69.64%, 1.0059 72.73%, 1.0046 75.82%, 1.0035 78.73%, 1.0026 81.82%, 1.0019 84.73%, 1.0013 87.82%, 1.0008 90.91%, 1.0005 94.00%, 1.0002 96.91%, 1.0000 100.00%);
+  /* :root --pp-fade-ms (L35) · JS PP.FADE_MS (L1876) */
+  --nn-pp-fade-ms: 200ms;
+  /* :root --pp-fade (L36) · JS PP.FADE (L1876) — "a fast ease-out" */
+  --nn-pp-fade: linear(0.0000 0.00%, 0.1160 4.00%, 0.2350 8.50%, 0.3310 12.50%, 0.5070 21.00%, 0.6020 26.50%, 0.6630 30.50%, 0.7170 34.50%, 0.7530 37.50%, 0.7970 41.50%, 0.8440 46.50%, 0.8720 50.00%, 0.9000 54.00%, 0.9260 58.50%, 0.9490 63.50%, 0.9620 67.00%, 0.9730 70.50%, 0.9830 75.00%, 0.9900 79.00%, 0.9950 83.00%, 0.9980 88.00%, 0.9990 91.50%, 1.0000 95.50%, 1.0000 100.00%);
+  /* JS PP.STAGGER (L1877) — "list items step 40 ms apart" */
+  --nn-stagger: 40ms;
+  /* JS PP.FOLLOW (L1877) — "follow-ups trail by 0.1 s" */
+  --nn-follow: 100ms;
+
+  /* Keyboard curve: .ui { --kb-ease: var(--pp-move); --kb-dur: var(--pp-move-ms) } (L113–114) */
+  --nn-kb-ease: var(--nn-pp-move);
+  --nn-kb-dur: var(--nn-pp-move-ms);
+
+  /* ---- Sampled spring literal ------------------------------------------- */
+  /* DROP_SPRING (L2279–2281) — "Sampled damped spring (ζ 0.72, response 0.42 s): peaks at 1.038, settled by 600 ms" (L2278).
+     Authored for the Send-OTP button activation (L2164) but that call is re-timed to PP Move at runtime. */
+  --nn-drop-spring: linear(0, 0.039, 0.133, 0.257, 0.391, 0.523, 0.642, 0.746, 0.832, 0.9, 0.951, 0.988, 1.013, 1.028, 1.036, 1.038, 1.037, 1.034, 1.029, 1.024, 1.019, 1.014, 1.01, 1.007, 1.004, 1.002, 1.001, 1, 0.999, 0.999, 1);
+
+  /* ---- Cubic-bezier curves (every distinct one in index.html) ----------- */
+  /* IOS / EASE / GLIDE_EASE / KB_EASE (L224, L226, L2737, L2870, L2957, L2986, L3035, L3074, L3127, L3439, L3625, L4241, L4269, L4413) */
+  --nn-ease-ios-out: cubic-bezier(0.32, 0.72, 0, 1);
+  /* FADE — CSS "ease" written out (L2081, L2738, L3037, L3075, L3137, L3138, L3441, L3582, L3626, L3689) */
+  --nn-ease-fade: cubic-bezier(0.25, 0.1, 0.25, 1);
+  /* OUT — symmetric-ish ease for exits (L2985, L3036, L3128, L3440, L3497) */
+  --nn-ease-out-exit: cubic-bezier(0.4, 0, 0.6, 1);
+  /* springy "bump" (chip tap, CTA enable, next-card scale overshoot) (L2902, L3413, L3424, L3428, L3429) */
+  --nn-ease-bump: cubic-bezier(0.3, 0.7, 0.4, 1);
+  /* Material "standard" (glow cross-fade L3295, bell absorb L3901, pager fade L4067, hint .nt__foot p L1254) */
+  --nn-ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  /* ease-out quint: CLOSE (L3629), openNotif OUT (L3887), pager roll E (L3871), veil (L4048, L4077, L4078) */
+  --nn-ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  /* SQ — toast squash (L2342), field shimmer sweep (L2448), wave rise (L4162) */
+  --nn-ease-in-out-sine: cubic-bezier(0.45, 0, 0.55, 1);
+  /* wave drop (L4163) */
+  --nn-ease-wave-drop: cubic-bezier(0.5, 0, 0.75, 0);
+  /* EASE_OUT_CUBIC (L2306) */
+  --nn-ease-out-cubic: cubic-bezier(0.33, 1, 0.68, 1);
+  /* EXIT_EASE — toast exit, "leaves straight away, accelerating out" (L2307) */
+  --nn-ease-toast-exit: cubic-bezier(0.4, 0, 0.7, 0.2);
+  /* toast exit stretch segment (L2383) */
+  --nn-ease-toast-stretch: cubic-bezier(0.3, 0, 0.4, 1);
+  /* OUT_EXPO — "Welcome to" tracking (L2095) */
+  --nn-ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  /* EXIT — showHome "soft ease-in: things leave, they don't snap" (L3581) */
+  --nn-ease-soft-in: cubic-bezier(0.4, 0, 0.7, 0.4);
+  /* EXIT — closeNotif (L3949) */
+  --nn-ease-notif-exit: cubic-bezier(0.4, 0, 0.75, 0.3);
+  /* LIFT — closeNotif scrim (L3949) */
+  --nn-ease-scrim-lift: cubic-bezier(0.45, 0, 0.2, 1);
+  /* scrim in — openNotif (L3903) */
+  --nn-ease-scrim-in: cubic-bezier(0.3, 0, 0.2, 1);
+  /* big avatar sinks out on avatar change (L3307) */
+  --nn-ease-sink: cubic-bezier(0.45, 0, 0.75, 0.3);
+  /* big avatar sinks out on leaving for Interests (L3449) */
+  --nn-ease-sink-fast: cubic-bezier(0.5, 0, 0.75, 0.15);
+  /* swoosh stroke draw (L3090) */
+  --nn-ease-draw: cubic-bezier(0.65, 0, 0.35, 1);
+  /* avatar ring pulse (L3314) */
+  --nn-ease-ring-pulse: cubic-bezier(0.37, 0, 0.3, 1);
+  /* notification card throw (L4061) */
+  --nn-ease-throw: cubic-bezier(.25,.6,.35,1);
+  /* field-shake keyframes (L309, L1372) */
+  --nn-ease-shake: cubic-bezier(.36,.07,.19,.97);
+  /* back-out overshoot: digit-in / digit-ok keyframes (L1367, L1373) */
+  --nn-ease-back-out: cubic-bezier(0.34, 1.4, 0.64, 1);
+  /* prototype chrome only (vswitch buttons / tooltip) (L1424, L1443) */
+  --nn-ease-chrome: cubic-bezier(.23, 1, .32, 1);
+  /* prototype chrome only (reset icon spin) (L1435) */
+  --nn-ease-chrome-spin: cubic-bezier(.2, .9, .3, 1);
+
+  /* ---- Generated power curves (JS, L3678–3680) ----------------------------
+     curve(f, n = 24) = linear(f(0/24), …, f(24/24)) with toFixed(4).
+     CARD_FADE: f(t) = 1 − (1 − t)^2.8   CARD_RISE: f(t) = 1 − (1 − t)^2.5
+     Not literal in the source (computed at runtime) — use motion.js powerCurve(). */
+
+  /* ---- Durations (CSS literals) ----------------------------------------- */
+  --nn-dur-kb-lift-touch: 450ms;     /* .is-touch .screen / .toast lift (L224, L226) */
+  --nn-dur-shake: 340ms;             /* field-shake (L309, L1372) */
+  --nn-dur-digit-in: 260ms;          /* digit-in (L1367) */
+  --nn-dur-digit-ok: 420ms;          /* digit-ok (L1373) */
+  --nn-dur-press: 90ms;              /* :active scale-down transition-duration (L985, L1068, L1094); numpad key bg (L1399) */
+  --nn-dur-hint: .26s;               /* .nt__foot p hint (L1254) */
+  --nn-dur-shimmer: 1.867s;          /* hmShimmer period (L1122) */
+  --nn-dur-reduced: 1ms;             /* prefers-reduced-motion (L229, L733) */
+  --nn-dur-chrome-press: 160ms;      /* prototype chrome (L1424) */
+  --nn-dur-chrome-tip: 125ms;        /* prototype chrome (L1443) */
+  --nn-dur-chrome-spin: .45s;        /* prototype chrome (L1435); .5s while spinning (L1437) */
+
+  /* ---- Press scales (CSS :active) --------------------------------------- */
+  --nn-press-nano-btn: .98;          /* .nano-btn:active transform: scale(.98) (L507) */
+  --nn-press-chip: .965;             /* .ich:active (L985) */
+  --nn-press-tile: .96;              /* .hm__topup:active, .hm__tile:active (L1068, L1094) */
+  --nn-press-icon-btn: .94;          /* .av__back:active scale (L946) */
+  --nn-press-chrome: .97;            /* .vswitch__b:active (L1428) */
+
+  /* ---- Choreography offsets (stagger steps) ----------------------------- */
+  --nn-stagger-otp-wave: 100ms;      /* WAVE_STAGGER (L2557) */
+  --nn-stagger-plp-col: 45ms;        /* revealMarketCards column (L3684) */
+  --nn-stagger-plp-row: 140ms;       /* revealMarketCards row (L3684) */
+  --nn-stagger-notif-step: 60ms;     /* throwCard k * 60 (L4076) */
+}
+
+/* prefers-reduced-motion, verbatim behaviour (L228–230, L732–734) */
+@media (prefers-reduced-motion: reduce) {
+  :root { --nn-kb-dur: 1ms; }
+}
+
+/* ==========================================================================
+   The 4 @keyframes, copied verbatim (names unchanged)
+   ========================================================================== */
+
+/* index.html L310–316 · used by .field.is-shaking (L309) and .otp__digits.is-shaking (L1372):
+   animation: field-shake 340ms cubic-bezier(.36,.07,.19,.97) both; */
+@keyframes field-shake {
+  0%, 100% { transform: translateX(0); }
+  18%      { transform: translateX(-4px); }
+  40%      { transform: translateX(3px); }
+  62%      { transform: translateX(-2px); }
+  82%      { transform: translateX(1px); }
+}
+
+/* index.html L1123–1126 · used by .hm.is-loading .hm__skel::after (L1122):
+   animation: hmShimmer 1.867s linear var(--shimmer-at, 0s) infinite both;  (--shimmer-at set to 0.3s at L3672) */
+@keyframes hmShimmer {
+  from { transform: translateX(-200px) skewX(-17deg); }
+  to   { transform: translateX(640px)  skewX(-17deg); }
+}
+
+/* index.html L1368–1371 · used by .otp__num.is-new (L1367):
+   animation: digit-in 260ms cubic-bezier(0.34, 1.4, 0.64, 1) both; */
+@keyframes digit-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(6px) scale(0.6); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+}
+
+/* index.html L1374 · used by .otp__digit.is-verified (L1373):
+   animation: digit-ok 420ms cubic-bezier(0.34, 1.4, 0.64, 1) both; animation-delay: calc(var(--i) * 40ms); */
+@keyframes digit-ok { 0% { transform: scale(1); } 40% { transform: scale(1.06); } 100% { transform: scale(1); } }

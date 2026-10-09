@@ -1,0 +1,101 @@
+/* 2:8348 — 12px padding, list gap 14 · 2:8349 — 12/12/16 padding, list gap 12 */
+.support-list {
+  width: 100%;
+  padding: var(--space-12);
+  border-radius: var(--radius-16);
+  background: var(--colour-surface-primary);
+}
+
+.support-list--support {
+  padding-bottom: var(--space-16);
+}
+
+.support-list__list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.support-list--support .support-list__list {
+  gap: var(--space-12);
+}
+
+.support-list__divider {
+  position: relative;
+  height: 0;
+}
+
+/* Line: 328×1 image, inset -0.5px -0.15% */
+.support-list__divider img {
+  position: absolute;
+  top: -0.5px;
+  left: -0.15%;
+  width: 100.3%;
+  height: 1px;
+  max-width: none;
+}
+
+.support-list__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  width: 100%;
+  border-radius: var(--radius-12);
+  text-align: left;
+}
+
+.support-list__icon {
+  flex-shrink: 0;
+  display: flex;
+  padding: var(--space-4);
+  border-radius: var(--radius-8);
+}
+
+.support-list__glyph {
+  position: relative;
+  width: 20px;
+  height: 20px;
+}
+
+.support-list__glyph img {
+  position: absolute;
+  max-width: none;
+}
+
+/* Exact Figma insets inside the 20px frame */
+.support-list__glyph--preferences img { left: 17.71%; top: 13.54%; }
+.support-list__glyph--notifications img { left: 17.71%; top: 13.54%; }
+.support-list__glyph--shield img { left: 0; top: 0; }
+.support-list__glyph--sign-out img { left: 14.97%; top: 14.98%; }
+
+/* Label3 Medium 15/18 */
+.support-list__label {
+  flex: 1 0 0;
+  min-width: 1px;
+  font-weight: var(--font-weight-medium);
+  font-size: 15px;
+  line-height: 18px;
+  letter-spacing: -0.14px;
+  font-feature-settings: 'case' 1;
+  color: #101628;
+}
+
+.support-list__chevron {
+  position: relative;
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+}
+
+.support-list__chevron img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  max-width: none;
+}
+
+/* LIne RAW: left 41.66%, top 25%, outset 0.75px for the stroke */
+.support-list__chevron .support-list__chevron-line {
+  left: calc(41.66% - 0.75px);
+  top: calc(25% - 0.75px);
+}

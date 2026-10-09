@@ -1,0 +1,147 @@
+/* Widget (2:8276): 351×138 at 375, nano purple, radius 16, clipped.
+   Stretches with the stack; the artwork keeps its exact px geometry in a 351×138 box
+   anchored to the right edge so the copy stays left. */
+.icw {
+  position: relative;
+  isolation: isolate; /* blend modes below mix with the purple fill only */
+  width: 100%;
+  height: 138px;
+  overflow: hidden;
+  border-radius: var(--radius-16);
+  background: var(--colour-primary);
+}
+
+.icw__art {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 351px;
+  height: 138px;
+  pointer-events: none;
+}
+
+/* Generic layer: `box` = Figma bounding box, centres the transformed `shape` */
+.icw__box {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icw__shape {
+  position: relative;
+  flex: none;
+}
+
+.icw__shape > img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  max-width: none;
+}
+
+/* ---- Above the illustration ---- */
+
+/* 2:8297 — yellow ribbon */
+.icw__box--ribbon { left: 161.68px; top: 8.09px; width: 196.778px; height: 201.911px; }
+.icw__box--ribbon .icw__shape { width: 153.772px; height: 161.845px; transform: rotate(18.28deg); }
+.icw__box--ribbon img { left: -1.353px; top: -1.44px; }
+
+/* 2:8301 — nano logo: inset 40.23% 10.78% 32.98% 59.59% of 351×138 */
+.icw__box--nano { left: 209.16px; top: 55.517px; width: 104px; height: 36.97px; }
+.icw__box--nano .icw__shape { width: 104px; height: 36.97px; }
+.icw__box--nano img { left: -6.115px; top: -1.224px; }
+
+/* 2:8317 — sparkle */
+.icw__box--sparkle { left: 134.71px; top: 71.85px; width: 16.738px; height: 17.818px; }
+.icw__box--sparkle .icw__shape { width: 16.747px; height: 17.273px; transform: rotate(1.86deg) skewX(1.86deg); }
+.icw__box--sparkle img { left: -1px; top: -0.833px; }
+
+/* 2:8318 — sparkle stroke */
+.icw__box--sparkle-line { left: 143.03px; top: 92.93px; width: 5.012px; height: 0.163px; }
+.icw__box--sparkle-line .icw__shape { width: 5.014px; height: 0; transform: rotate(1.86deg) skewX(1.86deg); }
+.icw__box--sparkle-line img { left: 0; top: -1px; }
+
+/* ---- Product renders (above the copy) ---- */
+.icw__box--disco .icw__shape > img,
+.icw__box--music .icw__shape > img,
+.icw__box--camera .icw__shape > img,
+.icw__box--cup .icw__shape > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 2:8323 — "4 1" disco ball */
+.icw__box--disco { left: 166.6px; top: 3.69px; width: 57.86px; height: 57.86px; }
+.icw__box--disco .icw__shape { width: 48.368px; height: 48.368px; transform: rotate(12.77deg); }
+
+/* 2:8324 — music note */
+.icw__box--music { left: 309.63px; top: 20.04px; width: 36px; height: 36px; }
+.icw__box--music .icw__shape { width: 36px; height: 36px; }
+
+/* 2:8325 — camera, bottom -68.5px, blurred */
+.icw__box--camera { left: 257.01px; bottom: -68.5px; width: 118.855px; height: 146.825px; }
+.icw__box--camera .icw__shape { width: 133.352px; height: 100.014px; filter: blur(0.5px); /* Figma blur-[1.986px] reads much softer in CSS than in the Figma render; tuned to match it */ transform: rotate(81.39deg); }
+
+/* 2:8326 — rotated clipping frame for the cup */
+.icw__box--cup-frame { left: 120.89px; top: 86.44px; width: 132.453px; height: 118.034px; }
+.icw__box--cup-frame > .icw__shape { width: 113.645px; height: 94.145px; overflow: hidden; transform: rotate(-13.47deg); }
+
+/* 2:8327 — cup, blurred */
+.icw__box--cup { left: 3.53px; top: -16.68px; width: 95.619px; height: 109.673px; }
+.icw__box--cup .icw__shape { width: 61.373px; height: 92.059px; filter: blur(0.69px); /* Figma blur-[2.758px], tuned to match the Figma render */ transform: rotate(26.1deg); }
+
+/* ---- Copy (2:8319): 227×138, 14/16 padding ---- */
+.icw__copy {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 227px;
+  height: 138px;
+  padding: var(--space-14) var(--space-16);
+}
+
+.icw__title {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--h18-size);
+  line-height: var(--h18-lh);
+  letter-spacing: var(--h18-ls);
+  color: var(--colour-text-on-surface-bold);
+}
+
+/* M-NeutralButton H36: inverted fill, #e0e0e0 border, radius 8, 10/16 padding */
+.icw__button {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  min-height: 36px;
+  max-height: 36px;
+  padding: var(--space-10) var(--space-16);
+  border: 1px solid #e0e0e0;
+  border-radius: var(--radius-8);
+  background: #101628;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--a12-size);
+  line-height: 16px;
+  letter-spacing: var(--a12-ls);
+  color: var(--colour-text-on-surface-bold);
+  white-space: nowrap;
+  transition: transform var(--nn-pp-move-ms) var(--nn-pp-move);
+}
+
+.icw__button:active {
+  transform: scale(var(--nn-press-tile));
+  transition-duration: var(--nn-dur-press);
+}
+
+.icw__button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}

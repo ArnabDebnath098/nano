@@ -1,0 +1,102 @@
+/* Figma 60:2289 Size=Default — 235 × 125 slot; artwork overflows it freely */
+.hero-illo {
+  position: relative;
+  width: 235px;
+  height: 125px;
+  flex-shrink: 0;
+}
+
+.hero-illo img {
+  max-width: none;
+}
+
+.hero-illo__part,
+.hero-illo__box {
+  position: absolute;
+}
+
+.hero-illo__box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-illo__inner {
+  position: relative;
+  flex: none;
+}
+
+.hero-illo__overflow {
+  position: absolute;
+}
+
+.hero-illo__overflow img,
+.hero-illo__fill {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-illo__fill {
+  position: absolute;
+  inset: 0;
+  object-fit: cover;
+}
+
+/* Figma: object-bottom without object-cover — the shield is stretched to its 89.9 × 101.2 box */
+.hero-illo__fill.is-stretch {
+  object-fit: fill;
+  object-position: bottom;
+}
+
+/* Mascot: mirrored, cropped at the waist (img is 143.45% of the box tall) */
+.hero-illo__mascot-crop,
+.hero-illo__mascot-haze {
+  position: absolute;
+  inset: 0;
+}
+
+.hero-illo__mascot-crop {
+  overflow: hidden;
+}
+
+/* Progressive blur: sharp above the horizon, a blurred copy takes over below it */
+.hero-illo__mascot-crop.is-sharp {
+  mask-image: linear-gradient(to bottom, #000 77%, transparent 83%);
+}
+
+.hero-illo__mascot-haze {
+  filter: blur(16px);
+  opacity: 0.85;
+}
+
+.hero-illo__mascot-haze .hero-illo__mascot-crop {
+  mask-image: linear-gradient(to bottom, transparent 70%, #000 82%);
+}
+
+/* Mirror on the img so the box stays free for GSAP's scale tween */
+.hero-illo__mascot img {
+  transform: scaleX(-1);
+}
+
+.hero-illo__mascot-crop img,
+.hero-illo__crop img {
+  position: absolute;
+  top: 0;
+  left: -0.03%;
+  width: 100.06%;
+  height: 143.45%;
+}
+
+.hero-illo__crop {
+  overflow: hidden;
+}
+
+/* 480 × 280 Lottie comp, scaled from its top-left corner */
+.hero-illo__lottie {
+  position: absolute;
+  width: 480px;
+  height: 280px;
+  transform-origin: 0 0;
+  pointer-events: none;
+}

@@ -1,0 +1,34 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="375" height="164" viewBox="0 0 375 164" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Lines &#194;&#183; vertical fade">
+<mask id="mask0_0_128" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="375" height="164">
+<rect id="Mask &#194;&#183; fade top &#38; front" width="375" height="164" fill="url(#paint0_linear_0_128)"/>
+</mask>
+<g mask="url(#mask0_0_128)">
+<path id="Row 1" d="M-20 0H395" stroke="#D1D4DE"/>
+<path id="Row 2" d="M-20 8H395" stroke="#D1D4DE"/>
+<path id="Row 3" d="M-20 25H395" stroke="#D1D4DE"/>
+<path id="Row 4" d="M-20 50H395" stroke="#D1D4DE"/>
+<path id="Row 5" d="M-20 82H395" stroke="#D1D4DE"/>
+<path id="Row 6" d="M-20 120H395" stroke="#D1D4DE"/>
+<path id="Row 7" d="M-20 164H395" stroke="#D1D4DE"/>
+<path id="Column 1" d="M-65.4481 0L-225 164" stroke="#D1D4DE"/>
+<path id="Column 2" d="M-2.21108 0L-121.875 164" stroke="#D1D4DE"/>
+<path id="Column 3" d="M61.0259 0L-18.75 164" stroke="#D1D4DE"/>
+<path id="Column 4" d="M124.263 0L84.375 164" stroke="#D1D4DE"/>
+<path id="Column 5" d="M187.5 0V164" stroke="#D1D4DE"/>
+<path id="Column 6" d="M250.737 0L290.625 164" stroke="#D1D4DE"/>
+<path id="Column 7" d="M313.974 0L393.75 164" stroke="#D1D4DE"/>
+<path id="Column 8" d="M377.211 0L496.875 164" stroke="#D1D4DE"/>
+<path id="Column 9" d="M440.448 0L600 164" stroke="#D1D4DE"/>
+</g>
+</g>
+<defs>
+<linearGradient id="paint0_linear_0_128" x1="187.5" y1="0" x2="187.5" y2="164" gradientUnits="userSpaceOnUse">
+<stop stop-opacity="0"/>
+<stop offset="0.2" stop-opacity="0.9"/>
+<stop offset="0.35" stop-opacity="0.9"/>
+<stop offset="0.65" stop-opacity="0"/>
+<stop offset="1" stop-opacity="0"/>
+</linearGradient>
+</defs>
+</svg>

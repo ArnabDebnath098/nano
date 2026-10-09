@@ -1,0 +1,172 @@
+/* 375 × 464 stage, centred; layers positioned exactly as in Figma */
+.empty-wallet {
+  position: relative;
+  width: 375px;
+  height: 464.156px;
+  margin: 0 auto;
+}
+
+.empty-wallet > * {
+  position: absolute;
+}
+
+/* ---- Header (56:42139) ---- */
+.ew-header {
+  top: 12.03px;
+  left: 0;
+  width: 375px;
+  height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.ew-header__sticker {
+  position: relative;
+  flex-shrink: 0;
+  width: 211.428px;
+  height: 77.305px;
+  overflow: hidden;
+}
+.ew-header__sticker img {
+  position: absolute;
+  left: 0;
+  top: -18.25%;
+  width: 100%;
+  height: 136.75%;
+  max-width: none;
+}
+
+.ew-header__text {
+  white-space: nowrap;
+  text-align: center;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--b16-size);
+  line-height: var(--b16-lh);
+  letter-spacing: var(--b16-ls);
+  color: var(--colour-text-secondary);
+}
+
+/* ---- Floor (103:9745) ---- */
+.ew-floor {
+  top: 248.03px;
+  left: 0;
+  width: 375px;
+  height: 220px;
+  overflow: hidden;
+}
+
+.ew-floor > * {
+  position: absolute;
+}
+
+.ew-floor__grid {
+  top: 56px;
+  left: 0;
+  width: 375px;
+  height: 164px;
+  overflow: hidden;
+}
+
+.ew-floor__grid-lines {
+  position: absolute;
+  inset: 0;
+  mask-mode: alpha;
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  mask-size: 375px 164px;
+  -webkit-mask-size: 375px 164px;
+}
+.ew-floor__grid-lines img {
+  max-width: none;
+}
+
+.ew-floor__shadow img {
+  position: absolute;
+  top: -86.58%;
+  left: -20.32%;
+  max-width: none;
+}
+
+.ew-floor__shadow--right {
+  left: 329.39px;
+  top: 55.33px;
+  width: 89.763px;
+  height: 24.255px;
+}
+
+.ew-floor__shadow--left {
+  left: 23.16px;
+  top: 90.13px;
+  width: 128.232px;
+  height: 34.65px;
+}
+
+/* ---- Card skin (56:42142) ---- */
+.ew-card {
+  left: 51.5px;
+  top: 132.03px;
+  width: 272.009px;
+  height: 192.157px;
+  /* Shadow follows the PNG alpha (Figma 22px blur ≈ CSS drop-shadow 11px) */
+  filter: drop-shadow(0 0 11px rgba(0, 0, 0, 0.15));
+}
+.ew-card img {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+
+/* ---- Props (105:4680) ---- */
+.ew-props {
+  top: 248.03px;
+  left: 0;
+  width: 375px;
+  height: 220px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.ew-props__cactus {
+  position: absolute;
+  overflow: hidden;
+}
+.ew-props__cactus img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 104.09%;
+  max-width: none;
+}
+
+/* centre at 50% − 138.31px */
+.ew-props__cactus--left {
+  left: calc(50% - 138.31px - 41.189px);
+  top: 20.86px;
+  width: 82.378px;
+  height: 79.138px;
+  filter: drop-shadow(0 10px 11px rgba(0, 0, 0, 0.19));
+}
+
+/* centre at 50% + 155.88px */
+.ew-props__cactus--right {
+  left: calc(50% + 155.88px - 26.43px);
+  top: 9.65px;
+  width: 52.859px;
+  height: 50.78px;
+  filter: blur(0.5px);
+}
+
+/* ---- CTA (56:42164) ---- */
+.ew-cta {
+  top: 355.49px;
+  left: 50%;
+  translate: -50% 0;
+  width: 165px;
+}
+.ew-cta .dark-button {
+  width: 100%;
+}

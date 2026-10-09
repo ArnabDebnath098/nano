@@ -1,0 +1,181 @@
+.hero-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 473px;
+  overflow: hidden;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    var(--colour-brand-start) 0%,
+    var(--colour-brand-mid) 59.966%,
+    var(--colour-surface-secondary) 97.897%
+  );
+}
+
+.hero-bg__art {
+  position: absolute;
+  inset: 0;
+}
+
+.hero-bg__art > * {
+  position: absolute;
+}
+
+/* An <img> that bleeds outside its layer box, matching Figma's negative insets.
+   It keeps its intrinsic SVG size; only the top/left offset is applied. */
+.hero-bg__fill {
+  position: absolute;
+  max-width: none;
+}
+
+/* 2:2860 */
+.hero-bg__swoosh {
+  left: -114.53px;
+  top: -75.25px;
+  width: 562.089px;
+  height: 307.75px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  mix-blend-mode: luminosity;
+}
+.hero-bg__swoosh-rotate {
+  flex: none;
+  rotate: 95.99deg;
+}
+.hero-bg__swoosh-box {
+  position: relative;
+  width: 252.894px;
+  height: 538.628px;
+}
+.hero-bg__swoosh-img {
+  top: -0.42%;
+  left: -2.68%;
+}
+
+/* 2:2861 */
+.hero-bg__glow-lg {
+  left: 160.69px;
+  top: -22.22px;
+  width: 348.376px;
+  height: 291.164px;
+}
+.hero-bg__glow-lg img {
+  top: -37.68%;
+  left: -31.49%;
+}
+
+/* 2:2862 */
+.hero-bg__glow-sm {
+  left: 184.49px;
+  top: 48.71px;
+  width: 263.602px;
+  height: 217.345px;
+}
+.hero-bg__glow-sm img {
+  top: -20.7%;
+  left: -17.07%;
+}
+
+/* 2:2863 */
+.hero-bg__illustration {
+  left: -63.82px;
+  top: -1px;
+  width: 502.645px;
+  height: 529.112px;
+}
+.hero-bg__illustration img {
+  top: -3.42%;
+  left: -3.6%;
+}
+
+/* 2:2913 */
+.hero-bg__blur-image {
+  left: 306.06px;
+  top: 114.12px;
+  width: 114.222px;
+  height: 106.67px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  mix-blend-mode: luminosity;
+}
+.hero-bg__blur-image-flip {
+  flex: none;
+  transform: rotate(180deg) scaleY(-1);
+}
+.hero-bg__blur-image-box {
+  position: relative;
+  width: 114.222px;
+  height: 106.67px;
+  overflow: hidden;
+  filter: blur(14.431px);
+  opacity: 0.8;
+}
+.hero-bg__blur-image-box img {
+  position: absolute;
+  max-width: none;
+  left: -365.49%;
+  top: -181%;
+  width: 603.46%;
+  height: 430.79%;
+}
+
+/* 2:2914 */
+.hero-bg__small-image {
+  left: 264.16px;
+  top: 117.51px;
+  width: 46.748px;
+  height: 46.748px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hero-bg__small-image-rotate {
+  flex: none;
+  position: relative;
+  width: 33.087px;
+  height: 33.087px;
+  rotate: -42.52deg;
+  filter: blur(3px);
+}
+.hero-bg__small-image-rotate img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 2:2915 – 2:2918 (positions derived from Figma's % insets on the 375×473 frame) */
+.hero-bg__sparkle {
+  rotate: 180deg;
+}
+.hero-bg__sparkle-bleed {
+  top: -67.14%;
+  left: -67.12%;
+}
+.hero-bg__sparkle--3 {
+  left: 306.08px;
+  top: 117.73px;
+  width: 4.46px;
+  height: 4.45px;
+}
+.hero-bg__sparkle--4 {
+  left: 367.99px;
+  top: 89.59px;
+  width: 15.56px;
+  height: 15.56px;
+}
+.hero-bg__sparkle--5 {
+  left: 248.74px;
+  top: 103.92px;
+  width: 1.69px;
+  height: 1.66px;
+}
+.hero-bg__sparkle--6 {
+  left: 304.13px;
+  top: 182.06px;
+  width: 1.95px;
+  height: 1.89px;
+}

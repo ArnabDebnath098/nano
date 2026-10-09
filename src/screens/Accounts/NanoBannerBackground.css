@@ -1,0 +1,9 @@
+/* nano banner · background (2:10508): fills its parent, top-left aligned, clipped.
+   Base fill covers any extra height below the 128px artwork. */
+.nbb {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--colour-primary) url('/figma/accounts/banner-bg.png') left top / 100% auto no-repeat;
+  pointer-events: none;
+}

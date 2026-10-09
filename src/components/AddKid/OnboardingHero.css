@@ -1,0 +1,148 @@
+/* Figma 55:1173 — 374 wide column, 8 bottom padding */
+.onboarding-hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding-bottom: var(--space-8);
+}
+
+/* Illustration slot, overlapped by the title (mb −48) */
+.onboarding-hero__illustration {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin-bottom: -48px;
+}
+
+/* Current illustration sits in flow; outgoing ones overlay it while they shrink + fade */
+.onboarding-hero__layer {
+  display: flex;
+  justify-content: center;
+}
+
+.onboarding-hero__layer.is-leaving {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.onboarding-hero__texts {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  text-align: center;
+}
+
+/* 55:1171 — H40 ExtraBold (Bold is the heaviest Noontree cut shipped), gradient fill.
+   drop-shadow instead of text-shadow: text-shadow would paint over a background-clip:text fill. */
+.onboarding-hero__title {
+  display: grid;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--h40-size);
+  line-height: var(--h40-lh);
+  letter-spacing: var(--h40-ls);
+  white-space: nowrap;
+}
+
+.onboarding-hero__title > span {
+  grid-area: 1 / 1;
+}
+
+/* White sticker outline (~8px, round) — a copy of the text ringed with white shadows.
+   text-stroke would give mitred, spiky corners; this keeps the outline round like a sticker. */
+.onboarding-hero__title-outline {
+  color: #fff;
+  /* the soft shadow sits under the sticker — on this layer, so the h1 stays free for the
+     blur tween without the shadow dropping out mid-transition */
+  filter: drop-shadow(0 1px 7px rgba(0, 0, 0, 0.15));
+  text-shadow:
+    8.00px 0.00px 0 #fff,
+    7.85px 1.56px 0 #fff,
+    7.39px 3.06px 0 #fff,
+    6.65px 4.44px 0 #fff,
+    5.66px 5.66px 0 #fff,
+    4.44px 6.65px 0 #fff,
+    3.06px 7.39px 0 #fff,
+    1.56px 7.85px 0 #fff,
+    0.00px 8.00px 0 #fff,
+    -1.56px 7.85px 0 #fff,
+    -3.06px 7.39px 0 #fff,
+    -4.44px 6.65px 0 #fff,
+    -5.66px 5.66px 0 #fff,
+    -6.65px 4.44px 0 #fff,
+    -7.39px 3.06px 0 #fff,
+    -7.85px 1.56px 0 #fff,
+    -8.00px 0.00px 0 #fff,
+    -7.85px -1.56px 0 #fff,
+    -7.39px -3.06px 0 #fff,
+    -6.65px -4.44px 0 #fff,
+    -5.66px -5.66px 0 #fff,
+    -4.44px -6.65px 0 #fff,
+    -3.06px -7.39px 0 #fff,
+    -1.56px -7.85px 0 #fff,
+    -0.00px -8.00px 0 #fff,
+    1.56px -7.85px 0 #fff,
+    3.06px -7.39px 0 #fff,
+    4.44px -6.65px 0 #fff,
+    5.66px -5.66px 0 #fff,
+    6.65px -4.44px 0 #fff,
+    7.39px -3.06px 0 #fff,
+    7.85px -1.56px 0 #fff,
+    5.50px 0.00px 0 #fff,
+    5.23px 1.70px 0 #fff,
+    4.45px 3.23px 0 #fff,
+    3.23px 4.45px 0 #fff,
+    1.70px 5.23px 0 #fff,
+    0.00px 5.50px 0 #fff,
+    -1.70px 5.23px 0 #fff,
+    -3.23px 4.45px 0 #fff,
+    -4.45px 3.23px 0 #fff,
+    -5.23px 1.70px 0 #fff,
+    -5.50px 0.00px 0 #fff,
+    -5.23px -1.70px 0 #fff,
+    -4.45px -3.23px 0 #fff,
+    -3.23px -4.45px 0 #fff,
+    -1.70px -5.23px 0 #fff,
+    -0.00px -5.50px 0 #fff,
+    1.70px -5.23px 0 #fff,
+    3.23px -4.45px 0 #fff,
+    4.45px -3.23px 0 #fff,
+    5.23px -1.70px 0 #fff,
+    3.00px 0.00px 0 #fff,
+    2.60px 1.50px 0 #fff,
+    1.50px 2.60px 0 #fff,
+    0.00px 3.00px 0 #fff,
+    -1.50px 2.60px 0 #fff,
+    -2.60px 1.50px 0 #fff,
+    -3.00px 0.00px 0 #fff,
+    -2.60px -1.50px 0 #fff,
+    -1.50px -2.60px 0 #fff,
+    -0.00px -3.00px 0 #fff,
+    1.50px -2.60px 0 #fff,
+    2.60px -1.50px 0 #fff;
+}
+
+/* Gradient fill on top */
+.onboarding-hero__title-fill {
+  position: relative;
+  background-image: linear-gradient(28.68deg, #000 52.835%, #7924ff 104.2%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* 55:1172 — B14 Medium, 311 wide */
+.onboarding-hero__subtitle {
+  width: 311.28px;
+  max-width: calc(100% - 32px);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--b14-size);
+  line-height: var(--b14-lh);
+  letter-spacing: var(--b14-ls);
+  color: var(--colour-text-secondary);
+}

@@ -1,0 +1,36 @@
+/* Figma 306:30909: status bar 62 + header 56 + 8px bottom padding = 126px */
+.top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding-bottom: var(--space-8);
+  /* The 8px padding overlaps the hero so content still starts at y=118 */
+  margin-bottom: calc(-1 * var(--space-8));
+}
+
+/* Without the mock status bar, respect the real device's safe area instead */
+.top-bar--native {
+  padding-top: env(safe-area-inset-top);
+}
+
+/* Clipped window onto the hero artwork; TopBar.jsx animates a smoothed (squircle)
+   clip-path on the bottom corners from 0 → 20px */
+.top-bar__surface {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.top-bar__art {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
+.top-bar > :not(.top-bar__surface) {
+  position: relative;
+}

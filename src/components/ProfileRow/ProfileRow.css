@@ -1,0 +1,54 @@
+.profile-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-24, 24px);
+  width: 100%;
+  text-align: left;
+  border-radius: var(--radius-12);
+  /* noon NANO press: down in 90ms, release on PP Move (.nano-btn) */
+  transition: transform var(--nn-pp-move-ms) var(--nn-pp-move);
+}
+
+.profile-row:active {
+  transform: scale(var(--nn-press-nano-btn));
+  transition-duration: var(--nn-dur-press);
+}
+
+.profile-row__identity {
+  flex: 1 0 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+}
+
+.profile-row__name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--h16-size);
+  line-height: var(--h16-lh);
+  letter-spacing: var(--h16-ls);
+  color: var(--colour-text-primary);
+}
+
+.profile-row__chevron {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding-left: 1px; /* Figma: 9px left vs 8px right padding nudges the chevron optically */
+  border: 1px solid var(--colour-border-subtle);
+  border-radius: 9999px;
+  background: var(--colour-surface-primary);
+}
+
+.profile-row__chevron img {
+  flex-shrink: 0;
+  max-width: none;
+}

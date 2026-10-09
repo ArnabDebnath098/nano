@@ -1,0 +1,46 @@
+.dark-button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-6);
+  height: 48px;
+  padding: var(--space-16) var(--space-14);
+  overflow: hidden;
+  border: 3px solid #e0e0e0;
+  border-radius: 9999px;
+  background: linear-gradient(to bottom, #212121 26.922%, #0d0d0d);
+  /* noon NANO press: down in 90ms, release on PP Move (.hm__topup) */
+  transition: transform var(--nn-pp-move-ms) var(--nn-pp-move);
+}
+
+.dark-button:active {
+  transform: scale(var(--nn-press-tile));
+  transition-duration: var(--nn-dur-press);
+}
+
+/* Inner sculpt shadow drawn over the border, as in Figma (inset −3px) */
+.dark-button::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: inherit;
+  box-shadow:
+    inset 0 -4px 5px 0 rgba(0, 0, 0, 0.9),
+    inset 0 4px 5px 0 rgba(14, 14, 14, 0.9);
+  pointer-events: none;
+}
+
+.dark-button img {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.dark-button__label {
+  position: relative;
+  white-space: nowrap;
+  font-weight: var(--font-weight-semibold);
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--colour-text-on-surface-bold);
+}

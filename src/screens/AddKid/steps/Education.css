@@ -1,0 +1,22 @@
+/* Full screen; the comp draws its own lilac gradient, `cover` fills any phone shape */
+.education {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+  background: #f3ecff;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.education:focus-visible {
+  outline: 2px solid var(--colour-primary);
+  outline-offset: -4px;
+}
+
+.education__anim {
+  position: absolute;
+  inset: 0;
+}

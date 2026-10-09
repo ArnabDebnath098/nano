@@ -1,0 +1,123 @@
+/* Full-screen flow; lives inside PushPage (from="bottom") */
+.add-kid {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--colour-surface-primary);
+  isolation: isolate;
+}
+
+.add-kid__chrome {
+  position: absolute;
+  inset: 0;
+}
+
+.add-kid__scroll {
+  position: absolute;
+  inset: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  /* room for the footer (76 + home bar 24) and its shadow, or the keyboard */
+  padding-bottom: calc(132px + var(--kb-height, 0px));
+}
+
+/* Head (background + top bar + hero) pins while the page scrolls; content slides under it.
+   Transparent to taps except the top bar, so content passing beneath stays tappable. */
+.add-kid__head {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* Top bar (57:1244) */
+.add-kid__top {
+  position: relative;
+  z-index: 1;
+  pointer-events: auto;
+}
+
+/* Hero morphs from its top edge (useCollapsingHero sets scale / translate) */
+.add-kid__head .onboarding-hero__illustration,
+.add-kid__head .onboarding-hero__title,
+.add-kid__head .onboarding-hero__subtitle {
+  transform-origin: 50% 0;
+}
+
+/* Scroll fade (66:2550) — under the compact hero, content dissolves into white instead of
+   being cut. An eased (scrim-curve) white gradient that starts fully opaque, so it meets the
+   solid head with no step, and a LAYER blur on the gradient itself to feather it — no
+   backdrop-filter, whose blurred band ends on a hard line (and smudges what's behind).
+   Overscanned left/right and 8px up so the blur never shows an edge. It paints BENEATH the
+   Onboarding background (first in the head), so it never tints the background image — it
+   only shows where the content scrolls out from under it.
+   `top` and opacity come from useCollapsingHero. */
+.add-kid__fade {
+  position: absolute;
+  left: -16px;
+  right: -16px;
+  height: 64px;
+  margin-top: -8px;
+  opacity: 0;
+  background: linear-gradient(
+    to bottom,
+    #fff 0%,
+    #fff 12%,
+    rgba(255, 255, 255, 0.987) 19%,
+    rgba(255, 255, 255, 0.951) 26%,
+    rgba(255, 255, 255, 0.896) 32%,
+    rgba(255, 255, 255, 0.825) 38%,
+    rgba(255, 255, 255, 0.741) 44%,
+    rgba(255, 255, 255, 0.648) 49%,
+    rgba(255, 255, 255, 0.55) 54%,
+    rgba(255, 255, 255, 0.45) 59%,
+    rgba(255, 255, 255, 0.352) 64%,
+    rgba(255, 255, 255, 0.259) 69%,
+    rgba(255, 255, 255, 0.175) 75%,
+    rgba(255, 255, 255, 0.104) 81%,
+    rgba(255, 255, 255, 0.049) 87%,
+    rgba(255, 255, 255, 0.013) 94%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  filter: blur(6px);
+  pointer-events: none;
+}
+
+/* Body (57:1191) — 16 side padding, 20 top/bottom, radius 20 top */
+.add-kid__body {
+  position: relative;
+  padding: var(--space-20) var(--space-16);
+}
+
+/* Footer pinned to the bottom; lifts above the drawn keyboard on PP Move */
+.add-kid__footer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 5;
+  transform: translateY(calc(-1 * var(--kb-height, 0px)));
+  transition: transform var(--nn-kb-dur) var(--nn-kb-ease);
+}
+
+.add-kid__full.is-leaving {
+  z-index: 11; /* above the beat that replaced it, if any */
+  pointer-events: none;
+  will-change: opacity, transform, filter;
+}
+
+.add-kid__full {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .add-kid__footer {
+    transition: none;
+  }
+}

@@ -1,0 +1,34 @@
+/* Fixed layer capped to the app shell width; scrolls independently */
+.push-page {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  z-index: 40;
+  width: min(100%, 480px);
+  translate: -50% 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Dims the page underneath while the new page slides over it */
+.push-page__shade {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.24);
+  pointer-events: none;
+}
+
+.push-page__page {
+  position: relative;
+  min-height: 100%;
+  outline: none;
+  will-change: transform;
+  box-shadow: -8px 0 24px rgba(0, 0, 0, 0.12);
+}
+
+.push-page--from-bottom .push-page__page {
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.12);
+}

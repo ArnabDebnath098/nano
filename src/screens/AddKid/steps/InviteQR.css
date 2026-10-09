@@ -1,0 +1,417 @@
+/* Figma 18:16204 — Invite · Share QR, laid out on the 375 × 812 frame */
+.invite {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--colour-surface-primary);
+}
+
+/* BG (900:47847) — Figma's render, stretched to the screen */
+.invite__bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.invite__bg img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+}
+
+.invite__top {
+  position: relative;
+  z-index: 2;
+}
+
+/* M-PageHeader (18:16656) — 56 tall, 12 side padding, ✕ only */
+.invite__header {
+  display: flex;
+  align-items: center;
+  height: 56px;
+  padding: var(--space-8) var(--space-12);
+}
+
+/* 18:16660 — title + subtitle at y 127 */
+.invite__texts {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: 9.31px;
+  text-align: center;
+}
+
+.invite__title {
+  /* fill + white sticker outline come from .onboarding-hero__title (shared) */
+  margin: 0;
+}
+
+.invite__subtitle {
+  width: 311.28px;
+  max-width: calc(100% - 32px);
+  margin: 0;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--b14-size);
+  line-height: var(--b14-lh);
+  letter-spacing: var(--b14-ls);
+  color: var(--colour-text-primary);
+}
+
+/* The card stack keeps Figma's absolute geometry, centred on the screen */
+.invite__stage {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 375px;
+  height: 640px;
+  translate: -50% 0;
+  pointer-events: none;
+  /* gyro tilt: perspective centred on the card */
+  perspective: 900px;
+  perspective-origin: 187.5px 416.5px;
+}
+
+/* Tilt layer — rotated by useGyroTilt about the card's centre; the card keeps its own
+   entrance transform underneath */
+.invite__tilt {
+  position: absolute;
+  inset: 0;
+  transform-origin: 187.5px 416.5px;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* Holographic sheen over the frame — a soft light band that slides with the tilt */
+.invite__sheen {
+  position: absolute;
+  inset: 4px;
+  overflow: hidden;
+  border-radius: 30px;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+
+.invite__sheen-band {
+  position: absolute;
+  inset: -40%;
+  opacity: 0.35;
+  background: linear-gradient(
+    115deg,
+    transparent 36%,
+    rgba(255, 255, 255, 0.85) 47%,
+    rgba(255, 255, 255, 0.2) 53%,
+    transparent 62%
+  );
+  will-change: transform, opacity;
+}
+
+/* Sparkle drift layers (full stage, so the sparkles keep their Figma positions) */
+.invite__spark-drift {
+  position: absolute;
+  inset: 0;
+  will-change: translate;
+}
+
+/* 18:16213 — holo frame 290 × 409 at (42.5, 211.9) */
+.invite__card {
+  position: absolute;
+  left: 42.5px;
+  top: 211.91px;
+  width: 290px;
+  height: 409.19px;
+}
+
+.invite__card-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 18:16214 — screen 212 × 244, image cropped inside */
+.invite__card-screen {
+  position: absolute;
+  left: 39px;
+  top: 41.85px;
+  width: 212px;
+  height: 244px;
+  overflow: hidden;
+}
+
+.invite__card-screen img {
+  position: absolute;
+  left: -8.25%;
+  top: -26.54%;
+  width: 115.97%;
+  height: 155.53%;
+  max-width: none;
+}
+
+/* 18:16215 — QR 164 at (105.5, 293.4) */
+.invite__qr {
+  position: absolute;
+  left: 63px;
+  top: 81.47px;
+}
+
+/* 18:16652 — H28 Bold, purple-tinted shadow */
+.invite__name {
+  position: absolute;
+  /* 6px side padding so the sticker outline isn't clipped by the ellipsis overflow */
+  left: 14.23px;
+  top: 304.79px;
+  width: 258.6px;
+  padding: 0 6px;
+  margin: 0;
+  overflow: hidden;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--h28-size);
+  line-height: var(--h28-lh);
+  letter-spacing: var(--h28-ls);
+  color: var(--colour-text-primary);
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-shadow: 0 5px 10px rgba(24, 1, 73, 0.2);
+  /* white sticker outline, like the titles (round — text-shadow ring, not text-stroke) */
+  text-shadow:
+    4.00px 0.00px 0 #fff,
+    3.86px 1.04px 0 #fff,
+    3.46px 2.00px 0 #fff,
+    2.83px 2.83px 0 #fff,
+    2.00px 3.46px 0 #fff,
+    1.04px 3.86px 0 #fff,
+    0.00px 4.00px 0 #fff,
+    -1.04px 3.86px 0 #fff,
+    -2.00px 3.46px 0 #fff,
+    -2.83px 2.83px 0 #fff,
+    -3.46px 2.00px 0 #fff,
+    -3.86px 1.04px 0 #fff,
+    -4.00px 0.00px 0 #fff,
+    -3.86px -1.04px 0 #fff,
+    -3.46px -2.00px 0 #fff,
+    -2.83px -2.83px 0 #fff,
+    -2.00px -3.46px 0 #fff,
+    -1.04px -3.86px 0 #fff,
+    -0.00px -4.00px 0 #fff,
+    1.04px -3.86px 0 #fff,
+    2.00px -3.46px 0 #fff,
+    2.83px -2.83px 0 #fff,
+    3.46px -2.00px 0 #fff,
+    3.86px -1.04px 0 #fff,
+    2.50px 0.00px 0 #fff,
+    2.25px 1.08px 0 #fff,
+    1.56px 1.95px 0 #fff,
+    0.56px 2.44px 0 #fff,
+    -0.56px 2.44px 0 #fff,
+    -1.56px 1.95px 0 #fff,
+    -2.25px 1.08px 0 #fff,
+    -2.50px 0.00px 0 #fff,
+    -2.25px -1.08px 0 #fff,
+    -1.56px -1.95px 0 #fff,
+    -0.56px -2.44px 0 #fff,
+    0.56px -2.44px 0 #fff,
+    1.56px -1.95px 0 #fff,
+    2.25px -1.08px 0 #fff;
+  filter: drop-shadow(0 1px 5px rgba(0, 0, 0, 0.12));
+}
+
+/* Not in Figma: the single-use / 7-day note, a quiet line under the name */
+
+.invite__sparkle {
+  position: absolute;
+  max-width: none;
+}
+
+/* 18:16663 — left sparkle, blur 1 */
+.invite__sparkle--left {
+  /* off the card's lower-left edge, as in the frame render */
+  left: -18px;
+  top: 475px;
+  object-fit: cover;
+  filter: blur(1px);
+}
+
+/* 18:16680 — chrome sparkle off the card's right edge (placed and sized to the frame render;
+   the layer sits in a transformed group, so its raw 218 × 260 box doesn't map 1:1) */
+.invite__sparkle--right {
+  left: 267px;
+  top: 263px;
+  width: 120px;
+  height: 143px;
+}
+
+/* Header Container (18:16664) — link area over the row action bar */
+.invite__footer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+}
+
+/* No white bar behind Share invite — the button sits straight on the BG */
+.invite__footer .action-bar {
+  background: transparent;
+  filter: none;
+}
+
+/* 18:16665 — 20 padding, 12 gap */
+.invite__link-area {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  padding: var(--space-20);
+}
+
+.invite__or {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--b12-size);
+  line-height: 18px; /* Figma 18:16666 row is 18 tall */
+  letter-spacing: var(--b12-ls);
+  color: var(--colour-text-muted);
+}
+
+.invite__or img {
+  flex: 1 0 0;
+  min-width: 0;
+  height: 1px;
+}
+
+.invite__or img:first-child {
+  scale: -1 1;
+}
+
+/* Box (18:16670) — white pill 52 tall, 18 / 16 padding (15 inside the 1px border), inner shadow */
+.invite__link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 15px 17px;
+  border: 1px solid var(--colour-border-primary);
+  border-radius: var(--radius-pill);
+  background: var(--colour-surface-primary);
+  box-shadow: inset 0 -3px 6px 0 rgba(152, 159, 179, 0.18);
+  color: var(--colour-text-primary);
+  font: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: scale 160ms var(--ease-out);
+}
+
+.invite__link:active {
+  scale: var(--press-scale-card);
+}
+
+.invite__link:focus-visible {
+  outline: 2px solid var(--colour-primary);
+  outline-offset: 2px;
+}
+
+.invite__link-text {
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--b14-size);
+  line-height: var(--b14-lh);
+  letter-spacing: var(--b14-ls);
+  text-align: left;
+}
+
+/* Icon slots: glyph ⇄ check, same crossfade as the label */
+.invite__link-icon,
+.invite__share-icon {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+}
+
+.invite__link-icon > *,
+.invite__share-icon > * {
+  grid-area: 1 / 1;
+}
+
+.invite__share {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+/* Label morph — both labels share one cell; blur bridges the swap */
+.invite-morph {
+  display: inline-grid;
+  white-space: nowrap;
+}
+
+.invite-morph > span {
+  grid-area: 1 / 1;
+}
+
+.invite-morph__off,
+.invite-morph__on,
+.invite__morph-off,
+.invite__morph-on {
+  transition:
+    opacity var(--nn-pp-fade-ms) var(--nn-pp-fade),
+    filter var(--nn-pp-fade-ms) var(--nn-pp-fade),
+    translate var(--nn-pp-fade-ms) var(--nn-pp-fade),
+    scale var(--nn-pp-fade-ms) var(--nn-pp-fade);
+}
+
+.invite-morph__on,
+.invite__morph-on {
+  opacity: 0;
+  filter: blur(2px);
+  translate: 0 4px;
+}
+
+.invite__morph-on {
+  translate: none;
+  scale: var(--pop-from);
+}
+
+.invite-morph.is-on .invite-morph__off,
+.is-copied .invite__morph-off {
+  opacity: 0;
+  filter: blur(2px);
+  translate: 0 -4px;
+}
+
+.is-copied .invite__morph-off {
+  translate: none;
+  scale: var(--pop-from);
+}
+
+.invite-morph.is-on .invite-morph__on,
+.is-copied .invite__morph-on {
+  opacity: 1;
+  filter: blur(0);
+  translate: 0 0;
+  scale: 1;
+}
+
+/* The check pops in on the drop spring */
+.is-copied .invite__morph-on {
+  transition-timing-function: var(--nn-pp-fade), var(--nn-pp-fade), var(--nn-pp-fade), var(--nn-drop-spring);
+  transition-duration: var(--nn-pp-fade-ms), var(--nn-pp-fade-ms), var(--nn-pp-fade-ms), var(--nn-pp-move-ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .invite-morph > span,
+  .invite__link-icon > *,
+  .invite__share-icon > * {
+    translate: none !important;
+    scale: none !important;
+    filter: none !important;
+  }
+}

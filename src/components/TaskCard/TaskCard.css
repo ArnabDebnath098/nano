@@ -1,0 +1,208 @@
+.task-card {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--colour-border-primary);
+  border-radius: 16px;
+  background: var(--colour-surface-primary);
+}
+
+.task-card--done {
+  overflow: visible;
+  border-color: var(--colour-border-subtle);
+  background: var(--colour-surface-action-subtle);
+}
+
+/* ---- Row - 1 ---- */
+.task-card__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px;
+  background: var(--colour-surface-primary);
+}
+
+.task-card--done .task-card__row {
+  border-radius: var(--radius-16);
+  background: #fff;
+}
+
+.task-card__asset {
+  flex-shrink: 0;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  padding: var(--space-8);
+  border-radius: var(--radius-12);
+  background: var(--colour-surface-secondary);
+}
+
+.task-card__image {
+  position: relative;
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  border-radius: 11.429px;
+  overflow: hidden;
+}
+
+/* Crop taken directly from Figma's image fill */
+.task-card__image img {
+  position: absolute;
+  max-width: none;
+  left: -383.53%;
+  top: -310.35%;
+  width: 719.64%;
+  height: 471.37%;
+}
+
+.task-card__content {
+  flex: 1 0 0;
+  min-width: 1px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.task-card__top {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-16);
+  width: 100%;
+}
+
+.task-card__title {
+  flex: 1 0 0;
+  min-width: 1px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  font-weight: var(--font-weight-semibold);
+  font-size: 16px;
+  line-height: var(--b16-lh);
+  letter-spacing: var(--b16-ls);
+  color: var(--colour-text-primary);
+}
+
+.task-card__divider {
+  width: 100%;
+  height: 1px;
+  background: var(--colour-surface-tertiary);
+}
+
+/* ---- Assignee + due date ---- */
+.task-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  white-space: nowrap;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--b13-size);
+  line-height: var(--b13-lh);
+  letter-spacing: var(--b13-ls);
+}
+
+.task-card__meta > img {
+  flex-shrink: 0;
+}
+
+.task-card__assignee-avatar {
+  position: relative;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  border-radius: 70.278px;
+  overflow: hidden;
+}
+
+.task-card__assignee-fill,
+.task-card__assignee-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 70.278px;
+}
+
+.task-card__assignee-fill {
+  background: #b8d7ff;
+}
+
+.task-card__assignee-photo {
+  max-width: none;
+  object-fit: cover;
+}
+
+.task-card__assignee-ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 29.394px;
+  height: 29.394px;
+  translate: -50% -50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.task-card__assignee-ring img {
+  flex: none;
+  max-width: none;
+  rotate: -15deg;
+}
+
+.task-card__assignee-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--colour-text-primary);
+}
+
+.task-card__due {
+  color: var(--colour-text-tertiary);
+}
+
+/* ---- Marked as done footer ---- */
+.task-card__info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 0 0 16px 16px;
+}
+
+.task-card__info-status,
+.task-card__review {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--b12-size);
+  line-height: var(--b12-lh);
+  letter-spacing: var(--b12-ls);
+  color: var(--colour-text-action);
+}
+
+.task-card__info-status {
+  gap: 6px;
+}
+
+.task-card__review {
+  gap: 2px;
+}
+
+.task-card__info img {
+  flex-shrink: 0;
+}

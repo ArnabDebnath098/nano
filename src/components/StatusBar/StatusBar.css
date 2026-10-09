@@ -1,0 +1,49 @@
+.status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 154px;
+  width: 100%;
+  padding: 21px 24px 19px;
+}
+
+.status-bar__time,
+.status-bar__levels {
+  flex: 1 0 0;
+  min-width: 1px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-bar__time {
+  padding-top: 1.5px;
+}
+
+.status-bar__time span {
+  font-family: 'SF Pro', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  font-weight: 590;
+  font-size: 17px;
+  line-height: 22px;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.status-bar__levels {
+  gap: 7px;
+  padding: 1px 1px 0 0;
+}
+
+.status-bar__levels img {
+  flex-shrink: 0;
+}
+
+/* Dark glyphs for light backgrounds — the level icons are white SVGs, so invert them */
+.status-bar--dark .status-bar__time span {
+  color: #000;
+}
+
+.status-bar--dark .status-bar__levels img {
+  filter: invert(1);
+}

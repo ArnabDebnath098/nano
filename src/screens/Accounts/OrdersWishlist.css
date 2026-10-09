@@ -1,0 +1,157 @@
+/* 2:8236 — two equal cards, 12px gap, 124px tall */
+.orders-wishlist {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  width: 100%;
+}
+
+/* Top widget (2:8237 / 2:8252) */
+.ow-widget {
+  flex: 1 0 0;
+  min-width: 1px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-12);
+  background: var(--colour-surface-primary);
+  text-align: left;
+}
+
+/* Figma inside stroke (white): over the content, no layout impact */
+.ow-widget::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--colour-border-white);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* Header row: 12 top / 16 bottom / 12 sides → 48px */
+.ow-widget__header {
+  width: 100%;
+  padding: var(--space-12) var(--space-12) var(--space-16);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--h16-size);
+  line-height: var(--h16-lh);
+  letter-spacing: var(--h16-ls);
+  color: var(--colour-text-primary);
+}
+
+/* Image (2:8240): 76px, 8px side padding, thumbs overlap by 10px */
+.ow-widget__images {
+  isolation: isolate;
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  height: 76px;
+  padding: 0 var(--space-8);
+}
+
+.ow-widget__slot {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: -10px;
+}
+
+.ow-widget__slot:last-child {
+  margin-right: 0;
+}
+
+.ow-widget__tilt {
+  flex: none;
+  display: flex;
+}
+
+/* Rotated bounding boxes from Figma */
+.ow-widget__slot--a { width: 51.53px; height: 66.143px; }
+.ow-widget__slot--a .ow-widget__tilt { transform: rotate(-4deg); }
+.ow-widget__slot--b { width: 48.342px; height: 63.815px; }
+.ow-widget__slot--b .ow-widget__tilt { transform: rotate(1deg); }
+.ow-widget__slot--c { width: 49.42px; height: 64.611px; }
+.ow-widget__slot--c .ow-widget__tilt { transform: rotate(2deg); }
+.ow-widget__slot--d { width: 49.42px; height: 64.611px; }
+.ow-widget__slot--d .ow-widget__tilt { transform: rotate(-2deg); }
+
+/* Thumb: 47.25×63, 2.25px white border, radius 9 */
+.ow-thumb {
+  position: relative;
+  display: block;
+  width: 47.25px;
+  height: 63px;
+  overflow: hidden;
+  border: 2.25px solid var(--colour-border-white);
+  border-radius: 9px;
+  background: var(--colour-surface-tertiary);
+}
+
+.ow-thumb__img {
+  position: absolute;
+}
+
+.ow-thumb__img img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+/* Image placements — exact Figma insets (percentages of the 42.75×58.5 padding box) */
+.ow-thumb__img--o1 {
+  inset: calc(-1.79% - 1.17px) calc(-2.38% - 1.18px) calc(-7.14% - 1.29px) calc(0% - 1.12px);
+}
+.ow-thumb__img--o1 img { object-fit: contain; }
+
+.ow-thumb__img--o2 {
+  inset: calc(7.5% - 0.96px) calc(3.34% - 1.05px) calc(2.5% - 1.07px) calc(10% - 0.9px);
+}
+
+.ow-thumb__img--tall-a,
+.ow-thumb__img--tall-b {
+  top: calc(50% + 0.53px);
+  aspect-ratio: 780 / 1064;
+  transform: translateY(-50%);
+}
+.ow-thumb__img--tall-a { left: calc(-13.34% - 1.43px); right: calc(-6.66% - 1.27px); }
+.ow-thumb__img--tall-b { left: calc(-13.33% - 1.42px); right: calc(-6.67% - 1.28px); }
+
+.ow-thumb__img--full {
+  left: 0;
+  top: calc(50% + 0.56px);
+  width: 46.817px;
+  height: 64.125px;
+  transform: translateY(-50%);
+}
+
+.ow-thumb__img--o5 {
+  inset: calc(11.19% - 0.87px) calc(6.66% - 0.98px) calc(3.81% - 1.04px) calc(10% - 0.9px);
+}
+
+.ow-thumb__img--w1 {
+  left: 0.31px;
+  top: -0.19px;
+  width: 44.83px;
+  height: 61.137px;
+  overflow: hidden;
+}
+.ow-thumb__img--w1 img { object-fit: fill; }
+
+.ow-thumb__img--w2 {
+  inset: calc(-6.35% - 1.27px) calc(-9.99% - 1.35px) -1.13px calc(-0.07% - 1.13px);
+}
+
+.ow-thumb__img--w3 {
+  inset: calc(-1.79% - 1.17px) calc(-2.39% - 1.18px) calc(-7.14% - 1.29px) calc(0.01% - 1.12px);
+}

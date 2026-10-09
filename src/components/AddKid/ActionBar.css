@@ -1,0 +1,53 @@
+/* Figma 57:1247 — white bar, radius 20 top, layered upward shadow */
+.action-bar {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-20) var(--radius-20) 0 0;
+  background: var(--colour-surface-primary);
+  filter: drop-shadow(0 -7px 7.5px rgba(224, 224, 224, 0.1)) drop-shadow(0 -27px 13.5px rgba(224, 224, 224, 0.09))
+    drop-shadow(0 -60px 18px rgba(224, 224, 224, 0.05));
+}
+
+.action-bar__bar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  padding: var(--space-12);
+}
+
+.action-bar__top {
+  display: flex;
+  justify-content: center;
+}
+
+.action-bar__buttons {
+  display: flex;
+  gap: var(--space-12);
+}
+
+.action-bar__bar--stacked .action-bar__buttons {
+  flex-direction: column;
+}
+
+.action-bar__bar--stacked .nano-btn {
+  flex: none;
+  width: 100%;
+}
+
+/* Home bar 24 — 124 × 5 indicator */
+.action-bar__home {
+  position: relative;
+  height: 24px;
+}
+
+.action-bar__home span {
+  position: absolute;
+  left: 50%;
+  top: 10px;
+  width: 124px;
+  height: 5px;
+  translate: -50% 0;
+  border-radius: var(--radius-8);
+  background: var(--colour-surface-secondary-inverted);
+}

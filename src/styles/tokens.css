@@ -1,0 +1,121 @@
+/* Design tokens — mirrors the Figma variables of the Parent-Side file */
+
+@font-face {
+  font-family: 'Noontree';
+  src: local('Noontree Regular'), local('Noontree-Regular'), url('/fonts/Noontree-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Noontree';
+  src: local('Noontree Medium'), local('Noontree-Medium'), url('/fonts/Noontree-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Noontree';
+  src: local('Noontree SemiBold'), local('Noontree-SemiBold'), url('/fonts/Noontree-SemiBold.otf') format('opentype');
+  font-weight: 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Noontree';
+  src: local('Noontree Bold'), local('Noontree-Bold'), url('/fonts/Noontree-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-display: swap;
+}
+
+:root {
+  /* Font */
+  --font-primary: 'Noontree', system-ui, -apple-system, sans-serif;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Surface */
+  --colour-surface-primary: #ffffff;
+  --colour-surface-secondary: #f9f9fb;
+  --colour-surface-tertiary: #f2f3f7;
+  --colour-surface-action-subtle: #ebf4ff;
+  --colour-surface-overlay-subtle: rgba(0, 0, 0, 0.24);
+  --colour-surface-muted: #eaecf0;
+  --colour-surface-field: #f5f7fa;
+  --colour-surface-secondary-inverted: #1d2539;
+
+  /* Text & icon */
+  --colour-text-primary: #1d2539;
+  --colour-text-secondary: #475067;
+  --colour-text-tertiary: #666d85;
+  --colour-text-action: #0f61ff;
+  --colour-text-muted: #989fb3;
+  --colour-text-error: #d92626;
+  --colour-text-on-surface-bold: #ffffff;
+  --colour-text-on-surface-subtle: rgba(255, 255, 255, 0.8);
+
+  /* Border */
+  --colour-border-primary: #eaecf0;
+  --colour-border-subtle: #f2f3f7;
+  --colour-border-white: #ffffff;
+  --colour-border-medium: #d0d4dd;
+
+  /* nano brand (Add a child) */
+  --colour-primary: #7924ff;
+  --colour-tertiary: #f3ecff;
+
+  /* Brand gradient (hero background) */
+  --colour-brand-start: #5f14d6;
+  --colour-brand-mid: #9d57ff;
+
+  /* Space */
+  --space-0: 0px;
+  --space-1: 1px;
+  --space-2: 2px;
+  --space-4: 4px;
+  --space-6: 6px;
+  --space-8: 8px;
+  --space-10: 10px;
+  --space-12: 12px;
+  --space-14: 14px;
+  --space-16: 16px;
+  --space-18: 18px;
+  --space-20: 20px;
+  --space-32: 32px;
+
+  /* Radius */
+  --radius-8: 8px;
+  --radius-12: 12px;
+  --radius-16: 16px;
+  --radius-20: 20px;
+  --radius-24: 24px;
+  --radius-pill: 7999px;
+
+  /* Type scale — size / line-height / letter-spacing */
+  --h40-size: 40px;  --h40-lh: 48px; --h40-ls: -0.25px;
+  --a16-size: 16px;  --a16-lh: 24px; --a16-ls: 0px;
+  --h28-size: 28px;  --h28-lh: 36px; --h28-ls: -0.25px;
+  --h18-size: 18px;  --h18-lh: 24px; --h18-ls: -0.15px;
+  --h16-size: 16px;  --h16-lh: 20px; --h16-ls: -0.15px;
+  --a17-size: 17px;  --a17-lh: 24px; --a17-ls: -0.25px;
+  --a12-size: 14px;  --a12-lh: 20px; --a12-ls: 0px;
+  --b16-size: 16px;  --b16-lh: 22px; --b16-ls: -0.15px;
+  --b14-size: 14px;  --b14-lh: 20px; --b14-ls: -0.1px;
+  --b13-size: 14px;  --b13-lh: 20px; --b13-ls: -0.1px;
+  /* No text below 14px for now — b12/b13/a12 are bumped to 14 until told otherwise */
+  --b12-size: 14px;  --b12-lh: 20px; --b12-ls: -0.1px;
+
+  /* Motion (Emil Kowalski) — extends the noon NANO --nn-* system, never forks it.
+     Moves use --nn-pp-move, fades --nn-pp-fade; these cover what NANO doesn't define. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1); /* strong ease-out: enters, exits, press release */
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1); /* on-screen morphs */
+  /* Press: in quickly (NANO 90ms), release on PP Move — asymmetric, the user decides on press */
+  --press-scale: 0.97;
+  --press-scale-card: 0.98;
+  /* Selected-state pop (radio dot, checkbox tick, chip tick): from 0.9 + opacity 0, never from 0.
+     Select travels on PP Move; deselect is quicker. */
+  --pop-from: 0.9;
+  --pop-out-dur: 140ms;
+
+  /* Layout */
+  --top-bar-height: 118px; /* status bar 62 + header 56 */
+}

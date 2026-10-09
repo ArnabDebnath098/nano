@@ -1,0 +1,82 @@
+.child-card {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--space-16);
+  /* Figma 220 leaves 188px for the status line and "Add Kiaan’s first wallet balance" needs
+     189 — it wrapped, made the card taller and pushed the avatar into the strip's crop.
+     232 gave the text 200px; widened a further 40px on request → 272 (240px of text). */
+  width: 272px;
+  padding: var(--space-12);
+  border-radius: var(--radius-20); /* read by SquircleSurface → 20px smoothed corners */
+  /* the white fill is the SquircleSurface (smoothed corners); isolate so it paints behind */
+  position: relative;
+  isolation: isolate;
+  --surface-fill: var(--colour-surface-primary);
+}
+
+/* Fixed 72px with bottom alignment — the avatar intentionally overflows above the card */
+.child-card__identity {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--space-12);
+  height: 72px;
+  width: 100%;
+}
+
+.child-card__identity > * {
+  flex-shrink: 0;
+}
+
+/* nano avatar (Background=Off) — overhangs the card's top edge; 8px inset like the name */
+.child-card__avatar {
+  align-self: flex-start;
+  margin-left: var(--space-4);
+  /* tuck 4px into the gap above the name so the ring clears the scroll strip's top clip */
+  margin-bottom: -4px;
+}
+
+.child-card__name-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+  padding: 0 var(--space-4);
+}
+
+.child-card__name-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  text-align: left;
+}
+
+.child-card__name-row img {
+  flex-shrink: 0;
+}
+
+.child-card__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--h16-size);
+  line-height: var(--h16-lh);
+  letter-spacing: var(--h16-ls);
+  color: var(--colour-text-primary);
+}
+
+.child-card__status {
+  width: 100%;
+  /* B13 Medium, tertiary (#666D85). A literal 13px: the --b13-size token is held at 14 by the
+     "no text below 14px" rule in tokens.css, and this line was explicitly asked to be 13. */
+  font-weight: var(--font-weight-medium);
+  font-size: 13px;
+  line-height: var(--b13-lh);
+  letter-spacing: var(--b13-ls);
+  color: var(--colour-text-tertiary);
+}

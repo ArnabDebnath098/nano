@@ -1,0 +1,28 @@
+.price-highlight {
+  flex-shrink: 0;
+  display: flex;
+  align-items: stretch;
+  padding: var(--space-1) 0;
+}
+
+.price-highlight__ticker {
+  flex-shrink: 0;
+}
+
+.price-highlight__view {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  padding: 0 var(--space-4);
+  background: var(--colour-text-action);
+}
+
+.price-highlight__amount {
+  font-weight: var(--font-weight-bold);
+  font-size: 18px;
+  line-height: 24px;
+  letter-spacing: -0.15px;
+  color: var(--colour-text-on-surface-bold);
+  white-space: nowrap;
+}

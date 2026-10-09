@@ -1,0 +1,20 @@
+.squircle-surface {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1; /* behind the content; the parent isolates the stacking context */
+  max-width: none; /* the global reset caps svg at the padding box (1px border each side) */
+  overflow: visible;
+  pointer-events: none;
+}
+
+.squircle-surface__fill {
+  fill: var(--surface-fill, transparent);
+  transition: fill var(--nn-pp-fade-ms) var(--nn-pp-fade);
+}
+
+.squircle-surface__stroke {
+  fill: none;
+  stroke: var(--surface-stroke, transparent);
+  transition: stroke var(--nn-pp-fade-ms) var(--nn-pp-fade);
+}

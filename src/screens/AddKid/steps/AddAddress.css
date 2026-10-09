@@ -1,0 +1,86 @@
+/* Figma 57:1703 — cards 12 apart */
+.add-address__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+}
+
+/* Figma 18:15889 — centred column, 40 / 4 padding, 32 gap */
+.add-address__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-32);
+  padding: 40px var(--space-4);
+  text-align: center;
+}
+
+/* 18:15890 — 176 × 101 artwork, clipped */
+.add-address__art {
+  position: relative;
+  flex-shrink: 0;
+  width: 176px;
+  height: 101px;
+  overflow: hidden;
+}
+
+.add-address__art img {
+  position: absolute;
+  display: block;
+  max-width: none;
+}
+
+.add-address__arc {
+  left: 7.11px;
+  top: 13.73px;
+}
+
+.add-address__grid {
+  left: -27.49px;
+  top: 86.85px;
+}
+
+.add-address__sparkle {
+  left: 103.97px;
+  top: 0.89px;
+  object-fit: cover;
+}
+
+.add-address__cactus {
+  left: 26.79px;
+  top: -6.75px;
+  object-fit: cover;
+}
+
+.add-address__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-8);
+  width: 100%;
+}
+
+/* H18 Bold */
+.add-address__title {
+  margin: 0;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--h18-size);
+  line-height: var(--h18-lh);
+  letter-spacing: var(--h18-ls);
+  color: var(--colour-text-primary);
+}
+
+/* B13 Regular, tertiary */
+.add-address__text {
+  margin: 0;
+  font-size: var(--b13-size);
+  line-height: var(--b13-lh);
+  letter-spacing: var(--b13-ls);
+  color: var(--colour-text-tertiary);
+}
+
+/* nano button · Add new address — hugs its label, 32 side padding */
+.add-address__cta .nano-btn {
+  flex: none;
+  padding: var(--space-14) var(--space-32);
+}
