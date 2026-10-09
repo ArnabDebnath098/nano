@@ -37,6 +37,20 @@ export const TOAST_EXIT_MS = 440 // EXIT_MS L2275
 // slide, no overshoot (it should land, not bounce back down)
 export const SETTLE = { y: 8, duration: 0.5, ease: 'emil.out' }
 
+// Page change — NANO's own page-to-page choreography (noon-NANO @ 4db90ae, index.html):
+//  • forward = showHome() clear (L3663–3671, authored pp:false): title lifts 8, subtitle 6,
+//    content shrinks to .96 rows 12ms apart, all 220ms on a soft ease-in — things leave, they don't snap;
+//  • back = backToAvatar() (L3561–3580): title lifts 10 quickly (160ms), subtitle 8, content
+//    drops 14 with the last rows leaving first (25ms apart), on OUT;
+//  • arriving = showInterests() build (L3540–3553): title rises 16 out of blur(6px), subtitle 10,
+//    then each row rises 16 from .95, 40ms apart. Everything that travels runs PP Move (540ms),
+//    opacity PP Fade — NANO's animate() wrapper re-times them to exactly that.
+//  • the action bar is shared between pages (NANO hands its Continue button over in place):
+//    buttons that persist never fade; only ones the new page adds rise in, 8px (L3557).
+export const PAGE_OUT = { duration: 0.22, ease: 'nano.softIn', titleY: -8, subY: -6, rowScale: 0.96, rowStagger: 0.012 }
+export const PAGE_BACK_OUT = { duration: 0.22, titleDuration: 0.16, ease: 'nano.outExit', titleY: -10, subY: -8, rowY: 14, rowStagger: 0.025 }
+export const PAGE_IN = { titleY: 16, subY: 10, blur: 6, rowY: 16, rowScale: 0.95, rowAt: 0.04, subAt: 0.02, footerY: 8 }
+
 // Blending a full-screen beat with the screen beneath (a crossfade, so on-screen in-out):
 // in over the live screen, out dissolving over the next step
 export const BLEND_IN = { duration: 0.45, ease: 'emil.inOut' }

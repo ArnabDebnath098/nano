@@ -278,7 +278,7 @@
    the value (dhm prefix) sits centred */
 /* Order limit — same surface and states as First name (TextField defaults: #f5f7fa, no
    border; selected = radius 16 + light purple border; error = red). The dirham symbol is always
-   shown in black, followed by a muted "Amount" placeholder; 16px SemiBold like the name
+   shown in black, followed by a muted "Amount" placeholder; 14px SemiBold like the name
    placeholders. */
 .rule-limit .text-field__label {
   display: none;
@@ -295,9 +295,9 @@
 
 .rule-limit .text-field__prefix,
 .rule-limit .text-field__input {
-  font-size: 16px;
+  font-size: var(--b14-size);
   line-height: 24px;
-  letter-spacing: var(--b16-ls);
+  letter-spacing: var(--b14-ls);
 }
 
 .rule-limit .text-field__input {

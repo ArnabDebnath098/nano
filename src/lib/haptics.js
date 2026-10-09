@@ -1,4 +1,5 @@
-// Haptics — ported from noon NANO (github.com/saswata2002/noon-NANO @ f137e63, index.html L1912–1983).
+// Haptics — ported from noon NANO (github.com/saswata2002/noon-NANO @ f137e63, index.html L1912–1983),
+// with every level strengthened (see `haptic` below).
 //
 // Exactly one channel plays per event:
 //  1. native iOS host — a WKWebView that registers `webkit.messageHandlers.haptic` gets a real
@@ -68,14 +69,21 @@ function play(native, iosOffsets, androidPattern) {
   }
 }
 
-// Values verbatim from NANO
+// Strengthened from NANO's values (which were too faint on iOS Safari's one fixed-strength tick):
+// every level plays more ticks (iOS) and longer pulses (Android), and native hosts get full
+// intensity. Taps on buttons (`light`) now land as firmly as NANO's `heavy`.
 export const haptic = {
-  selection: () => play(['rigid', 0.75], [0, 28], 26),
-  light: () => play(['medium', 0.85], [0, 28, 56], 38),
-  medium: () => play(['heavy', 0.85], [0, 26, 52, 78], 58),
-  heavy: () => play(['heavy', 1], [0, 25, 50, 75, 100], 85),
-  success: () => play([[0, 'success'], [150, 'heavy', 0.9]], [0, 28, 56, 150, 178, 206], [45, 60, 70]),
-  error: () => play([[0, 'error'], [220, 'heavy', 1]], [0, 28, 56, 110, 138, 166, 220, 248, 276], [60, 40, 60, 40, 70]),
+  selection: () => play(['medium', 1], [0, 25, 50], 40),
+  light: () => play(['heavy', 1], [0, 24, 48, 72], 60),
+  medium: () => play(['heavy', 1], [0, 22, 44, 66, 88], 80),
+  heavy: () => play(['heavy', 1], [0, 20, 40, 60, 80, 100, 120], 110),
+  success: () => play([[0, 'success'], [140, 'heavy', 1]], [0, 24, 48, 72, 140, 164, 188, 212], [70, 50, 90]),
+  error: () => play([[0, 'error'], [200, 'heavy', 1]], [0, 24, 48, 72, 110, 134, 158, 200, 224, 248, 272], [80, 40, 80, 40, 100]),
+  // Picker wheels (our addition): NANO's `selection` is two ticks, which iOS Safari's one fixed
+  // tick makes too faint to feel on a wheel. A detent is a 3-tick burst; the wheel coming to rest
+  // on a value is a firmer 5-tick bump. Native hosts get a full-strength rigid / medium pulse.
+  detent: () => play(['rigid', 1], [0, 25, 50], 40),
+  settle: () => play(['heavy', 1], [0, 24, 48, 72, 96], 70),
   get lastAt() {
     return lastAt
   },

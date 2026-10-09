@@ -146,12 +146,12 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Empty: DD-MM-YYYY placeholder — identical to the name placeholders: 16 SemiBold, muted.
-   (A picked date stays B14, like typed text in the name fields.) */
+/* Empty: DD-MM-YYYY placeholder — identical to the name placeholders: 14 SemiBold, muted.
+   (A picked date is B14 too, like typed text in the name fields.) */
 .child-birthday__field:not(.is-filled) .child-birthday__value {
   font-weight: var(--font-weight-semibold);
-  font-size: 16px;
-  letter-spacing: var(--b16-ls);
+  font-size: var(--b14-size);
+  letter-spacing: var(--b14-ls);
   color: var(--colour-text-muted);
 }
 

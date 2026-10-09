@@ -54,6 +54,6 @@
   pointer-events: none;
 }
 
-.lets-go__anim svg {
+.lets-go__anim canvas {
   display: block;
 }

@@ -4,7 +4,7 @@ import { ageFrom } from '../steps.js'
 import TextField from '../../../components/AddKid/TextField.jsx'
 import SquircleSurface from '../../../components/SquircleSurface/SquircleSurface.jsx'
 import BirthdayPicker from './child/BirthdayPicker.jsx'
-import { isAndroid, isNativeMobile } from '../../../lib/platform.js'
+import { isAndroid } from '../../../lib/platform.js'
 import './ChildDetails.css'
 
 const AGE_COPY = 'nano is for kids aged 7 to 18'
@@ -21,7 +21,7 @@ const ageOk = (iso) => {
 
 // Figma: Child details · Empty (57:1182) / Filled (18:14867) / Last name missing (18:15059) /
 // Age outside 7–18 (57:1926). Name (two M-Input-alt boxes), Birthday (M-Input-alt + calendar,
-// opens the date wheel sheet), Gender (two option cards with hex avatars + M-Radio).
+// opens the iOS date-wheel sheet), Gender (two option cards with hex avatars + M-Radio).
 // Continue (stacked) stays disabled until everything is valid; the A5 errors fire as the parent
 // moves on: picking a birthday outside 7–18, or moving past an empty last name, shows the red
 // toast, marks the field and replays the NANO field shake.
@@ -54,8 +54,9 @@ export default function ChildDetails() {
     showToast(`Add ${first}’s last name`)
   }
 
-  // Birthday — iOS / Android: the system date picker (a native <input type="date"> laid
-  // invisibly over the field, so a real tap lands on it). Web: the drum picker bottom sheet.
+  // Birthday — Android: the system date picker (a native <input type="date"> laid invisibly
+  // over the field, so a real tap lands on it). iOS + web: the iOS date-wheel bottom sheet
+  // (iOS Safari's own date input opens a calendar popover, not the wheel).
   // Either way the field shows the selected state while picking (`pickerOpen`).
   const valueAtOpen = useRef('')
 
@@ -159,7 +160,7 @@ export default function ChildDetails() {
           <p className="child-details__helper">We'll make sure to make it special for them.</p>
         </div>
         <div className={`child-birthday ${birthdayError ? 'is-error' : ''}`}>
-          {isNativeMobile ? (
+          {isAndroid ? (
             <div
               className={`child-birthday__field ${data.birthday ? 'is-filled' : ''} ${pickerOpen ? 'is-selected' : ''}`}
               data-shake={birthdayShake || undefined}
@@ -214,7 +215,7 @@ export default function ChildDetails() {
         </div>
       </section>
 
-      {!isNativeMobile && (
+      {!isAndroid && (
         <BirthdayPicker open={pickerOpen} value={data.birthday} onClose={() => setPickerOpen(false)} onDone={pickBirthday} />
       )}
     </div>

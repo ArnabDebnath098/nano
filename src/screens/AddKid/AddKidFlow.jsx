@@ -1,6 +1,7 @@
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { gsap, useGSAP } from '../../lib/gsap.js'
-import { BLEND_IN, BLEND_OUT, FADE, SETTLE, STAGGER, prefersReducedMotion } from '../../lib/motion.js'
+import { haptic } from '../../lib/haptics.js'
+import { BLEND_IN, BLEND_OUT, FADE, MOVE, PAGE_BACK_OUT, PAGE_IN, PAGE_OUT, STAGGER, prefersReducedMotion } from '../../lib/motion.js'
 import OnboardingBackground from '../../components/AddKid/OnboardingBackground.jsx'
 import AddKidHeader from '../../components/AddKid/AddKidHeader.jsx'
 import OnboardingHero from '../../components/AddKid/OnboardingHero.jsx'
@@ -20,11 +21,12 @@ import './AddKidFlow.css'
 //   footer  = M-StackedActionBar / M-RowActionBar with nano buttons + Home bar
 // The chrome persists across steps so motion stays continuous (Emil: one object that
 // changes, not screens swapping):
-//   • leaving: body + hero text soften (blur 2px) and fade on PP Fade — they don't travel;
-//   • arriving: content settles in place — rises 8px on a strong ease-out (no sideways slide,
-//     no overshoot), its [data-rise] rows staggered 40ms;
-//   • the footer buttons leave and settle with the page (same fade + 8px rise, just after the
-//     content rows), so the whole screen moves as one; the progress fill grows as you tap;
+//   • page change follows noon NANO (lib/motion.js PAGE_*): leaving forward, the hero title lifts
+//     8px and the content rows shrink to .96 (220ms soft ease-in); going back, the title lifts 10
+//     and the rows drop 14, last row first. Arriving, the title rises 16 out of blur(6px), then
+//     each [data-rise] row rises 16 from .95 on PP Move, 40ms apart;
+//   • the action bar is shared, as NANO hands its button over: buttons that persist never fade,
+//     only ones the new step adds rise in 8px after the rows; the progress fill grows as you tap;
 //   • full-screen beats (age reveal, education, Let's go, invite) BLEND with the chrome rather
 //     than dipping through white: entering, the beat fades in from blur(8px) over the live
 //     screen (hidden only once covered); leaving, the next step is mounted beneath at once and
@@ -74,13 +76,7 @@ export default function AddKidFlow({ onExit, initialStep }) {
       const nextStep = getStep(nextHistory.at(-1))
       const reduced = prefersReducedMotion()
       const scope = root.current
-      const targets = fromFull
-        ? scope.querySelector('[data-full-layer]:not([data-full-leaving])')
-        : [
-            scope.querySelector('[data-step-body]'),
-            ...scope.querySelectorAll('[data-hero-text]'),
-            ...scope.querySelectorAll('[data-footer-btn]'),
-          ]
+      const back = nextHistory.length < history.length
 
       if (!nextStep.fullscreen) setPendingProgress(nextStep.progress)
 
@@ -98,16 +94,36 @@ export default function AddKidFlow({ onExit, initialStep }) {
       // Out of a full-screen beat into a step: mount the step beneath now and keep the beat
       // on top (on its last frame) to dissolve over it
       if (fromFull && !nextStep.fullscreen) {
+        haptic.light() // the beat hands over (also answers a tap-to-skip, so the tap listener stays quiet)
         setLeavingFull(history.at(-1))
         commit()
         return
       }
-      gsap.to(targets, {
-        autoAlpha: 0,
-        filter: reduced ? 'none' : 'blur(2px)',
-        ...FADE,
-        onComplete: commit,
-      })
+      if (fromFull) {
+        gsap.to(scope.querySelector('[data-full-layer]:not([data-full-leaving])'), { autoAlpha: 0, ...FADE, onComplete: commit })
+        return
+      }
+      // Step → step: the page clears (NANO showHome / backToAvatar); the action bar stays
+      const body = scope.querySelector('[data-step-body]')
+      const [title, ...subs] = scope.querySelectorAll('[data-hero-text]')
+      if (reduced) {
+        gsap.to([body, title, ...subs].filter(Boolean), { autoAlpha: 0, ...FADE, onComplete: commit })
+        return
+      }
+      const rows = body.querySelectorAll('[data-rise]')
+      const content = rows.length ? rows : body
+      const tl = gsap.timeline({ onComplete: commit })
+      if (back) {
+        const { duration, titleDuration, ease, titleY, subY, rowY, rowStagger } = PAGE_BACK_OUT
+        if (title) tl.to(title, { autoAlpha: 0, y: titleY, duration: titleDuration, ease }, 0)
+        if (subs.length) tl.to(subs, { autoAlpha: 0, y: subY, duration, ease }, 0)
+        tl.to(content, { autoAlpha: 0, y: rowY, duration, ease, stagger: { each: rowStagger, from: 'end' } }, 0)
+      } else {
+        const { duration, ease, titleY, subY, rowScale, rowStagger } = PAGE_OUT
+        if (title) tl.to(title, { autoAlpha: 0, y: titleY, duration, ease }, 0)
+        if (subs.length) tl.to(subs, { autoAlpha: 0, y: subY, duration, ease }, 0)
+        tl.to(content, { autoAlpha: 0, scale: rowScale, duration, ease, stagger: rowStagger }, 0)
+      }
     },
     [history],
   )
@@ -154,6 +170,9 @@ export default function AddKidFlow({ onExit, initialStep }) {
 
       const chrome = scope.querySelector('[data-chrome]')
       if (step.fullscreen) {
+        // A firm bump as the beat lands — kept within ~1s of the tap that opened it, the window
+        // iOS Safari allows a web haptic in
+        const bump = setTimeout(() => haptic.medium(), 280)
         const layer = scope.querySelector('[data-full-layer]:not([data-full-leaving])')
         // Hide the screen beneath only once the beat covers it (`overlay` beats keep it)
         const cover = () => !step.overlay && gsap.set(chrome, { autoAlpha: 0 })
@@ -167,7 +186,7 @@ export default function AddKidFlow({ onExit, initialStep }) {
             { autoAlpha: 0, filter: 'blur(8px)' },
             { autoAlpha: 1, filter: 'blur(0px)', ...BLEND_IN, clearProps: 'filter', onComplete: cover },
           )
-        return
+        return () => clearTimeout(bump)
       }
 
       const leaving = scope.querySelector('[data-full-leaving]')
@@ -186,15 +205,13 @@ export default function AddKidFlow({ onExit, initialStep }) {
         gsap.fromTo(body, { autoAlpha: 0, x: 0 }, { autoAlpha: 1, ...FADE })
         return
       }
-      const { y, ...settle } = SETTLE
+      // NANO showInterests(): each row rises 16 from .95 on PP Move, 40ms apart, just after the title
+      const { rowY, rowScale, rowAt } = PAGE_IN
       gsap.fromTo(body, { autoAlpha: 0 }, { autoAlpha: 1, ...FADE })
       const rows = body.querySelectorAll('[data-rise]')
-      if (rows.length) {
-        gsap.fromTo(rows, { y }, { y: 0, ...settle, stagger: STAGGER })
-        gsap.fromTo(rows, { autoAlpha: 0 }, { autoAlpha: 1, ...FADE, stagger: STAGGER })
-      } else {
-        gsap.fromTo(body, { y }, { y: 0, ...settle })
-      }
+      const content = rows.length ? rows : body
+      gsap.fromTo(content, { y: rowY, scale: rowScale }, { y: 0, scale: 1, ...MOVE, delay: rowAt, stagger: STAGGER, clearProps: 'scale' })
+      if (rows.length) gsap.fromTo(rows, { autoAlpha: 0 }, { autoAlpha: 1, ...FADE, delay: rowAt, stagger: STAGGER })
     },
     { scope: root, dependencies: [id] },
   )
@@ -208,17 +225,19 @@ export default function AddKidFlow({ onExit, initialStep }) {
   useLayoutEffect(() => {
     if (!footerSettle.current || footer?.stepId !== id || step.fullscreen) return
     footerSettle.current = false
-    const btns = root.current.querySelectorAll('[data-footer-btn]')
+    // Shared action bar (NANO hands its button over in place): buttons already on screen stay;
+    // only ones this page adds rise in, after its rows
+    const btns = [...root.current.querySelectorAll('[data-footer-btn]')].filter((b) => !b.dataset.shown)
+    btns.forEach((b) => (b.dataset.shown = '1'))
     if (!btns.length) return
     gsap.killTweensOf(btns)
     if (prefersReducedMotion()) {
-      gsap.fromTo(btns, { autoAlpha: 0 }, { autoAlpha: 1, ...FADE, clearProps: 'filter' })
+      gsap.fromTo(btns, { autoAlpha: 0 }, { autoAlpha: 1, ...FADE })
       return
     }
     const rows = root.current.querySelectorAll('[data-step-body] [data-rise]').length
-    const delay = Math.min(rows, 4) * STAGGER
-    const { y, ...settle } = SETTLE
-    gsap.fromTo(btns, { y, filter: 'blur(0px)' }, { y: 0, ...settle, delay, clearProps: 'filter' })
+    const delay = PAGE_IN.rowAt + Math.min(rows, 4) * STAGGER
+    gsap.fromTo(btns, { y: PAGE_IN.footerY }, { y: 0, ...MOVE, delay })
     gsap.fromTo(btns, { autoAlpha: 0 }, { autoAlpha: 1, ...FADE, delay })
   })
 

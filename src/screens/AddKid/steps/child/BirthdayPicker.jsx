@@ -1,29 +1,30 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import BottomSheet from '../../../../components/BottomSheet/BottomSheet.jsx'
-import NanoButton from '../../../../components/AddKid/NanoButton.jsx'
 import { prefersReducedMotion } from '../../../../lib/motion.js'
 import { haptic } from '../../../../lib/haptics.js'
 import './BirthdayPicker.css'
 
-// Birthday entry — an iOS-style date wheel in the app's M-BottomSheet (Figma has no picker
-// frame in 02 · Add a Child, so this follows the iOS UIDatePicker .wheels layout with the
-// sheet's type + colour tokens). Three columns: day · month · year, 40px rows, 5 visible.
+// Birthday entry — the iOS native date wheel as a bottom sheet (Figma has no picker frame in
+// 02 · Add a Child, so this follows UIDatePicker .wheels): a Cancel · title · Done toolbar,
+// SF Pro 21 rows 34pt tall on a 216pt drum with the grey selection pill. Three columns:
+// day · month · year. Used on iOS (Safari's own date input opens a calendar popover) and web.
 // Motion: the columns are native scroll-snap lists, so flicks keep real momentum and can be
 // interrupted mid-spin (Emil: interruptible > choreographed). Each column renders as an iOS
 // drum: rows sit on a cylinder (18° apart, radius R = ROW / 18° ≈ 127px), so their position,
 // depth and rotation follow the angle from the centre — rows bunch up and turn away towards
 // the edges, and fade with cos(angle). The wheel's own `perspective` keeps the vanishing point
 // fixed at its centre while the content scrolls. Every row that lands in the band plays a
-// `selection` haptic, like UIPickerView's detents. transform/opacity only, written per frame.
+// `detent` haptic (a 3-tick burst — iOS Safari's single tick is too faint), like UIPickerView's
+// detents, and landing on a new value plays a firmer `settle` bump. transform/opacity only, written per frame.
 // Reduced motion: flat list, no tilt; snapping is instant. Keyboard steps (↑/↓) always jump —
 // never animate a keyboard action.
 // Portalled to <body>: the step body is transformed during step transitions, which would
 // otherwise trap the sheet's position: fixed inside it.
-const ROW = 40
+const ROW = 34 // UIDatePicker row height
 const ROW_DEG = 18 // angle between rows on the drum
-const RADIUS = ROW / ((ROW_DEG * Math.PI) / 180) // ≈ 127.3px, so arc length per row = ROW
-const WHEEL_H = Math.round(RADIUS * 2) // the drum's full visible height (≈ 255px)
+const RADIUS = ROW / ((ROW_DEG * Math.PI) / 180) // ≈ 108.2px, so arc length per row = ROW
+const WHEEL_H = Math.round(RADIUS * 2) // the drum's full visible height (216pt, as UIDatePicker)
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
 const daysIn = (y, m) => new Date(y, m, 0).getDate() // m is 1-based
@@ -58,13 +59,25 @@ export default function BirthdayPicker({ open, value, onClose, onDone }) {
   return createPortal(
     <BottomSheet open={open} onClose={onClose} labelledBy="birthday-picker-title">
       <div className="birthday-picker">
+        {/* iOS toolbar: Cancel · title · Done */}
         <div className="birthday-picker__head">
+          <button type="button" className="birthday-picker__action" onClick={onClose}>
+            Cancel
+          </button>
           <h2 id="birthday-picker-title" className="birthday-picker__title">
             Birthday
           </h2>
-          <p className="birthday-picker__value">
-            {pad(day)}-{pad(sel.m)}-{sel.y}
-          </p>
+          <button
+            type="button"
+            className="birthday-picker__action birthday-picker__action--done"
+            aria-describedby="birthday-picker-value"
+            onClick={() => onDone(`${sel.y}-${pad(sel.m)}-${pad(day)}`)}
+          >
+            Done
+          </button>
+          <span id="birthday-picker-value" className="birthday-picker__sr">
+            {day} {MONTHS[sel.m - 1]} {sel.y}
+          </span>
         </div>
 
         <div className="birthday-picker__wheels">
@@ -73,7 +86,6 @@ export default function BirthdayPicker({ open, value, onClose, onDone }) {
             label="Day"
             items={days}
             index={day - 1}
-            format={(d) => pad(d)}
             onChange={(i) => setSel((s) => ({ ...s, d: i + 1 }))}
             open={open}
           />
@@ -94,11 +106,6 @@ export default function BirthdayPicker({ open, value, onClose, onDone }) {
           />
         </div>
 
-        <div className="birthday-picker__actions">
-          <NanoButton variant="primary" onClick={() => onDone(`${sel.y}-${pad(sel.m)}-${pad(day)}`)}>
-            Done
-          </NanoButton>
-        </div>
       </div>
     </BottomSheet>,
     document.body,
@@ -110,6 +117,7 @@ function Wheel({ label, items, index, format = (v) => v, onChange, grow = false,
   const settle = useRef(null)
   const current = useRef(index)
   const detent = useRef(index) // last row that crossed the centre (for haptic ticks)
+  const lastTick = useRef(0)
 
   // Place every row on the drum — written straight to each row (no React state)
   const paint = () => {
@@ -140,11 +148,16 @@ function Wheel({ label, items, index, format = (v) => v, onChange, grow = false,
       row.style.transform = `translate3d(0, ${dy.toFixed(2)}px, ${dz.toFixed(2)}px) rotateX(${(-deg).toFixed(2)}deg)`
       row.style.opacity = Math.cos(a).toFixed(3)
     }
-    // Detent: a soft tick each time a new row reaches the centre band
+    // Detent: a tick each time a new row reaches the centre band. Spaced ≥ 60ms (one burst's
+    // length) so a fast spin stays a run of distinct clicks instead of smearing into nothing
     const nearest = Math.round(centre)
     if (nearest !== detent.current) {
       detent.current = nearest
-      haptic.selection()
+      const now = performance.now()
+      if (now - lastTick.current >= 60) {
+        lastTick.current = now
+        haptic.detent()
+      }
     }
   }
 
@@ -180,6 +193,7 @@ function Wheel({ label, items, index, format = (v) => v, onChange, grow = false,
       if (i !== current.current) {
         current.current = i
         onChange(i)
+        haptic.settle() // a firmer bump as the wheel lands on its new value
       }
     }, 90)
   }

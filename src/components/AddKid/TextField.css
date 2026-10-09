@@ -125,14 +125,14 @@
   justify-content: center;
 }
 
-/* Placeholder text — 16 SemiBold, muted */
+/* Placeholder text — 14 SemiBold, muted (same size as typed text) */
 .text-field.is-placeholder .text-field__label,
 .text-field.is-placeholder:focus-within .text-field__label,
 .text-field.is-placeholder.is-error .text-field__label {
   font-weight: var(--font-weight-semibold);
-  font-size: 16px;
-  line-height: 20px;
-  letter-spacing: var(--b16-ls);
+  font-size: var(--b14-size);
+  line-height: var(--b14-lh);
+  letter-spacing: var(--b14-ls);
   color: var(--colour-text-muted);
   opacity: 1;
   filter: blur(0);

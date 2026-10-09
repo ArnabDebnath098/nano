@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { gsap, useGSAP } from '../../lib/gsap.js'
-import { FADE, MOVE, POP_FROM, SETTLE, STAGGER, prefersReducedMotion } from '../../lib/motion.js'
+import { FADE, MOVE, PAGE_IN, POP_FROM, STAGGER, prefersReducedMotion } from '../../lib/motion.js'
 import HeroIllustration from './HeroIllustration.jsx'
 import './OnboardingHero.css'
 
@@ -13,8 +13,8 @@ import './OnboardingHero.css'
 //  • the incoming illustration overlaps it: the layer unblurs/fades in on PP Fade, static
 //    parts pop .9 → 1 on PP Move (staggered within 40ms total), the swoosh draws left → right;
 //    Lottie illustrations play their own entrance (Lottie.jsx starts once its DOM has loaded);
-//  • the incoming text settles up 8px on a strong ease-out (no overshoot) with a 40ms stagger,
-//    the blur hiding the crossfade.
+//  • the incoming text rises as in noon NANO's page change: title 16px out of blur(6px), subtitle
+//    10px 20ms later, on PP Move (540ms), the blur hiding the crossfade.
 // Whole swap ≈ 600ms. Interruptible: exits tween from wherever they are, and an illustration
 // that comes back mid-exit is tweened back instead of being re-created.
 // Reduced motion: no scale, blur or travel — layers and text cross-fade on PP Fade.
@@ -102,10 +102,15 @@ export default function OnboardingHero({ illustration, title, subtitle, children
         gsap.fromTo('[data-hero-text]', { autoAlpha: 0 }, { autoAlpha: 1, ...FADE, clearProps: 'filter,x,y' })
         return
       }
-      gsap.fromTo(
-        '[data-hero-text]',
-        { x: 0, y: SETTLE.y, autoAlpha: 0, filter: 'blur(4px)' },
-        { y: 0, autoAlpha: 1, filter: 'blur(0px)', duration: SETTLE.duration, ease: SETTLE.ease, stagger: STAGGER, delay: isFirst ? 0.08 : 0, clearProps: 'filter' },
+      // NANO showInterests() fadeUp: title rises 16 out of blur(6px), subtitle 10 just after, on PP Move
+      const { titleY, subY, subAt, blur } = PAGE_IN
+      const at = isFirst ? 0.08 : 0
+      gsap.utils.toArray('[data-hero-text]', root.current).forEach((el, i) =>
+        gsap.fromTo(
+          el,
+          { x: 0, y: i ? subY : titleY, autoAlpha: 0, filter: `blur(${blur}px)` },
+          { y: 0, autoAlpha: 1, filter: 'blur(0px)', ...MOVE, delay: at + (i ? subAt : 0), clearProps: 'filter' },
+        ),
       )
     },
     { scope: root, dependencies: [illustration, title, subtitle] },
