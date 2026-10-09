@@ -1,10 +1,11 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useAddKid, useStepFooter } from '../AddKidContext.js'
 import { ageFrom } from '../steps.js'
+import { preloadLottie } from '../../../lib/preloadLottie.js'
 import TextField from '../../../components/AddKid/TextField.jsx'
 import SquircleSurface from '../../../components/SquircleSurface/SquircleSurface.jsx'
 import BirthdayPicker from './child/BirthdayPicker.jsx'
-import { isAndroid } from '../../../lib/platform.js'
+import { isAndroid, isNativeMobile } from '../../../lib/platform.js'
 import './ChildDetails.css'
 
 const AGE_COPY = 'nano is for kids aged 7 to 18'
@@ -21,7 +22,7 @@ const ageOk = (iso) => {
 
 // Figma: Child details · Empty (57:1182) / Filled (18:14867) / Last name missing (18:15059) /
 // Age outside 7–18 (57:1926). Name (two M-Input-alt boxes), Birthday (M-Input-alt + calendar,
-// opens the iOS date-wheel sheet), Gender (two option cards with hex avatars + M-Radio).
+// opens the system date picker on phones), Gender (two option cards with hex avatars + M-Radio).
 // Continue (stacked) stays disabled until everything is valid; the A5 errors fire as the parent
 // moves on: picking a birthday outside 7–18, or moving past an empty last name, shows the red
 // toast, marks the field and replays the NANO field shake.
@@ -30,6 +31,9 @@ const ageOk = (iso) => {
 // age error rises 4px into place. Reduced: fades only (press scale kept).
 export default function ChildDetails() {
   const { data, update, goNext, showToast, setKeyboard } = useAddKid()
+
+  // The age-reveal beat comes next — warm its comp + images so its first frames don't hitch
+  useEffect(() => preloadLottie('age-reveal'), [])
   const [pickerOpen, setPickerOpen] = useState(false)
   const [lastError, setLastError] = useState(false)
   const [lastShake, setLastShake] = useState(0)
@@ -54,9 +58,9 @@ export default function ChildDetails() {
     showToast(`Add ${first}’s last name`)
   }
 
-  // Birthday — Android: the system date picker (a native <input type="date"> laid invisibly
-  // over the field, so a real tap lands on it). iOS + web: the iOS date-wheel bottom sheet
-  // (iOS Safari's own date input opens a calendar popover, not the wheel).
+  // Birthday — iOS / Android (Safari, Chrome or the native wrapper's WKWebView): the real system
+  // date picker (a native <input type="date"> laid invisibly over the field, so a real tap lands
+  // on it). Desktop: the HTML iOS-style wheel bottom sheet.
   // Either way the field shows the selected state while picking (`pickerOpen`).
   const valueAtOpen = useRef('')
 
@@ -160,7 +164,7 @@ export default function ChildDetails() {
           <p className="child-details__helper">We'll make sure to make it special for them.</p>
         </div>
         <div className={`child-birthday ${birthdayError ? 'is-error' : ''}`}>
-          {isAndroid ? (
+          {isNativeMobile ? (
             <div
               className={`child-birthday__field ${data.birthday ? 'is-filled' : ''} ${pickerOpen ? 'is-selected' : ''}`}
               data-shake={birthdayShake || undefined}
@@ -215,7 +219,7 @@ export default function ChildDetails() {
         </div>
       </section>
 
-      {!isAndroid && (
+      {!isNativeMobile && (
         <BirthdayPicker open={pickerOpen} value={data.birthday} onClose={() => setPickerOpen(false)} onDone={pickBirthday} />
       )}
     </div>

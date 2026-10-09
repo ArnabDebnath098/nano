@@ -106,7 +106,7 @@
 .add-kid__full.is-leaving {
   z-index: 11; /* above the beat that replaced it, if any */
   pointer-events: none;
-  will-change: opacity, transform, filter;
+  will-change: opacity, transform;
 }
 
 .add-kid__full {

@@ -3,12 +3,18 @@ import { createPortal } from 'react-dom'
 import BottomSheet from '../../../../components/BottomSheet/BottomSheet.jsx'
 import { prefersReducedMotion } from '../../../../lib/motion.js'
 import { haptic } from '../../../../lib/haptics.js'
+import NanoButton from '../../../../components/AddKid/NanoButton.jsx'
+import { ageFrom } from '../../steps.js'
 import './BirthdayPicker.css'
 
-// Birthday entry — the iOS native date wheel as a bottom sheet (Figma has no picker frame in
-// 02 · Add a Child, so this follows UIDatePicker .wheels): a Cancel · title · Done toolbar,
-// SF Pro 21 rows 34pt tall on a 216pt drum with the grey selection pill. Three columns:
-// day · month · year. Used on iOS (Safari's own date input opens a calendar popover) and web.
+// Birthday entry (desktop / web — phones open the real system picker, ChildDetails.jsx): a
+// date wheel in the app's M-BottomSheet, styled with the app's own type + tokens rather than
+// imitating iOS chrome. Head: "Birthday" + a live line with the date and the child's age, which
+// turns red with the 7–18 rule when the age is out of range (you see it while scrolling, not as
+// a toast after Done). Three columns, day · month · year, under one selection band; a full-width
+// nano Done commits. The band is a lens: a flat, bold copy of each column is clipped to it and
+// the drum underneath is masked out there, so the selected value reads crisp (as UIPickerView's
+// magnifier does) while the rest turns away on the drum.
 // Motion: the columns are native scroll-snap lists, so flicks keep real momentum and can be
 // interrupted mid-spin (Emil: interruptible > choreographed). Each column renders as an iOS
 // drum: rows sit on a cylinder (18° apart, radius R = ROW / 18° ≈ 127px), so their position,
@@ -21,10 +27,10 @@ import './BirthdayPicker.css'
 // never animate a keyboard action.
 // Portalled to <body>: the step body is transformed during step transitions, which would
 // otherwise trap the sheet's position: fixed inside it.
-const ROW = 34 // UIDatePicker row height
+const ROW = 40 // row height (a comfortable tap target)
 const ROW_DEG = 18 // angle between rows on the drum
-const RADIUS = ROW / ((ROW_DEG * Math.PI) / 180) // ≈ 108.2px, so arc length per row = ROW
-const WHEEL_H = Math.round(RADIUS * 2) // the drum's full visible height (216pt, as UIDatePicker)
+const RADIUS = ROW / ((ROW_DEG * Math.PI) / 180) // ≈ 127.3px, so arc length per row = ROW
+const WHEEL_H = Math.round(RADIUS * 2) // the drum's full visible height (≈ 255px)
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
 const daysIn = (y, m) => new Date(y, m, 0).getDate() // m is 1-based
@@ -55,29 +61,26 @@ export default function BirthdayPicker({ open, value, onClose, onDone }) {
   const maxDay = daysIn(sel.y, sel.m)
   const days = Array.from({ length: maxDay }, (_, i) => i + 1)
   const day = Math.min(sel.d, maxDay)
+  const iso = `${sel.y}-${pad(sel.m)}-${pad(day)}`
+  const age = ageFrom(iso, today)
+  const ageInRange = age !== null && age >= 7 && age <= 18
 
   return createPortal(
     <BottomSheet open={open} onClose={onClose} labelledBy="birthday-picker-title">
       <div className="birthday-picker">
-        {/* iOS toolbar: Cancel · title · Done */}
         <div className="birthday-picker__head">
-          <button type="button" className="birthday-picker__action" onClick={onClose}>
-            Cancel
-          </button>
           <h2 id="birthday-picker-title" className="birthday-picker__title">
             Birthday
           </h2>
-          <button
-            type="button"
-            className="birthday-picker__action birthday-picker__action--done"
-            aria-describedby="birthday-picker-value"
-            onClick={() => onDone(`${sel.y}-${pad(sel.m)}-${pad(day)}`)}
-          >
-            Done
-          </button>
-          <span id="birthday-picker-value" className="birthday-picker__sr">
-            {day} {MONTHS[sel.m - 1]} {sel.y}
-          </span>
+          <p className={`birthday-picker__value ${ageInRange ? '' : 'is-error'}`} aria-live="polite">
+            {ageInRange ? (
+              <>
+                {day} {MONTHS[sel.m - 1]} {sel.y} · {age} {age === 1 ? 'year' : 'years'} old
+              </>
+            ) : (
+              'nano is for kids aged 7 to 18'
+            )}
+          </p>
         </div>
 
         <div className="birthday-picker__wheels">
@@ -106,6 +109,11 @@ export default function BirthdayPicker({ open, value, onClose, onDone }) {
           />
         </div>
 
+        <div className="birthday-picker__actions">
+          <NanoButton variant="primary" onClick={() => onDone(iso)}>
+            Done
+          </NanoButton>
+        </div>
       </div>
     </BottomSheet>,
     document.body,
@@ -114,6 +122,7 @@ export default function BirthdayPicker({ open, value, onClose, onDone }) {
 
 function Wheel({ label, items, index, format = (v) => v, onChange, grow = false, open }) {
   const list = useRef(null)
+  const lens = useRef(null)
   const settle = useRef(null)
   const current = useRef(index)
   const detent = useRef(index) // last row that crossed the centre (for haptic ticks)
@@ -125,6 +134,8 @@ function Wheel({ label, items, index, format = (v) => v, onChange, grow = false,
     if (!el) return
     const reduced = prefersReducedMotion()
     const centre = el.scrollTop / ROW
+    // The lens copy is flat and just follows the scroll (row `centre` sits in the band)
+    if (lens.current) lens.current.style.transform = `translate3d(0, ${(-el.scrollTop).toFixed(2)}px, 0)`
     for (const row of el.children) {
       const i = Number(row.dataset.i)
       if (Number.isNaN(i)) continue
@@ -204,35 +215,46 @@ function Wheel({ label, items, index, format = (v) => v, onChange, grow = false,
   }
 
   return (
-    <div
-      ref={list}
-      className={`birthday-wheel ${grow ? 'birthday-wheel--grow' : ''}`}
-      role="listbox"
-      aria-label={label}
-      tabIndex={0}
-      onScroll={onScroll}
-      onKeyDown={(e) => {
-        if (e.key === 'ArrowDown') step(1)
-        else if (e.key === 'ArrowUp') step(-1)
-        else return
-        e.preventDefault()
-      }}
-      style={{ '--row': `${ROW}px`, '--wheel-h': `${WHEEL_H}px` }}
-    >
-      <div className="birthday-wheel__spacer" aria-hidden="true" />
-      {items.map((item, i) => (
-        <div
-          key={item}
-          data-i={i}
-          role="option"
-          aria-selected={i === index}
-          className="birthday-wheel__row"
-          onClick={() => list.current?.scrollTo({ top: i * ROW, behavior: glide() })}
-        >
-          {format(item)}
+    <div className={`birthday-wheel-col ${grow ? 'birthday-wheel-col--grow' : ''}`} style={{ '--row': `${ROW}px`, '--wheel-h': `${WHEEL_H}px` }}>
+      <div
+        ref={list}
+        className="birthday-wheel"
+        role="listbox"
+        aria-label={label}
+        tabIndex={0}
+        onScroll={onScroll}
+        onKeyDown={(e) => {
+          if (e.key === 'ArrowDown') step(1)
+          else if (e.key === 'ArrowUp') step(-1)
+          else return
+          e.preventDefault()
+        }}
+      >
+        <div className="birthday-wheel__spacer" aria-hidden="true" />
+        {items.map((item, i) => (
+          <div
+            key={item}
+            data-i={i}
+            role="option"
+            aria-selected={i === index}
+            className="birthday-wheel__row"
+            onClick={() => list.current?.scrollTo({ top: i * ROW, behavior: glide() })}
+          >
+            {format(item)}
+          </div>
+        ))}
+        <div className="birthday-wheel__spacer" aria-hidden="true" />
+      </div>
+      {/* Lens: the selected value, flat and bold, clipped to the band */}
+      <div className="birthday-wheel__lens" aria-hidden="true">
+        <div ref={lens} className="birthday-wheel__lens-track">
+          {items.map((item) => (
+            <div key={item} className="birthday-wheel__lens-row">
+              {format(item)}
+            </div>
+          ))}
         </div>
-      ))}
-      <div className="birthday-wheel__spacer" aria-hidden="true" />
+      </div>
     </div>
   )
 }

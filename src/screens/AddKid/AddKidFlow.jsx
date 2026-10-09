@@ -180,11 +180,13 @@ export default function AddKidFlow({ onExit, initialStep }) {
         // backdrop-filter from seeing the screen beneath
         if (step.overlay) gsap.set(layer, { autoAlpha: 1, clearProps: 'filter' })
         else if (reduced) gsap.fromTo(layer, { autoAlpha: 0 }, { autoAlpha: 1, ...FADE, onComplete: cover })
+        // Opacity + a slight settle, no blur: a filter on a full-screen layer whose Lottie is
+        // playing re-blurs every frame — the main stutter on iOS Safari / Android
         else
           gsap.fromTo(
             layer,
-            { autoAlpha: 0, filter: 'blur(8px)' },
-            { autoAlpha: 1, filter: 'blur(0px)', ...BLEND_IN, clearProps: 'filter', onComplete: cover },
+            { autoAlpha: 0, scale: 1.03 },
+            { autoAlpha: 1, scale: 1, ...BLEND_IN, clearProps: 'transform', onComplete: cover },
           )
         return () => clearTimeout(bump)
       }
@@ -195,7 +197,7 @@ export default function AddKidFlow({ onExit, initialStep }) {
         gsap.set(chrome, { autoAlpha: 1 })
         const drop = () => setLeavingFull(null)
         if (reduced) gsap.to(leaving, { autoAlpha: 0, ...FADE, onComplete: drop })
-        else gsap.to(leaving, { autoAlpha: 0, scale: 1.04, filter: 'blur(8px)', ...BLEND_OUT, onComplete: drop })
+        else gsap.to(leaving, { autoAlpha: 0, scale: 1.04, ...BLEND_OUT, onComplete: drop }) // no blur: see arrival
       } else {
         gsap.to(chrome, { autoAlpha: 1, ...FADE })
       }

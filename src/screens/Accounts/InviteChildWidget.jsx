@@ -1,4 +1,6 @@
+import { useRef } from 'react'
 import NanoBannerBackground from './NanoBannerBackground.jsx'
+import { useSquircleClip } from '../../lib/useSquircleClip.js'
 import './InviteChildWidget.css'
 
 // Figma: Widget (2:8276) — "Kids can now shop, save & earn" + M-NeutralButton "Invite your child".
@@ -32,8 +34,12 @@ function Layer({ id, src, w, h }) {
 }
 
 export default function InviteChildWidget({ onInviteChild }) {
+  // Radius 16 with Figma's 60% corner smoothing
+  const ref = useRef(null)
+  useSquircleClip(ref)
+
   return (
-    <section className="icw" aria-labelledby="icw-title">
+    <section ref={ref} className="icw" aria-labelledby="icw-title">
       {/* Background art: nano banner · background (2:10508) replaces 2:8277's illustration group */}
       <NanoBannerBackground />
 

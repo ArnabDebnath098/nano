@@ -5,10 +5,26 @@ import { prefersReducedMotion } from '../../lib/motion.js'
 // Thin lottie-web wrapper. Canvas renderer by default: the image-led comps here re-layout an
 // SVG tree every frame under the SVG renderer, which stutters on iOS Safari / Android WebView;
 // canvas just blits bitmaps. Some comps use what lottie-web's canvas renderer draws wrong —
-// gradient fills with alpha stops (age-reveal's rays), matte strokes (parent-education) — so
-// they stay on SVG (verified frame-by-frame against SVG). Canvas can't draw AE effects either:
-// bake them into the images, as parent-education's mascot drop shadow is.
-const SVG_ONLY = new Set(['age-reveal', 'parent-education'])
+// matte strokes (parent-education) — so those stay on SVG (verified frame-by-frame against
+// SVG). Canvas can't draw AE effects or gradient fills with alpha stops either: bake them into
+// images, as parent-education's mascot shadow and age-reveal's rays/stars/plate are.
+const SVG_ONLY = new Set(['parent-education'])
+
+// Decode every image of a loaded comp before its first played frame. lottie-web only waits
+// for `load`; the decode itself then happens on the main thread on first draw, which on a
+// phone is a visible hitch right as the animation starts. Capped so a slow image never stalls.
+const DECODE_CAP_MS = 400
+function decodeImages(a) {
+  const base = a.path ?? ''
+  const jobs = (a.animationData?.assets ?? [])
+    .filter((as) => as.p && !as.layers && as.e !== 1)
+    .map((as) => {
+      const img = new Image()
+      img.src = base + (as.u ?? '') + as.p
+      return img.decode?.().catch(() => {})
+    })
+  return Promise.race([Promise.all(jobs), new Promise((ok) => setTimeout(ok, DECODE_CAP_MS))])
+}
 
 // Files live in /public/lottie/add-kid/<name>/animation.json with their images/ beside them.
 //   name      — folder under /lottie/add-kid
@@ -62,12 +78,18 @@ const Lottie = forwardRef(function Lottie(
     const a = anim.current
     if (!a) return
     let timer
+    let cancelled = false
     const start = () => {
       if (prefersReducedMotion()) {
         a.goToAndStop(a.totalFrames - 1, true)
         completeRef.current?.()
       } else if (playing) {
-        timer = setTimeout(() => a.goToAndPlay(0, true), delay)
+        a.goToAndStop(0, true)
+        const t0 = performance.now()
+        decodeImages(a).then(() => {
+          if (cancelled) return
+          timer = setTimeout(() => a.goToAndPlay(0, true), Math.max(0, delay - (performance.now() - t0)))
+        })
       } else {
         a.goToAndStop(0, true)
       }
@@ -77,6 +99,7 @@ const Lottie = forwardRef(function Lottie(
     if (a.isLoaded) start()
     else off = a.addEventListener('DOMLoaded', start)
     return () => {
+      cancelled = true
       clearTimeout(timer)
       if (anim.current === a) off?.()
     }

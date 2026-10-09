@@ -1,7 +1,8 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { gsap, useGSAP } from '../../../lib/gsap.js'
 import { FADE, MOVE, STAGGER, prefersReducedMotion } from '../../../lib/motion.js'
 import { useAddKid, useStepFooter } from '../AddKidContext.js'
+import { preloadLottie } from '../../../lib/preloadLottie.js'
 import NanoButton from '../../../components/AddKid/NanoButton.jsx'
 import { NEW_ADDRESS, savedAddresses } from '../../../data/addKid.js'
 import AddressCard from './address/AddressCard.jsx'
@@ -20,6 +21,9 @@ const ASSETS = '/figma/add-kid/address'
 // Selection motion lives in AddressCard.
 export default function AddAddress() {
   const { data, update, goNext, goBack, fillName } = useAddKid()
+
+  // The lets-go beat comes next — warm its comp + images so its first frames don't hitch
+  useEffect(() => preloadLottie('lets-go'), [])
   const root = useRef(null)
   const [addresses, setAddresses] = useState(savedAddresses)
   const [added, setAdded] = useState(false)

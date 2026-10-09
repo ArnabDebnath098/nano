@@ -34,7 +34,7 @@ const EASE_OUT_CSS = 'cubic-bezier(0.23, 1, 0.32, 1)' // WAAPI twin of var(--eas
 export default function EmailId() {
   const { data, update, goNext, goBack, goTo, showToast, fillName, setKeyboard } = useAddKid()
 
-  // The parent-education beat comes next — fetch its 578 KB comp while this step is open
+  // The parent-education beat comes next — warm its comp + images while this step is open
   useEffect(() => preloadLottie('parent-education'), [])
   const [email, setEmail] = useState(data.email ?? '')
   const [error, setError] = useState(false)

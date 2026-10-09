@@ -6,103 +6,74 @@
   background: var(--colour-surface-primary);
 }
 
-/* iOS toolbar: Cancel (regular) · title (semibold) · Done (semibold), system blue, 17pt */
-.birthday-picker {
-  --ios-blue: #007aff;
-  --ios-font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro', system-ui, sans-serif;
-}
-
+/* Head: title + live date / age line */
 .birthday-picker__head {
-  position: relative;
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  min-height: 52px;
-  padding: 0 var(--space-8);
-  border-bottom: 0.5px solid rgba(60, 60, 67, 0.29);
-  font-family: var(--ios-font);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-20) var(--space-16) var(--space-4);
 }
 
 .birthday-picker__title {
   margin: 0;
-  font-family: inherit;
-  font-weight: 600;
-  font-size: 17px;
-  line-height: 22px;
-  letter-spacing: -0.43px;
-  color: #000;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--h18-size);
+  line-height: var(--h18-lh);
+  letter-spacing: var(--h18-ls);
+  color: var(--colour-text-primary);
 }
 
-.birthday-picker__action {
-  justify-self: start;
-  min-height: 44px;
-  padding: 0 var(--space-8);
-  border: 0;
-  background: none;
-  font-family: inherit;
-  font-weight: 400;
-  font-size: 17px;
-  line-height: 22px;
-  letter-spacing: -0.43px;
-  color: var(--ios-blue);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: opacity var(--pp-fade-ms, 200ms) ease;
+.birthday-picker__value {
+  margin: 0;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--b14-size);
+  line-height: var(--b14-lh);
+  letter-spacing: var(--b14-ls);
+  font-variant-numeric: tabular-nums;
+  color: var(--colour-text-tertiary);
+  transition: color var(--pp-fade-ms, 200ms) ease;
 }
 
-.birthday-picker__action:active {
-  opacity: 0.3;
-  transition-duration: 0ms;
+.birthday-picker__value.is-error {
+  color: var(--colour-text-error);
 }
 
-.birthday-picker__action--done {
-  justify-self: end;
-  font-weight: 600;
-}
-
-.birthday-picker__action:focus-visible {
-  outline: 2px solid var(--ios-blue);
-  outline-offset: -2px;
-  border-radius: 8px;
-}
-
-.birthday-picker__sr {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
-/* Three wheels over one centre band, faded top / bottom like UIDatePicker */
+/* Columns over one selection band */
 .birthday-picker__wheels {
   position: relative;
   display: flex;
   gap: var(--space-4);
-  margin: var(--space-8) 0 var(--space-16);
   padding: 0 var(--space-16);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 22%, #000 78%, transparent 100%);
-  mask-image: linear-gradient(to bottom, transparent 0, #000 22%, #000 78%, transparent 100%);
 }
 
 .birthday-picker__band {
   position: absolute;
   top: 50%;
-  left: var(--space-8);
-  right: var(--space-8);
-  height: 34px;
+  left: var(--space-12);
+  right: var(--space-12);
+  height: 40px;
   translate: 0 -50%;
-  border-radius: 8px;
-  background: rgba(118, 118, 128, 0.12); /* iOS tertiarySystemFill */
+  border-radius: var(--radius-12, 12px);
+  background: var(--colour-surface-tertiary);
   pointer-events: none;
 }
 
-/* Each column is a drum: perspective on the scroll container keeps the vanishing point fixed
-   at the wheel's centre while its content scrolls (rows are placed by BirthdayPicker.jsx) */
-.birthday-wheel {
+.birthday-wheel-col {
   position: relative;
-  flex: 0 0 72px;
+  flex: 0 0 64px;
+}
+
+.birthday-wheel-col--grow {
+  flex: 1 1 0;
+}
+
+/* Each column is a drum: perspective on the scroll container keeps the vanishing point fixed
+   at the wheel's centre while its content scrolls (rows are placed by BirthdayPicker.jsx).
+   The mask fades the drum out top and bottom and cuts it out of the band, where the lens
+   shows the flat, bold copy instead. */
+.birthday-wheel {
+  --hole: calc(var(--row) / 2);
+  position: relative;
   height: var(--wheel-h);
   perspective: 700px;
   perspective-origin: 50% 50%;
@@ -112,18 +83,28 @@
   scrollbar-width: none;
   outline: none;
   -webkit-tap-highlight-color: transparent;
+  --wheel-mask: linear-gradient(
+    to bottom,
+    transparent 0,
+    rgba(0, 0, 0, 0.35) 12%,
+    #000 32%,
+    #000 calc(50% - var(--hole)),
+    transparent calc(50% - var(--hole)),
+    transparent calc(50% + var(--hole)),
+    #000 calc(50% + var(--hole)),
+    #000 68%,
+    rgba(0, 0, 0, 0.35) 88%,
+    transparent 100%
+  );
+  -webkit-mask-image: var(--wheel-mask);
+  mask-image: var(--wheel-mask);
 }
 
 .birthday-wheel::-webkit-scrollbar {
   display: none;
 }
 
-.birthday-wheel--grow {
-  flex: 1 1 0;
-}
-
-.birthday-wheel:focus-visible {
-  border-radius: var(--radius-8);
+.birthday-wheel:focus-visible + .birthday-wheel__lens {
   box-shadow: inset 0 0 0 2px var(--colour-primary);
 }
 
@@ -131,21 +112,51 @@
   height: calc((var(--wheel-h) - var(--row)) / 2);
 }
 
-.birthday-wheel__row {
+.birthday-wheel__row,
+.birthday-wheel__lens-row {
   display: flex;
   align-items: center;
   justify-content: center;
   height: var(--row);
-  scroll-snap-align: center;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro', system-ui, sans-serif;
-  font-weight: 400;
-  font-size: 21px;
-  line-height: 25px;
-  letter-spacing: 0.35px;
+  font-size: var(--b16-size);
+  line-height: var(--b16-lh);
+  letter-spacing: var(--b16-ls);
   font-variant-numeric: tabular-nums;
-  color: #000;
-  cursor: pointer;
+  white-space: nowrap;
   user-select: none;
+}
+
+.birthday-wheel__row {
+  scroll-snap-align: center;
+  font-weight: var(--font-weight-medium);
+  color: var(--colour-text-tertiary);
+  cursor: pointer;
   backface-visibility: hidden;
   will-change: transform, opacity;
+}
+
+/* Lens: a band-sized window onto a flat copy of the column, moved with the scroll */
+.birthday-wheel__lens {
+  position: absolute;
+  top: calc(50% - var(--row) / 2);
+  left: 0;
+  right: 0;
+  height: var(--row);
+  overflow: hidden;
+  border-radius: var(--radius-8);
+  pointer-events: none;
+}
+
+.birthday-wheel__lens-track {
+  will-change: transform;
+}
+
+.birthday-wheel__lens-row {
+  font-weight: var(--font-weight-semibold);
+  color: var(--colour-text-primary);
+}
+
+.birthday-picker__actions {
+  display: flex;
+  padding: var(--space-12) var(--space-16);
 }

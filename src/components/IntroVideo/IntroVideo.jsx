@@ -3,6 +3,7 @@ import { gsap, useGSAP } from '../../lib/gsap.js'
 import { FADE, prefersReducedMotion } from '../../lib/motion.js'
 import { lockScroll } from '../../lib/scrollLock.js'
 import { haptic } from '../../lib/haptics.js'
+import { isNativeMobile } from '../../lib/platform.js'
 import './IntroVideo.css'
 
 
@@ -97,9 +98,13 @@ export default function IntroVideo({ open, src, cues = NO_CUES, onDone }) {
   return (
     <div ref={root} className="intro-video" role="dialog" aria-modal="true" aria-label="Introducing noon nano">
       <video ref={video} className="intro-video__media" src={src} playsInline preload="auto" />
-      <button type="button" className="intro-video__skip" onClick={() => doneRef.current?.()}>
-        Skip
-      </button>
+      {/* 56px header right under the status bar (the device safe area on a phone, the
+          62px mock status bar on desktop), Skip centred in it on the right */}
+      <div className={`intro-video__header${isNativeMobile ? ' intro-video__header--native' : ''}`}>
+        <button type="button" className="intro-video__skip" onClick={() => doneRef.current?.()}>
+          Skip
+        </button>
+      </div>
     </div>
   )
 }

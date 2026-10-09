@@ -22,21 +22,26 @@ export default function SquircleSurface({ radius, smoothing = 0.6, strokeWidth =
     const shape = { r: null }
     let tween = null
 
-    const read = () => {
+    // Layout size, never the painted one: getBoundingClientRect() includes transforms, so a
+    // parent caught mid-animation (e.g. a page row rising in from scale .95) would get a
+    // shrunken path that no resize ever corrects. ResizeObserver's border box is fractional and
+    // transform-free; offsetWidth (also transform-free) covers the first, pre-observer read.
+    const read = (entry) => {
       const cs = getComputedStyle(parent)
-      const box = parent.getBoundingClientRect() // fractional (offsetWidth rounds)
+      const bb = entry?.borderBoxSize?.[0]
       return {
         // border-box size; absolute children start inside the border, so offset by it
-        w: box.width,
-        h: box.height,
+        w: bb ? bb.inlineSize : parent.offsetWidth,
+        h: bb ? bb.blockSize : parent.offsetHeight,
         x: -(parseFloat(cs.borderLeftWidth) || 0),
         y: -(parseFloat(cs.borderTopWidth) || 0),
         r: radius ?? (parseFloat(cs.borderTopLeftRadius) || 0),
       }
     }
 
-    const measure = () => {
-      const next = read()
+    let last = null // latest ResizeObserver entry, so focus re-reads keep the fractional size
+    const measure = (entry) => {
+      const next = read(entry ?? last)
       if (shape.r === null || shape.r === next.r || prefersReducedMotion()) {
         tween?.kill()
         shape.r = next.r
@@ -53,10 +58,13 @@ export default function SquircleSurface({ radius, smoothing = 0.6, strokeWidth =
     }
 
     measure()
-    const ro = new ResizeObserver(measure)
+    const ro = new ResizeObserver(([entry]) => {
+      last = entry
+      measure(entry)
+    })
     ro.observe(parent)
     // :focus-within can change the radius without changing size; re-read after styles apply
-    const onFocusChange = () => requestAnimationFrame(measure)
+    const onFocusChange = () => requestAnimationFrame(() => measure())
     parent.addEventListener('focusin', onFocusChange)
     parent.addEventListener('focusout', onFocusChange)
     return () => {

@@ -22,12 +22,29 @@
   object-fit: cover;
 }
 
+/* Header: 56px tall, right under the status bar — the 62px mock one on desktop (Figma
+   306:30909), the device's safe area on a phone */
+.intro-video__header {
+  position: absolute;
+  top: 62px;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 56px;
+  padding: 0 var(--space-16);
+  pointer-events: none;
+}
+
+.intro-video__header--native {
+  top: env(safe-area-inset-top);
+}
+
 /* Skip — frosted dark-purple glass, like the header buttons */
 .intro-video__skip {
-  position: absolute;
-  top: calc(env(safe-area-inset-top) + 66px);
-  right: var(--space-16);
   height: 32px;
+  pointer-events: auto;
   padding: 0 var(--space-14);
   border: 1px solid rgba(255, 255, 255, 0.56);
   border-radius: var(--radius-pill);
