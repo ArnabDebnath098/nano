@@ -2,6 +2,7 @@ import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { gsap, useGSAP } from '../../lib/gsap.js'
 import { haptic } from '../../lib/haptics.js'
 import { requestMotionPermission } from '../../lib/motionPermission.js'
+import { useKeyboardViewport } from '../../lib/useKeyboardViewport.js'
 import { BLEND_IN, BLEND_OUT, FADE, MOVE, PAGE_BACK_OUT, PAGE_IN, PAGE_OUT, STAGGER, prefersReducedMotion } from '../../lib/motion.js'
 import OnboardingBackground from '../../components/AddKid/OnboardingBackground.jsx'
 import AddKidHeader from '../../components/AddKid/AddKidHeader.jsx'
@@ -278,6 +279,23 @@ export default function AddKidFlow({ onExit, onComplete, initialStep }) {
 
   // Scrolled state: hero Default → Compact, scrubbed with the scroll
   useCollapsingHero(scroller, head, [lastChromeId, hero.illustration, hero.title, hero.subtitle, data.firstName])
+  // Phone keyboard up: the flow tracks the visible area, so the head stays pinned at the top, the
+  // footer rides on the keyboard (without its home-bar strip), and the focused field is scrolled
+  // into the band between the compact head and the footer
+  const [phoneKeyboard, setPhoneKeyboard] = useState(false)
+  useKeyboardViewport(root, (up, field) => {
+    setPhoneKeyboard(up)
+    if (!up) return
+    requestAnimationFrame(() => {
+      const s = scroller.current
+      const top = root.current?.querySelector('[data-scroll-fade]')?.getBoundingClientRect().top ?? 0
+      const bottom = root.current?.querySelector('.add-kid__footer')?.getBoundingClientRect().top ?? s.clientHeight
+      const r = (field.closest('.text-field__field') ?? field).getBoundingClientRect() // the whole field box
+      const gap = 8
+      if (r.bottom > bottom - gap) s.scrollBy({ top: r.bottom - (bottom - gap) })
+      else if (r.top < top + gap) s.scrollBy({ top: r.top - (top + gap) })
+    })
+  })
 
   return (
     <AddKidContext.Provider value={ctx}>
@@ -307,7 +325,7 @@ export default function AddKidFlow({ onExit, onComplete, initialStep }) {
 
           {footer && !footer.hidden && (
             <div className={`add-kid__footer ${keyboard ? 'has-keyboard' : ''}`} style={{ '--kb-height': `${kbHeight}px` }}>
-              <ActionBar layout={footer.layout ?? 'row'} top={footer.top} homeBar={!keyboard}>
+              <ActionBar layout={footer.layout ?? 'row'} top={footer.top} homeBar={!keyboard && !phoneKeyboard}>
                 {footer.secondary && (
                   <NanoButton
                     variant="secondary"
