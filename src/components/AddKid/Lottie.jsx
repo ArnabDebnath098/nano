@@ -93,9 +93,7 @@ const Lottie = forwardRef(function Lottie(
     }
     a.addEventListener('enterFrame', onFrame)
     return () => {
-      a.removeEventListener('complete', done)
-      a.removeEventListener('enterFrame', onFrame)
-      a.destroy()
+      a.destroy() // drops its listeners too
       anim.current = null
     }
   }, [name, loop, fit, renderer])

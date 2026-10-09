@@ -3,6 +3,7 @@ import { useAddKid, useStepFooter } from '../AddKidContext.js'
 import TextField from '../../../components/AddKid/TextField.jsx'
 import { KEYBOARD_HEIGHT } from '../../../components/AddKid/DrawnKeyboard.jsx'
 import { prefersReducedMotion } from '../../../lib/motion.js'
+import { preloadLottie } from '../../../lib/preloadLottie.js'
 import RuleRadio from './rules/RuleRadio.jsx'
 import RuleCheckbox from './rules/RuleCheckbox.jsx'
 import './SetRules.css'
@@ -21,6 +22,8 @@ const FOOTER_CLEARANCE = 132 // the row action bar + home bar over the scroller 
 // until a mode is picked; a manual limit that's empty or 0 → red toast + field error + shake.
 export default function SetRules() {
   const { data, update, goNext, goBack, showToast, keyboard, fillName } = useAddKid()
+  // Add address comes next — warm its pin Lottie so its hero never lands empty (NANO preloadHome)
+  useEffect(() => preloadLottie('address'), [])
   const rules = data.rules ?? {}
   const mode = rules.mode ?? null
   const approve = rules.approve ?? 'limit'

@@ -37,6 +37,34 @@ import './AddKidFlow.css'
 // Reduced motion: no travel or blur, PP Fade only.
 const FIELD_GAP = 8 // keyboard up: space kept between the focused field and the footer
 
+// A frozen, inert copy of an element at its current on-screen spot, inside `layer` (an absolute,
+// full-size layer over the flow). The page exit plays on these copies so the next step can mount
+// underneath straight away. Copies keep typed field values; ids are dropped (no duplicates).
+function makeGhost(el, layer, z) {
+  const base = layer.getBoundingClientRect()
+  const r = el.getBoundingClientRect()
+  const g = el.cloneNode(true)
+  const src = el.querySelectorAll('input, textarea')
+  g.querySelectorAll('input, textarea').forEach((f, i) => f.setAttribute('value', src[i]?.value ?? ''))
+  for (const n of [g, ...g.querySelectorAll('[id]')]) n.removeAttribute('id')
+  g.removeAttribute('data-step-body')
+  g.removeAttribute('data-hero-text')
+  g.setAttribute('aria-hidden', 'true')
+  g.inert = true
+  Object.assign(g.style, {
+    position: 'absolute',
+    left: `${r.left - base.left}px`,
+    top: `${r.top - base.top}px`,
+    width: `${el.offsetWidth}px`,
+    height: `${el.offsetHeight}px`,
+    margin: '0',
+    zIndex: String(z),
+    pointerEvents: 'none',
+  })
+  layer.appendChild(g)
+  return g
+}
+
 export default function AddKidFlow({ onExit, onComplete, initialStep }) {
   const root = useRef(null)
   const scroller = useRef(null)
@@ -122,25 +150,33 @@ export default function AddKidFlow({ onExit, onComplete, initialStep }) {
       }
       // Step → step: the page clears (NANO showHome / backToAvatar); the action bar stays
       const body = scope.querySelector('[data-step-body]')
-      const [title, ...subs] = scope.querySelectorAll('[data-hero-text]')
+      const texts = [...scope.querySelectorAll('[data-hero-text]')]
       if (reduced) {
-        gsap.to([body, title, ...subs].filter(Boolean), { autoAlpha: 0, ...FADE, onComplete: commit })
+        gsap.to([body, ...texts].filter(Boolean), { autoAlpha: 0, ...FADE, onComplete: commit })
         return
       }
-      const rows = body.querySelectorAll('[data-rise]')
-      const content = rows.length ? rows : body
-      const tl = gsap.timeline({ onComplete: commit })
+      // NANO overlaps the pages — the next one starts building while this one is still leaving.
+      // So freeze a copy of the outgoing content where it is, mount the next step underneath at
+      // once, and play the exit on the copy while the new page rises in (PAGE_IN.at later).
+      const layer = scope.querySelector('[data-ghosts]')
+      const ghostBody = body && makeGhost(body, layer, 2)
+      const [title, ...subs] = texts.map((t) => makeGhost(t, layer, 4))
+      const rows = ghostBody ? ghostBody.querySelectorAll('[data-rise]') : []
+      const content = rows.length ? rows : ghostBody
+      const clear = () => layer.replaceChildren()
+      const tl = gsap.timeline({ onComplete: clear })
       if (back) {
         const { duration, titleDuration, ease, titleY, subY, rowY, rowStagger } = PAGE_BACK_OUT
         if (title) tl.to(title, { autoAlpha: 0, y: titleY, duration: titleDuration, ease }, 0)
         if (subs.length) tl.to(subs, { autoAlpha: 0, y: subY, duration, ease }, 0)
-        tl.to(content, { autoAlpha: 0, y: rowY, duration, ease, stagger: { each: rowStagger, from: 'end' } }, 0)
+        if (content) tl.to(content, { autoAlpha: 0, y: rowY, duration, ease, stagger: { each: rowStagger, from: 'end' } }, 0)
       } else {
         const { duration, ease, titleY, subY, rowScale, rowStagger } = PAGE_OUT
         if (title) tl.to(title, { autoAlpha: 0, y: titleY, duration, ease }, 0)
         if (subs.length) tl.to(subs, { autoAlpha: 0, y: subY, duration, ease }, 0)
-        tl.to(content, { autoAlpha: 0, scale: rowScale, duration, ease, stagger: rowStagger }, 0)
+        if (content) tl.to(content, { autoAlpha: 0, scale: rowScale, duration, ease, stagger: rowStagger }, 0)
       }
+      commit()
     },
     [history],
   )
@@ -232,12 +268,12 @@ export default function AddKidFlow({ onExit, onComplete, initialStep }) {
         return
       }
       // NANO showInterests(): each row rises 16 from .95 on PP Move, 40ms apart, just after the title
-      const { rowY, rowScale, rowAt } = PAGE_IN
-      gsap.fromTo(body, { autoAlpha: 0 }, { autoAlpha: 1, ...FADE })
+      const { rowY, rowScale, rowAt, at } = PAGE_IN
+      gsap.fromTo(body, { autoAlpha: 0 }, { autoAlpha: 1, ...FADE, delay: at })
       const rows = body.querySelectorAll('[data-rise]')
       const content = rows.length ? rows : body
-      gsap.fromTo(content, { y: rowY, scale: rowScale }, { y: 0, scale: 1, ...MOVE, delay: rowAt, stagger: STAGGER, clearProps: 'scale' })
-      if (rows.length) gsap.fromTo(rows, { autoAlpha: 0 }, { autoAlpha: 1, ...FADE, delay: rowAt, stagger: STAGGER })
+      gsap.fromTo(content, { y: rowY, scale: rowScale }, { y: 0, scale: 1, ...MOVE, delay: at + rowAt, stagger: STAGGER, clearProps: 'scale' })
+      if (rows.length) gsap.fromTo(rows, { autoAlpha: 0 }, { autoAlpha: 1, ...FADE, delay: at + rowAt, stagger: STAGGER })
     },
     { scope: root, dependencies: [id] },
   )
@@ -262,7 +298,7 @@ export default function AddKidFlow({ onExit, onComplete, initialStep }) {
       return
     }
     const rows = root.current.querySelectorAll('[data-step-body] [data-rise]').length
-    const delay = PAGE_IN.rowAt + Math.min(rows, 4) * STAGGER
+    const delay = PAGE_IN.at + PAGE_IN.rowAt + Math.min(rows, 4) * STAGGER
     gsap.fromTo(btns, { y: PAGE_IN.footerY }, { y: 0, ...MOVE, delay })
     gsap.fromTo(btns, { autoAlpha: 0 }, { autoAlpha: 1, ...FADE, delay })
   })
@@ -325,6 +361,9 @@ export default function AddKidFlow({ onExit, onComplete, initialStep }) {
               <Body />
             </main>
           </div>
+
+          {/* Outgoing page copies, exiting over the next step (see transition) */}
+          <div className="add-kid__ghosts" data-ghosts aria-hidden="true" />
 
           {footer && !footer.hidden && (
             <div className={`add-kid__footer ${keyboard ? 'has-keyboard' : ''}`} style={{ '--kb-height': `${kbHeight}px` }}>

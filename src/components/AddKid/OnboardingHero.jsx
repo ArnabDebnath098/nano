@@ -105,7 +105,7 @@ export default function OnboardingHero({ illustration, title, subtitle, children
       }
       // NANO showInterests() fadeUp: title rises 16 out of blur(6px), subtitle 10 just after, on PP Move
       const { titleY, subY, subAt, blur } = PAGE_IN
-      const at = isFirst ? 0.08 : 0
+      const at = isFirst ? 0.08 : PAGE_IN.at // after the outgoing title has started lifting away
       gsap.utils.toArray('[data-hero-text]', root.current).forEach((el, i) =>
         gsap.fromTo(
           el,

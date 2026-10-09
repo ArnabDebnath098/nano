@@ -1,9 +1,10 @@
-/* nano banner · background (2:10508): fills its parent, top-left aligned, clipped.
-   Image scales to the full height; base fill covers any extra width. */
+/* nano banner · background (2:10508): fills its parent, clipped. Image scales to the full height
+   and is anchored RIGHT, like the widget's art layers (.icw__art), so the two stay registered at
+   any phone width; on a wider banner the purple base fills the extra space on the left. */
 .nbb {
   position: absolute;
   inset: 0;
   overflow: hidden;
-  background: var(--colour-primary) url('/figma/accounts/banner-bg.png') left top / auto 100% no-repeat;
+  background: var(--colour-primary) url('/figma/accounts/banner-bg.png') right top / auto 100% no-repeat;
   pointer-events: none;
 }

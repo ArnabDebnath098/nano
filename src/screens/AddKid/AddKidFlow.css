@@ -101,6 +101,14 @@
   padding: var(--space-20) var(--space-16);
 }
 
+/* Outgoing page copies (AddKidFlow transition): over the scrolling content, under the footer;
+   the body copy sits under the pinned head (z 2), the hero text copies over it (z 4) */
+.add-kid__ghosts {
+  position: absolute;
+  inset: 0;
+  pointer-events: none; /* no z-index: the copies stack against the head (3) and footer (5) */
+}
+
 /* Footer pinned to the bottom; lifts above the drawn keyboard on PP Move */
 .add-kid__footer {
   position: absolute;

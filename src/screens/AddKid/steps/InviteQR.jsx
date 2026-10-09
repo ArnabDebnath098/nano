@@ -7,7 +7,7 @@ import { usePress } from '../../../lib/usePress.js'
 import StatusBar from '../../../components/StatusBar/StatusBar.jsx'
 import ActionBar from '../../../components/AddKid/ActionBar.jsx'
 import NanoButton from '../../../components/AddKid/NanoButton.jsx'
-import { INVITE_TTL_DAYS, makeInvite } from '../../../data/addKid.js'
+import { makeInvite } from '../../../data/addKid.js'
 import InviteQRCode from './address/InviteQRCode.jsx'
 import { useGyroTilt } from './address/useGyroTilt.js'
 import '../../../components/AddKid/OnboardingHero.css' // shared sticker title
@@ -23,10 +23,8 @@ const SENT_HOLD_MS = 900 // "Invite sent" reads before the flow hands over to Ma
 // a plain top bar (✕ only — no progress), "Share Invite" (H40 gradient with the white sticker
 // outline, like every step title) + subtitle, the holographic card with a real QR
 // for a single-use link (valid for 7 days) and the child's name, then "OR" + the link field
-// (tap to copy) and "Share invite". Share invite opens the share sheet (or copies the link when
-// the Web Share API isn't available), then takes the parent to Manage Family: after a beat on
-// "Invite sent" / "Link copied" if it went out, straight away if the sheet was dismissed. No
-// Done button. ✕ also exits straight away — the child is already created, so there is nothing
+// (tap to copy) and "Share invite". Share invite (prototype: no system share sheet) confirms with
+// "Invite sent", then takes the parent to Manage Family after a beat. No Done button. ✕ also exits straight away — the child is already created, so there is nothing
 // to discard and no close confirmation.
 //
 // Motion: on arrival the title settles up 8px (blur 4 → 0, no overshoot), the card lifts and
@@ -34,14 +32,13 @@ const SENT_HOLD_MS = 900 // "Invite sent" reads before the flow hands over to Ma
 // in 3D with the phone, slides a holo sheen across it and drifts the sparkles for parallax; the QR then reveals behind a scan line (≤ 600ms,
 // see InviteQRCode). Copy success morphs the field label "invite.noon.com/…" → "Link copied"
 // (and the copy glyph → a check) through a 2px blur on PP Fade; Share runs the same morph on its
-// own label — "Invite sent" once the share sheet completes, or "Link copied" when the Web Share
-// API isn't available. Reduced motion: fades only.
+// own label → "Invite sent". Reduced motion: fades only.
 export default function InviteQR() {
   const { data, exit, complete, requestClose } = useAddKid()
   const root = useRef(null)
   const name = data.firstName?.trim() || 'Kiaan'
   const invite = useMemo(() => makeInvite(name), [name])
-  const [copied, setCopied] = useState(null) // 'field' | 'share' | 'shared' | null
+  const [copied, setCopied] = useState(null) // 'field' | 'shared' | null
   const timer = useRef(null)
   const closePress = usePress(0.94) // same press as the flow's close button
 
@@ -49,11 +46,10 @@ export default function InviteQR() {
   useGyroTilt(root, { card: '.invite__tilt', sheen: '.invite__sheen-band', sparkles: '.invite__spark-drift' })
 
   const finish = () => (exit ? exit() : requestClose?.())
-  // On to Manage Family, where the new child now lives — after a beat on the "Invite sent" /
-  // "Link copied" morph when the invite went out
-  const toFamily = (hold = SENT_HOLD_MS) => {
+  // On to Manage Family, where the new child now lives — after a beat on the "Invite sent" morph
+  const toFamily = () => {
     clearTimeout(timer.current)
-    timer.current = setTimeout(() => (complete ? complete() : finish()), hold)
+    timer.current = setTimeout(() => (complete ? complete() : finish()), SENT_HOLD_MS)
   }
 
   const flash = (where) => {
@@ -71,22 +67,9 @@ export default function InviteQR() {
     flash(where)
   }
 
-  const share = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: `${name}’s nano invite`,
-          text: `Download the nano app and use this link to sign in. It works once and expires in ${INVITE_TTL_DAYS} days.`,
-          url: invite.url,
-        })
-        flash('shared')
-        toFamily()
-      } catch {
-        toFamily(0) // dismissed — still on to Manage Family
-      }
-      return
-    }
-    copy('share').then(toFamily)
+  const share = () => {
+    flash('shared')
+    toFamily()
   }
 
   // Arrival
@@ -216,16 +199,12 @@ export default function InviteQR() {
         <div data-invite-rise>
           <ActionBar layout="row">
             <NanoButton variant="primary" onClick={share}>
-              <span className={`invite__share ${copied === 'share' || copied === 'shared' ? 'is-copied' : ''}`}>
+              <span className={`invite__share ${copied === 'shared' ? 'is-copied' : ''}`}>
                 <span className="invite__share-icon" aria-hidden="true">
                   <img className="invite__morph-off" src={`${ASSETS}/upload.svg`} width="20" height="20" alt="" />
                   <Check className="invite__morph-on" light />
                 </span>
-                <Morph
-                  on={copied === 'share' || copied === 'shared'}
-                  off="Share invite"
-                  onLabel={copied === 'shared' ? 'Invite sent' : 'Link copied'}
-                />
+                <Morph on={copied === 'shared'} off="Share invite" onLabel="Invite sent" />
               </span>
             </NanoButton>
           </ActionBar>

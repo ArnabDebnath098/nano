@@ -19,25 +19,11 @@ const ASSETS = '/figma/add-kid/address'
 // list rises in (cards stagger 40ms on PP Move, the empty state blurs out on PP Fade); the new
 // card mounts unticked and is ticked once it has landed, so its checkbox pop marks the success.
 // Selection motion lives in AddressCard.
-// Arrival: the hero (Lottie + title) lands first with an empty body; then skeleton card shapes
-// fade in and shimmer for SKELETON_MS while the saved addresses "load"; then the skeleton clears and
-// the cards settle in (12px rise from .97 on PP Move — its slight overshoot is the settle —
-// fading on PP Fade, 40ms apart). Reduced motion: no shimmer, plain fades.
-const SKELETON_IN_S = 0.24 // after the hero has started landing
-const SKELETON_MS = 500
-const SKELETON_OUT = { duration: 0.14, ease: 'power1.out' }
-
-// Just the card's shape: a real card, invisible, sizes it exactly (2-line address at any width)
-function SkeletonCard({ address }) {
-  return (
-    <div className="address-skeleton" aria-hidden="true" inert>
-      <div className="address-skeleton__sizer">
-        <AddressCard address={address} selected={false} />
-      </div>
-    </div>
-  )
-}
-
+// Arrival (noon NANO's page build — showInterests(), and preloadHome() so the next page is ready
+// before Continue): no loading state — the saved addresses are already here, so the cards build
+// straight in with the page, each rising 16px from .95 on PP Move, 40ms apart (the shell's
+// [data-rise] rows), just after the hero title rises out of blur. Set rules preloads this step's
+// pin Lottie so the hero never lands empty. Reduced motion: plain fades.
 export default function AddAddress() {
   const { data, update, goNext, goBack, fillName } = useAddKid()
 
@@ -46,7 +32,6 @@ export default function AddAddress() {
   const root = useRef(null)
   const [addresses, setAddresses] = useState(savedAddresses)
   const [added, setAdded] = useState(false)
-  const [loading, setLoading] = useState(addresses.length > 0)
   const ids = data.addressIds ?? []
   const empty = addresses.length === 0
 
@@ -73,36 +58,6 @@ export default function AddAddress() {
     primary: { label: 'Continue', disabled: ids.length === 0, onClick: goNext },
   })
 
-  // Skeleton in after the hero, hold, clear it, then the saved list settles in
-  useGSAP(
-    () => {
-      if (!loading) return
-      const sk = root.current.querySelector('.add-address__skeleton')
-      const reduced = prefersReducedMotion()
-      gsap.fromTo(sk, { autoAlpha: 0 }, { autoAlpha: 1, ...FADE, delay: SKELETON_IN_S })
-      gsap.delayedCall(SKELETON_IN_S + SKELETON_MS / 1000, () => {
-        if (reduced) return setLoading(false)
-        gsap.to(sk, { autoAlpha: 0, ...SKELETON_OUT, onComplete: () => setLoading(false) })
-      })
-    },
-    { scope: root, dependencies: [loading] },
-  )
-
-  useGSAP(
-    () => {
-      if (loading || empty || added) return
-      const cards = root.current.querySelectorAll('.add-address__list > *')
-      if (!cards.length) return
-      if (prefersReducedMotion()) {
-        gsap.fromTo(cards, { autoAlpha: 0 }, { autoAlpha: 1, ...FADE })
-        return
-      }
-      gsap.fromTo(cards, { y: 12, scale: 0.97 }, { y: 0, scale: 1, ...MOVE, stagger: STAGGER, clearProps: 'transform' })
-      gsap.fromTo(cards, { autoAlpha: 0 }, { autoAlpha: 1, ...FADE, stagger: STAGGER })
-    },
-    { scope: root, dependencies: [loading] },
-  )
-
   // The list arriving after "Add new address" — then tick the new address once it has landed
   useGSAP(
     () => {
@@ -127,13 +82,7 @@ export default function AddAddress() {
 
   return (
     <div ref={root} className="add-address">
-      {loading ? (
-        <div className="add-address__list add-address__skeleton" key="skeleton" aria-busy="true" aria-label="Loading saved addresses">
-          {addresses.map((a) => (
-            <SkeletonCard key={a.id} address={a} />
-          ))}
-        </div>
-      ) : empty ? (
+      {empty ? (
         <div className="add-address__empty" key="empty">
           <div className="add-address__art" aria-hidden="true" data-rise>
             <img className="add-address__arc" src={`${ASSETS}/empty-arc.svg`} width="149.265" height="52.7368" alt="" />

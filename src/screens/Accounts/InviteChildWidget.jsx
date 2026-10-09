@@ -8,10 +8,15 @@ import './InviteChildWidget.css'
 // `box` is the layer's rotated bounding box, `shape` the un-rotated vector, `img` the export.
 const A = '/figma/accounts/'
 
-// Behind the copy (over NanoBannerBackground): yellow ribbon 2:8297, nano logo 2:8298, sparkle marks 2:8317/2:8318
+// Behind the copy (over NanoBannerBackground): yellow ribbon 2:8297, nano logo 2:8298
 const BACK = [
   { id: 'ribbon', src: 'widget-yellow-ribbon.svg', w: 155.544, h: 163.931 },
   { id: 'nano', src: 'widget-nano-logo.png', w: 116.235, h: 41.34 },
+]
+
+// Sparkle marks 2:8317 / 2:8318 — an accent on the button's top-right corner, so they're placed
+// from the button (not the right-anchored art box) and stay on its corner at any width
+const SPARKS = [
   { id: 'sparkle', src: 'widget-sparkle.svg', w: 18.6299, h: 19.0592 },
   { id: 'sparkle-line', src: 'widget-sparkle-line.svg', w: 5.01427, h: 2 },
 ]
@@ -57,9 +62,16 @@ export default function InviteChildWidget({ onInviteChild }) {
           shop, save &amp; earn
         </h2>
         {/* M-NeutralButton (2:8322) — H36 */}
-        <button type="button" className="icw__button" onClick={onInviteChild}>
-          Invite your child
-        </button>
+        <div className="icw__cta">
+          <div className="icw__cta-art" aria-hidden="true">
+            {SPARKS.map((layer) => (
+              <Layer key={layer.id} {...layer} />
+            ))}
+          </div>
+          <button type="button" className="icw__button" onClick={onInviteChild}>
+            Invite your child
+          </button>
+        </div>
       </div>
 
       <div className="icw__art icw__art--front" aria-hidden="true">

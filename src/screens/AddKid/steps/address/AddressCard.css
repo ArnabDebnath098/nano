@@ -94,7 +94,7 @@
   text-overflow: ellipsis;
 }
 
-/* Card distance — white chip, radius 6, Bold 14/18 (no text below 14px for now) */
+/* Card distance — white chip, radius 6, Bold 12/16 */
 .address-card__distance {
   flex-shrink: 0;
   min-width: 37px;
@@ -102,8 +102,8 @@
   border-radius: 6px;
   background: #fff;
   font-weight: var(--font-weight-bold);
-  font-size: 14px;
-  line-height: 18px;
+  font-size: 12px;
+  line-height: 16px;
   color: var(--colour-text-secondary);
   text-align: center;
   white-space: nowrap;

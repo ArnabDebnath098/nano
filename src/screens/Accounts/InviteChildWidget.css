@@ -53,13 +53,26 @@
 /* PNG logo (1015×361) at the old export's width, centred on its old spot */
 .icw__box--nano img { left: -6.115px; top: 2.71px; }
 
-/* 2:8317 — sparkle */
-.icw__box--sparkle { left: 134.71px; top: 71.85px; width: 16.738px; height: 17.818px; }
+/* Sparkles sit on the button's top-right corner (Figma: button 16,88 · 135.97×36, so its corner
+   is at 151.97,88): offsets are measured from that corner */
+.icw__cta {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.icw__cta-art {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* 2:8317 — sparkle (Figma 134.71,71.85) */
+.icw__box--sparkle { left: calc(100% - 9.26px); top: -14px; /* nudged out past the corner (Figma −17.26 / −16.15), clear of the title */ width: 16.738px; height: 17.818px; }
 .icw__box--sparkle .icw__shape { width: 16.747px; height: 17.273px; transform: rotate(1.86deg) skewX(1.86deg); }
 .icw__box--sparkle img { left: -1px; top: -0.833px; }
 
-/* 2:8318 — sparkle stroke */
-.icw__box--sparkle-line { left: 143.03px; top: 92.93px; width: 5.012px; height: 0.163px; }
+/* 2:8318 — sparkle stroke (Figma 143.03,92.93) */
+.icw__box--sparkle-line { left: calc(100% - 0.94px); top: 4.93px; width: 5.012px; height: 0.163px; }
 .icw__box--sparkle-line .icw__shape { width: 5.014px; height: 0; transform: rotate(1.86deg) skewX(1.86deg); }
 .icw__box--sparkle-line img { left: 0; top: -1px; }
 
@@ -93,7 +106,7 @@
 .icw__box--cup { left: 3.53px; top: -16.68px; width: 95.619px; height: 109.673px; }
 .icw__box--cup .icw__shape { width: 61.373px; height: 92.059px; filter: blur(0.69px); /* Figma blur-[2.758px], tuned to match the Figma render */ transform: rotate(26.1deg); }
 
-/* ---- Copy (2:8319): 227×138, 14/16 padding ---- */
+/* ---- Copy (2:8319): 227×138, 14/16 padding, 12px title → button ---- */
 .icw__copy {
   position: absolute;
   left: 0;
@@ -101,7 +114,8 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: space-between;
+  justify-content: center; /* title + button as one group, 12px apart, centred in the 138 */
+  gap: var(--space-12);
   width: 227px;
   height: 138px;
   padding: var(--space-14) var(--space-16);
@@ -117,6 +131,7 @@
 
 /* M-NeutralButton H36: inverted fill, #e0e0e0 border, radius 8, 10/16 padding */
 .icw__button {
+  position: relative; /* over the sparkles, as in Figma (they sit behind the copy) */
   flex-shrink: 0;
   display: flex;
   align-items: center;

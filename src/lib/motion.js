@@ -49,7 +49,9 @@ export const SETTLE = { y: 8, duration: 0.5, ease: 'emil.out' }
 //    buttons that persist never fade; only ones the new page adds rise in, 8px (L3557).
 export const PAGE_OUT = { duration: 0.22, ease: 'nano.softIn', titleY: -8, subY: -6, rowScale: 0.96, rowStagger: 0.012 }
 export const PAGE_BACK_OUT = { duration: 0.22, titleDuration: 0.16, ease: 'nano.outExit', titleY: -10, subY: -8, rowY: 14, rowStagger: 0.025 }
-export const PAGE_IN = { titleY: 16, subY: 10, blur: 6, rowY: 16, rowScale: 0.95, rowAt: 0.04, subAt: 0.02, footerY: 8 }
+// `at`: the next page starts arriving this long after the old one starts leaving (NANO overlaps the
+// two — its next page fades in 140ms into the exit; ours leaves on a copy, so the overlap is real)
+export const PAGE_IN = { at: 0.12, titleY: 16, subY: 10, blur: 6, rowY: 16, rowScale: 0.95, rowAt: 0.04, subAt: 0.02, footerY: 8 }
 
 // Blending a full-screen beat with the screen beneath (a crossfade, so on-screen in-out):
 // in over the live screen, out dissolving over the next step
