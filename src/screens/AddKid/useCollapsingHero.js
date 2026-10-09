@@ -1,4 +1,4 @@
-import { useLayoutEffect } from 'react'
+import { useLayoutEffect, useRef } from 'react'
 import { HDR_SPRING, stepSpring } from '../../../animation-reference/noon-nano/motion.js'
 
 // Figma: Onboarding hero Size=Default (55:1173) → Size=Compact (65:2667), "Add address · Scrolled"
@@ -28,6 +28,8 @@ const GAP = 2 // title → subtitle
 const PAD_BOTTOM = 8
 const P_MAX = 1.02 // NANO lets the header overshoot Compact by 2% as it settles
 const TAP_TO_FOCUS_MS = 800 // a focus this soon after a pointerdown came from a tap
+export const COLLAPSE_EVENT = 'hero:collapse' // dispatch on the scroller to collapse for typing ({ detail: { minTop } })
+const GLIDE_MS = 320
 
 const easeOutQuad = (t) => 1 - (1 - t) * (1 - t)
 
@@ -42,15 +44,22 @@ function offsetTopWithin(el, root) {
   return y
 }
 
+// deps[0] is the step: a new step lands on its scroll position; any other re-run (a hero text
+// change, every keystroke of the name) carries on from where the spring was
 export function useCollapsingHero(scrollerRef, headRef, deps) {
+  const spring = useRef({ p: 0, v: 0, step: undefined, glide: 0 })
+
   useLayoutEffect(() => {
     const scroller = scrollerRef.current
     const head = headRef.current
     if (!scroller || !head) return
+    const saved = spring.current // our own state object, not a DOM node
+    const sameStep = saved.step === deps[0]
+    saved.step = deps[0]
     let geo = null
     let raf = 0
-    let p = 0 // drawn progress, Default 0 → Compact 1
-    let v = 0 // its velocity (per second)
+    let p = sameStep ? saved.p : 0 // drawn progress, Default 0 → Compact 1
+    let v = sameStep ? saved.v : 0 // its velocity (per second)
     let last = 0
     let els = {} // hero parts, looked up in measure() — off the per-frame path
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -128,6 +137,7 @@ export function useCollapsingHero(scrollerRef, headRef, deps) {
       const defaultBottom = (sub ? subTop + subH : titleTop + titleH) + PAD_BOTTOM
       const compactBottom = (sub ? compactSubTop + subH * SUB_SCALE : compactTitleTop + TITLE_LINE_COMPACT) + PAD_BOTTOM
 
+      const prev = geo
       geo = {
         // scaled from the top edge; centre the shrunk title in its 32px compact line box
         titleY: compactTitleTop + (TITLE_LINE_COMPACT - titleH * TITLE_SCALE) / 2 - titleTop,
@@ -135,7 +145,12 @@ export function useCollapsingHero(scrollerRef, headRef, deps) {
         distance: Math.max(1, defaultBottom - compactBottom),
       }
       if (fade) fade.style.top = `${compactBottom.toFixed(2)}px`
-      snap()
+      // Land on the target only when the geometry really changed (new step, resize). A re-run on
+      // the same step, or the ResizeObserver's first call, keeps springing from where it was.
+      const moved = prev ? Math.abs(prev.distance - geo.distance) > 1 || Math.abs(prev.titleY - geo.titleY) > 1 : !sameStep
+      if (moved || reduced.matches) return snap()
+      draw()
+      if (!raf) raf = requestAnimationFrame(tick)
     }
 
     const onScroll = () => {
@@ -145,19 +160,44 @@ export function useCollapsingHero(scrollerRef, headRef, deps) {
 
     const isTextEntry = (el) =>
       el?.matches?.('input:not([readonly]):not([type=checkbox]):not([type=radio]), textarea')
-    const collapseForTyping = () => {
-      if (!geo || scroller.scrollTop >= geo.distance) return
-      // A short page may not scroll that far — pad its bottom until it can (kept for the step).
+    // Scroll to `to` on our own frame loop rather than scrollTo({ behavior: 'smooth' }): the
+    // browser's smooth scroll is cancelled by the caret-into-view scrolls typing makes, which left
+    // the hero half-collapsed and then jumping. A finger on the page takes over. The frame id
+    // lives in `saved` so a re-run (each keystroke of the name) neither stops nor doubles it.
+    const glideTo = (to) => {
+      cancelAnimationFrame(saved.glide)
+      const from = scroller.scrollTop
+      if (reduced.matches || Math.abs(to - from) < 1) {
+        scroller.scrollTop = to
+        return
+      }
+      const t0 = performance.now()
+      const step = (now) => {
+        const t = Math.min(1, (now - t0) / GLIDE_MS)
+        scroller.scrollTop = from + (to - from) * (1 - (1 - t) ** 3) // ease-out cubic
+        saved.glide = t < 1 ? requestAnimationFrame(step) : 0
+      }
+      saved.glide = requestAnimationFrame(step)
+    }
+    // Collapse the hero for typing, scrolling at least to `minTop` (the flow passes how far the
+    // focused field needs to go to clear the footer above a phone keyboard)
+    const collapseForTyping = (minTop = 0) => {
+      if (!geo) return
+      const to = Math.max(geo.distance, minTop)
+      if (scroller.scrollTop >= to - 1) return
+      // A short page may not scroll that far — pad its bottom until it can (kept for the step;
+      // AddKidFlow clears it on the next step).
       // Re-measured after padding: a page shorter than the screen reports scrollHeight = height.
       let room = 0
       for (let i = 0; i < 3; i++) {
-        const short = geo.distance - (scroller.scrollHeight - scroller.clientHeight)
+        const short = to - (scroller.scrollHeight - scroller.clientHeight)
         if (short <= 0) break
         room += Math.ceil(short)
         scroller.style.setProperty('--typing-room', `${room}px`)
       }
-      scroller.scrollTo({ top: geo.distance, behavior: reduced.matches ? 'auto' : 'smooth' })
+      glideTo(to)
     }
+    const onCollapseEvent = (e) => collapseForTyping(e.detail?.minTop)
     // Tapping into a field (focusin right after a pointerdown), or tapping one that's already
     // focused (Email's auto-focused field — that tap is when a phone raises its keyboard; on
     // release, as a scroll started while the finger is down gets cancelled by the touch)
@@ -165,6 +205,8 @@ export function useCollapsingHero(scrollerRef, headRef, deps) {
     let downOnFocused = false
     const onPointerDown = (e) => {
       tappedAt = performance.now()
+      cancelAnimationFrame(saved.glide)
+      saved.glide = 0
       downOnFocused = isTextEntry(e.target) && e.target === document.activeElement
     }
     const onPointerUp = () => {
@@ -172,7 +214,9 @@ export function useCollapsingHero(scrollerRef, headRef, deps) {
       downOnFocused = false
     }
     const onFocusIn = (e) => {
-      if (performance.now() - tappedAt <= TAP_TO_FOCUS_MS && isTextEntry(e.target)) collapseForTyping()
+      // after the pointerup, so the finger lifting doesn't cancel the glide
+      if (performance.now() - tappedAt <= TAP_TO_FOCUS_MS && isTextEntry(e.target))
+        requestAnimationFrame(() => collapseForTyping())
     }
 
     measure()
@@ -180,15 +224,23 @@ export function useCollapsingHero(scrollerRef, headRef, deps) {
     scroller.addEventListener('pointerdown', onPointerDown, { passive: true })
     scroller.addEventListener('pointerup', onPointerUp, { passive: true })
     scroller.addEventListener('focusin', onFocusIn)
+    // The flow also asks once a phone keyboard has actually come up (iOS can cancel the
+    // tap-time scroll while it reveals the field)
+    scroller.addEventListener(COLLAPSE_EVENT, onCollapseEvent)
     const ro = new ResizeObserver(measure) // transforms don't change layout size, so no loop
     ro.observe(head)
     return () => {
       cancelAnimationFrame(raf)
+      saved.p = p
+      saved.v = v
       scroller.removeEventListener('scroll', onScroll)
       scroller.removeEventListener('pointerdown', onPointerDown)
       scroller.removeEventListener('pointerup', onPointerUp)
       scroller.removeEventListener('focusin', onFocusIn)
-      scroller.style.removeProperty('--typing-room')
+      scroller.removeEventListener(COLLAPSE_EVENT, onCollapseEvent)
+      // --typing-room stays: this effect re-runs on every keystroke of the name (deps), and
+      // dropping the room would clamp the scroll and spring the hero back open. The flow clears
+      // it when the step changes.
       ro.disconnect()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

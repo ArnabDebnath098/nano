@@ -10,6 +10,12 @@
   isolation: isolate;
 }
 
+/* Keyboard up: the flow is only as tall as the area above it, so paint the space behind the
+   (translucent) keyboard white — otherwise the page under the flow shows through it */
+.add-kid--keyboard {
+  box-shadow: 0 0 0 100vh var(--colour-surface-primary);
+}
+
 .add-kid__chrome {
   position: absolute;
   inset: 0;

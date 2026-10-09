@@ -13,7 +13,7 @@ import Toast from '../../components/AddKid/Toast.jsx'
 import DrawnKeyboard, { KEYBOARD_HEIGHT, hasDrawnKeyboard } from '../../components/AddKid/DrawnKeyboard.jsx'
 import CloseConfirm from './CloseConfirm.jsx'
 import { AddKidContext } from './AddKidContext.js'
-import { useCollapsingHero } from './useCollapsingHero.js'
+import { COLLAPSE_EVENT, useCollapsingHero } from './useCollapsingHero.js'
 import { INITIAL_DATA, NEXT, fillName, getStep } from './steps.js'
 import './AddKidFlow.css'
 
@@ -35,6 +35,8 @@ import './AddKidFlow.css'
 //     the beat — still mounted on its last frame — dissolves on top (fade + blur(8px) + 1.04,
 //     600ms in-out) while the step's hero and content settle in under it.
 // Reduced motion: no travel or blur, PP Fade only.
+const FIELD_GAP = 8 // keyboard up: space kept between the focused field and the footer
+
 export default function AddKidFlow({ onExit, onComplete, initialStep }) {
   const root = useRef(null)
   const scroller = useRef(null)
@@ -183,6 +185,7 @@ export default function AddKidFlow({ onExit, onComplete, initialStep }) {
       const scope = root.current
       const reduced = prefersReducedMotion()
       scroller.current.scrollTop = 0
+      scroller.current.style.removeProperty('--typing-room') // the last step's room to collapse for typing
 
       const chrome = scope.querySelector('[data-chrome]')
       if (step.fullscreen) {
@@ -286,20 +289,20 @@ export default function AddKidFlow({ onExit, onComplete, initialStep }) {
   useKeyboardViewport(root, (up, field) => {
     setPhoneKeyboard(up)
     if (!up) return
+    // One glide that both collapses the hero and lifts the field clear of the footer. Measured
+    // a frame later, once the flow has taken the keyboard-height layout.
     requestAnimationFrame(() => {
       const s = scroller.current
-      const top = root.current?.querySelector('[data-scroll-fade]')?.getBoundingClientRect().top ?? 0
-      const bottom = root.current?.querySelector('.add-kid__footer')?.getBoundingClientRect().top ?? s.clientHeight
-      const r = (field.closest('.text-field__field') ?? field).getBoundingClientRect() // the whole field box
-      const gap = 8
-      if (r.bottom > bottom - gap) s.scrollBy({ top: r.bottom - (bottom - gap) })
-      else if (r.top < top + gap) s.scrollBy({ top: r.top - (top + gap) })
+      const footerTop = root.current?.querySelector('.add-kid__footer')?.getBoundingClientRect().top ?? s.clientHeight
+      const box = (field.closest('.text-field__field') ?? field).getBoundingClientRect() // the whole field box
+      const minTop = s.scrollTop + Math.max(0, box.bottom - (footerTop - FIELD_GAP))
+      s.dispatchEvent(new CustomEvent(COLLAPSE_EVENT, { detail: { minTop } }))
     })
   })
 
   return (
     <AddKidContext.Provider value={ctx}>
-      <div ref={root} className="add-kid">
+      <div ref={root} className={`add-kid ${phoneKeyboard ? 'add-kid--keyboard' : ''}`}>
         <div className="add-kid__chrome" data-chrome>
           <div
             ref={scroller}
