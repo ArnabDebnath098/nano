@@ -4,10 +4,15 @@ import { HDR_SPRING, stepSpring } from '../../../animation-reference/noon-nano/m
 // Figma: Onboarding hero Size=Default (55:1173) → Size=Compact (65:2667), "Add address · Scrolled"
 // (57:2431). The head (background, top bar, hero) is pinned; as the page scrolls, the hero morphs
 // from Default to Compact over exactly the height it loses, so the content stays tucked under it:
-//   illustration / Lottie 235 → 145 wide (×0.617), overlap under the title −48 → −30
+//   illustration / Lottie dissolves: shrinks ×0.5, lifts, blurs and fades out — on its own
+//   elastic spring (ILLO_SPRING), so it pops back with a little bounce when the page returns
+//   to the top; the title and subtitle rise into the space it leaves, just under the top bar
 //   title  H40 → H24 (×0.6), line box 48 → 32
 //   subtitle B14 → B13 (×0.929)
-// and the Scroll fade (66:2550: eased white gradient, layer-blurred) fades in at the compact bottom.
+// The Onboarding background squashes 235 → the compact bottom (180 in Figma 57:2431), and the
+// Scroll fade (66:2550: 40px white 95% → clear over a 4px background blur) sits right under it.
+// It ramps in over the first FADE_RAMP px of content passing under the compact head, so at rest
+// in Compact (e.g. collapsed for typing) the first row below stays sharp.
 // Motion: NANO's collapsing-header spring (HDR_SPRING — K (2π/0.34)², ζ 0.86, semi-implicit
 // Euler, keeps its velocity when the direction reverses). The scroll sets a target on an
 // ease-out (so the morph leads the finger — fast at the start, slow into Compact) and the
@@ -18,9 +23,24 @@ import { HDR_SPRING, stepSpring } from '../../../animation-reference/noon-nano/m
 // the height the hero gives up, so the field stays just under the Compact head and the keyboard
 // has room, instead of the browser shoving the fields up under the head. Only a tap does it, so an
 // auto-focus on arrival (Email) leaves the hero alone.
+// Short pages: every page gets room to scroll at least the whole collapse distance
+// (--collapse-room) — one that fits the screen too — so each step scrolls into Compact the same
+// way, and a scroll never stops part-way with the title further from the top bar than in Compact.
 // Reduced motion: snaps between Default and Compact instead of morphing.
-const ILLO_SCALE = 145 / 235
-const ILLO_OVERLAP_COMPACT = 30
+const FADE_RAMP = 12
+const ILLO_SCALE = 0.5 // as it dissolves
+const ILLO_LIFT = 0.35 // of its height, upwards
+const ILLO_BLUR = 12 // px at Compact
+const ILLO_FADE_BY = 0.75 // fully gone by 75% of the collapse
+// Elastic: ~0.5s period, ζ 0.55 — overshoots and settles with a visible bounce
+const ILLO_SPRING = Object.freeze({
+  K: (2 * Math.PI / 0.5) ** 2,
+  C: 2 * 0.55 * (2 * Math.PI / 0.5),
+  maxDt: HDR_SPRING.maxDt,
+  eps: HDR_SPRING.eps,
+  vEps: HDR_SPRING.vEps,
+})
+const TITLE_GAP_COMPACT = 0 // top bar → compact title (Figma 57:2431: title at 118, right under the 118 top bar)
 const TITLE_SCALE = 24 / 40
 const TITLE_LINE_COMPACT = 32
 const SUB_SCALE = 13 / 14
@@ -47,7 +67,7 @@ function offsetTopWithin(el, root) {
 // deps[0] is the step: a new step lands on its scroll position; any other re-run (a hero text
 // change, every keystroke of the name) carries on from where the spring was
 export function useCollapsingHero(scrollerRef, headRef, deps) {
-  const spring = useRef({ p: 0, v: 0, step: undefined, glide: 0 })
+  const spring = useRef({ p: 0, v: 0, q: 0, qv: 0, step: undefined, glide: 0 })
 
   useLayoutEffect(() => {
     const scroller = scrollerRef.current
@@ -60,6 +80,8 @@ export function useCollapsingHero(scrollerRef, headRef, deps) {
     let raf = 0
     let p = sameStep ? saved.p : 0 // drawn progress, Default 0 → Compact 1
     let v = sameStep ? saved.v : 0 // its velocity (per second)
+    let q = sameStep ? saved.q : 0 // the illustration's own (elastic) progress, chasing the same target
+    let qv = sameStep ? saved.qv : 0
     let last = 0
     let els = {} // hero parts, looked up in measure() — off the per-frame path
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -71,19 +93,29 @@ export function useCollapsingHero(scrollerRef, headRef, deps) {
     }
 
     const draw = () => {
-      const { illo, title, sub, fade } = els
+      const { illo, title, sub, fade, bg } = els
       if (!illo || !title) return
+      // The background's white bottom edge rides up with the compact bottom, so it never covers
+      // the content just under the compact head
+      if (bg) bg.style.scale = `1 ${(1 - geo.bgSquash * Math.min(1, p)).toFixed(4)}`
       const lerp = (from, to) => from + (to - from) * p
-      illo.style.scale = String(lerp(1, ILLO_SCALE))
+      // q overshoots both ends: past 1 it just stays gone; below 0 it swells a touch (the bounce)
+      illo.style.scale = String(1 + (ILLO_SCALE - 1) * Math.max(-0.08, q))
+      // Lift only — the spring's overshoot back past Default must not push it below its resting
+      // place (that read as the top of the page dragging down); the bounce stays in the scale
+      illo.style.translate = `0 ${(-geo.illoLift * Math.max(0, q)).toFixed(2)}px`
+      illo.style.opacity = String(Math.min(1, Math.max(0, 1 - q / ILLO_FADE_BY)))
+      const blur = ILLO_BLUR * Math.min(1, Math.max(0, q))
+      illo.style.filter = blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : ''
       title.style.scale = String(lerp(1, TITLE_SCALE))
       title.style.translate = `0 ${(geo.titleY * p).toFixed(2)}px`
       if (sub) {
         sub.style.scale = String(lerp(1, SUB_SCALE))
         sub.style.translate = `0 ${(geo.subY * p).toFixed(2)}px`
       }
-      // Content slips under the head as soon as it moves, so the fade is at full strength within
-      // the first quarter of the collapse (it sits on plain white at rest, so it can't show early)
-      if (fade) fade.style.opacity = String(Math.min(1, Math.max(0, p * 4)))
+      // A variable, not the fade's own opacity: opacity < 1 on the parent would make it a backdrop
+      // root and cut its blur layers off from the content behind
+      if (fade) fade.style.setProperty('--fade', String(Math.min(1, Math.max(0, (scroller.scrollTop - geo.distance) / FADE_RAMP))))
     }
 
     // One spring frame; keeps running until the hero is at rest on the scroll's target
@@ -95,9 +127,12 @@ export function useCollapsingHero(scrollerRef, headRef, deps) {
       last = now
       ;({ x: p, v } = stepSpring(HDR_SPRING, p, v, to, dt))
       p = Math.min(P_MAX, Math.max(0, p))
-      if (Math.abs(p - to) < HDR_SPRING.eps && Math.abs(v) < HDR_SPRING.vEps) {
-        p = to
-        v = 0
+      ;({ x: q, v: qv } = stepSpring(ILLO_SPRING, q, qv, to, dt))
+      const pRest = Math.abs(p - to) < HDR_SPRING.eps && Math.abs(v) < HDR_SPRING.vEps
+      const qRest = Math.abs(q - to) < ILLO_SPRING.eps && Math.abs(qv) < ILLO_SPRING.vEps
+      if (pRest && qRest) {
+        p = q = to
+        v = qv = 0
         last = 0
       } else {
         raf = requestAnimationFrame(tick)
@@ -111,8 +146,8 @@ export function useCollapsingHero(scrollerRef, headRef, deps) {
       cancelAnimationFrame(raf)
       raf = 0
       last = 0
-      v = 0
-      p = target()
+      v = qv = 0
+      p = q = target()
       draw()
     }
 
@@ -122,6 +157,8 @@ export function useCollapsingHero(scrollerRef, headRef, deps) {
         title: head.querySelector('.onboarding-hero__title'),
         sub: head.querySelector('.onboarding-hero__subtitle'),
         fade: head.querySelector('[data-scroll-fade]'),
+        bg: head.querySelector('.onboarding-bg'),
+        top: head.querySelector('.add-kid__top'),
       }
       const { illo, title, sub, fade } = els
       if (!illo || !title) return
@@ -132,19 +169,36 @@ export function useCollapsingHero(scrollerRef, headRef, deps) {
       const subTop = sub ? offsetTopWithin(sub, head) : 0
       const subH = sub ? sub.offsetHeight : 0
 
-      const compactTitleTop = illoTop + illoH * ILLO_SCALE - ILLO_OVERLAP_COMPACT
+      const topBarBottom = els.top ? offsetTopWithin(els.top, head) + els.top.offsetHeight : illoTop
+      const compactTitleTop = topBarBottom + TITLE_GAP_COMPACT
       const compactSubTop = compactTitleTop + TITLE_LINE_COMPACT + GAP
       const defaultBottom = (sub ? subTop + subH : titleTop + titleH) + PAD_BOTTOM
       const compactBottom = (sub ? compactSubTop + subH * SUB_SCALE : compactTitleTop + TITLE_LINE_COMPACT) + PAD_BOTTOM
 
       const prev = geo
       geo = {
+        illoLift: illoH * ILLO_LIFT,
+        bgSquash: els.bg ? Math.max(0, 1 - compactBottom / els.bg.offsetHeight) : 0,
         // scaled from the top edge; centre the shrunk title in its 32px compact line box
         titleY: compactTitleTop + (TITLE_LINE_COMPACT - titleH * TITLE_SCALE) / 2 - titleTop,
         subY: compactSubTop - subTop,
         distance: Math.max(1, defaultBottom - compactBottom),
       }
       if (fade) fade.style.top = `${compactBottom.toFixed(2)}px`
+      // Room to scroll the whole collapse, on a page that scrolls less than that (or not at all)
+      // (measured from where the content ends — on a page shorter than the screen, scrollHeight
+      // only reports the screen)
+      const room = parseFloat(scroller.style.getPropertyValue('--collapse-room')) || 0
+      const body = scroller.querySelector('[data-step-body]')
+      const padBottom = parseFloat(getComputedStyle(scroller).paddingBottom) - room
+      const natural = body
+        ? body.offsetTop + body.offsetHeight + padBottom - scroller.clientHeight
+        : scroller.scrollHeight - scroller.clientHeight - room
+      const need = Math.max(0, Math.ceil(geo.distance - natural))
+      if (need !== room) {
+        if (need) scroller.style.setProperty('--collapse-room', `${need}px`)
+        else scroller.style.removeProperty('--collapse-room')
+      }
       // Land on the target only when the geometry really changed (new step, resize). A re-run on
       // the same step, or the ResizeObserver's first call, keeps springing from where it was.
       const moved = prev ? Math.abs(prev.distance - geo.distance) > 1 || Math.abs(prev.titleY - geo.titleY) > 1 : !sameStep
@@ -229,10 +283,18 @@ export function useCollapsingHero(scrollerRef, headRef, deps) {
     scroller.addEventListener(COLLAPSE_EVENT, onCollapseEvent)
     const ro = new ResizeObserver(measure) // transforms don't change layout size, so no loop
     ro.observe(head)
+    // and what decides how far the page can scroll: the step's content, and the scroller's own
+    // content box (its bottom padding grows with the keyboard). Our own --collapse-room lands on
+    // the same value when re-measured, so it settles after one pass.
+    const body = scroller.querySelector('[data-step-body]')
+    if (body) ro.observe(body)
+    ro.observe(scroller)
     return () => {
       cancelAnimationFrame(raf)
       saved.p = p
       saved.v = v
+      saved.q = q
+      saved.qv = qv
       scroller.removeEventListener('scroll', onScroll)
       scroller.removeEventListener('pointerdown', onPointerDown)
       scroller.removeEventListener('pointerup', onPointerUp)

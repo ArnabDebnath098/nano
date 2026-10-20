@@ -9,7 +9,8 @@
   translate: -50% 0;
   overflow-x: hidden;
   overflow-y: auto;
-  overscroll-behavior: contain;
+  /* none: no rubber band, so a pull at the top can't drag the page's header down */
+  overscroll-behavior: none;
   -webkit-overflow-scrolling: touch;
 }
 

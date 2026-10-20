@@ -2,6 +2,7 @@ import { useState } from 'react'
 import KidProfileHeader from '../components/KidProfileHeader/KidProfileHeader.jsx'
 import KidProfileTabs from '../components/KidProfileTabs/KidProfileTabs.jsx'
 import EmptyWallet from '../components/EmptyWallet/EmptyWallet.jsx'
+import ApprovalsTab from '../components/ApprovalsTab/ApprovalsTab.jsx'
 import { kidTabs } from '../data/manageFamily.js'
 import { getWalletSkin } from '../data/walletSkins.js'
 import './KidProfile.css'
@@ -31,6 +32,7 @@ export default function KidProfile({ kid, titleId, onBack }) {
         aria-labelledby={`kid-${kid.id}-tab-${tab}`}
       >
         {tab === 'wallet' && <EmptyWallet kidName={kid.firstName} skin={skin} />}
+        {tab === 'approvals' && <ApprovalsTab kid={kid} />}
       </div>
     </div>
   )

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useAddKid, useStepFooter } from '../AddKidContext.js'
 import TextField from '../../../components/AddKid/TextField.jsx'
 import { KEYBOARD_HEIGHT } from '../../../components/AddKid/DrawnKeyboard.jsx'
@@ -12,11 +12,27 @@ const ASSETS = '/figma/add-kid/rules'
 const LIMIT_TOAST = 'Enter an order limit to continue'
 const FOOTER_CLEARANCE = 132 // the row action bar + home bar over the scroller (AddKidFlow.css)
 
+// Selecting a card gives its icon a small wiggle: a damped rotate (with a touch of lift) about
+// its centre, ~0.5s. WAAPI, so it only plays on the tap, never when a step loads already selected.
+// Reduced motion: none.
+const WIGGLE = [
+  { rotate: '0deg', scale: 1 },
+  { rotate: '-9deg', scale: 1.06, offset: 0.18 },
+  { rotate: '7deg', scale: 1.06, offset: 0.38 },
+  { rotate: '-4deg', scale: 1.03, offset: 0.58 },
+  { rotate: '2deg', scale: 1.01, offset: 0.78 },
+  { rotate: '0deg', scale: 1 },
+]
+function wiggle(el) {
+  if (!el || prefersReducedMotion()) return
+  el.animate(WIGGLE, { duration: 520, easing: 'ease-out' })
+}
+
 // Figma: Set rules — Nothing selected (57:1599), Auto-approve (18:16061 / 850:47390, identical),
 // Manually approve expanded (18:15910), Typing a limit (18:15986), Order limit missing (18:16119),
 // scroll states (57:2545 / 57:2627 / 57:2709).
 // Two option cards. Picking one crossfades its fill (white → lilac gradient) and border on PP Fade
-// and pops its radio dot. "Manually approve" grows to reveal "Select one" (Above an order limit +
+// and pops its radio dot (the "Select one" rows use the round check). "Manually approve" grows to reveal "Select one" (Above an order limit +
 // dhm field / For every order): grid rows 0fr → 1fr on PP Move while the content fades and rises
 // 8px; collapsing is quicker. Cards and rows press to scale .98 (NANO .ich). Continue is disabled
 // until a mode is picked; a manual limit that's empty or 0 → red toast + field error + shake.
@@ -32,11 +48,21 @@ export default function SetRules() {
   const [shake, setShake] = useState(0)
   const manualRef = useRef(null)
   const fieldRef = useRef(null)
+  // The order-limit field's open height (its padding + the field), held by the spacer below
+  const [holdH, setHoldH] = useState(0)
+  useLayoutEffect(() => {
+    const el = fieldRef.current
+    if (!el) return
+    const ro = new ResizeObserver(() => setHoldH(el.offsetHeight))
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
 
   const setRules = (patch) => update((d) => ({ rules: { ...d.rules, ...patch } }))
 
-  const pick = (next) => {
+  const pick = (next, e) => {
     if (next === mode) return
+    wiggle(e?.currentTarget.querySelector('.rule-card__img'))
     setError(false)
     setRules({ mode: next, approve: next === 'manual' ? approve : undefined })
   }
@@ -70,22 +96,51 @@ export default function SetRules() {
     return () => clearTimeout(t)
   }
 
-  // Expanded → bring the new rows into view once the height has settled
-  useEffect(() => (mode === 'manual' ? reveal(manualRef.current, 380) : undefined), [mode]) // eslint-disable-line react-hooks/exhaustive-deps
+  // Expanded → bring the new rows into view once the card has finished opening (its grid-rows
+  // transition), not on a guess: scrolling mid-open measured a short card and stopped short.
+  // A finger on the page in the meantime wins — no reveal after the user has scrolled.
+  useEffect(() => {
+    if (mode !== 'manual') return
+    const card = manualRef.current
+    const expand = card?.querySelector('.rule-card__expand')
+    const scroller = card?.closest('.add-kid__scroll')
+    if (!expand || !scroller) return
+    let cancelReveal = () => {}
+    let done = false
+    const go = () => {
+      if (done) return
+      done = true
+      cancelReveal = reveal(card, 0)
+    }
+    const onEnd = (e) => e.target === expand && e.propertyName === 'grid-template-rows' && go()
+    const userScroll = () => (done = true)
+    expand.addEventListener('transitionend', onEnd)
+    scroller.addEventListener('touchstart', userScroll, { passive: true })
+    scroller.addEventListener('wheel', userScroll, { passive: true })
+    const fallback = setTimeout(go, 700) // reduced motion / no transition
+    return () => {
+      clearTimeout(fallback)
+      cancelReveal()
+      expand.removeEventListener('transitionend', onEnd)
+      scroller.removeEventListener('touchstart', userScroll)
+      scroller.removeEventListener('wheel', userScroll)
+    }
+  }, [mode]) // eslint-disable-line react-hooks/exhaustive-deps
   // Numpad up → lift the field above it (the keyboard rises on PP Move)
   useEffect(() => (keyboard ? reveal(fieldRef.current, 300) : undefined), [keyboard]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const manual = mode === 'manual'
+  const fieldOpen = manual && approve === 'limit'
 
   return (
     <div className="set-rules">
       <div className={`rule-card ${mode === 'auto' ? 'is-selected' : ''}`} data-rise>
-        <button type="button" className="rule-card__head" role="radio" aria-checked={mode === 'auto'} onClick={() => pick('auto')}>
+        <button type="button" className="rule-card__head" role="radio" aria-checked={mode === 'auto'} onClick={(e) => pick('auto', e)}>
           <span className="rule-card__action">
             <span className="rule-card__img">
               <img src={`${ASSETS}/auto-approve.png`} alt="" width="65" height="65" style={{ left: '-8.33%', top: '-5.42%' }} />
             </span>
-            <RuleCheckbox checked={mode === 'auto'} />
+            <RuleRadio checked={mode === 'auto'} />
           </span>
           <span className="rule-card__text">
             <span className="rule-card__title">Auto-approve orders</span>
@@ -95,12 +150,12 @@ export default function SetRules() {
       </div>
 
       <div ref={manualRef} className={`rule-card rule-card--manual ${manual ? 'is-selected is-open' : ''}`} data-rise>
-        <button type="button" className="rule-card__head" role="radio" aria-checked={manual} aria-expanded={manual} onClick={() => pick('manual')}>
+        <button type="button" className="rule-card__head" role="radio" aria-checked={manual} aria-expanded={manual} onClick={(e) => pick('manual', e)}>
           <span className="rule-card__action">
             <span className="rule-card__img">
               <img src={`${ASSETS}/manual-approve.png`} alt="" width="65" height="65" style={{ left: '-7.74%', top: '-7.9%' }} />
             </span>
-            <RuleCheckbox checked={manual} />
+            <RuleRadio checked={manual} />
           </span>
           <span className="rule-card__text">
             <span className="rule-card__title">Manually approve orders</span>
@@ -127,7 +182,7 @@ export default function SetRules() {
                     }}
                   >
                     <span className="rule-option__label">Above an order limit</span>
-                    <RuleRadio checked={approve === 'limit'} />
+                    <RuleCheckbox checked={approve === 'limit'} />
                   </button>
                   {/* Only shown for "Above an order limit": collapses away (height, fade, blur)
                       when "For every order" — or nothing yet — is selected */}
@@ -168,13 +223,18 @@ export default function SetRules() {
                   }}
                 >
                   <span className="rule-option__label">For every order</span>
-                  <RuleRadio checked={approve === 'every'} />
+                  <RuleCheckbox checked={approve === 'every'} />
                 </button>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Holds the page height while the order-limit field collapses: it grows as the field
+          shrinks (same curve, mirrored), so a page scrolled to the bottom isn't clamped up —
+          which dropped the rows above by the field's height — and shrinks as the field reopens */}
+      <div className={`set-rules__hold ${manual && !fieldOpen ? 'is-holding' : ''}`} style={{ '--hold': `${holdH}px` }} aria-hidden="true" />
     </div>
   )
 }

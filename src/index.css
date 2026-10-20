@@ -22,6 +22,9 @@
 }
 
 html {
+  /* No rubber band on the page itself (Manage Family / Accounts scroll the document): iOS
+     applies it from the root, and a bounce dragged the pinned top bar down */
+  overscroll-behavior-y: none;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;

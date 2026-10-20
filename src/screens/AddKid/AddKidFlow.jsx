@@ -191,11 +191,12 @@ export default function AddKidFlow({ onExit, onComplete, initialStep }) {
     else transition(h)
   }, [history, transition])
 
-  // Every toast here is an A5 error state (red M-Toast) — answered with the `error` haptic. It
-  // plays inside the tap that caused it, so the tap listener stays quiet for that tap.
-  const showToast = useCallback((message) => {
-    haptic.error()
-    setToast({ id: Date.now(), message })
+  // Toasts are A5 error states (red M-Toast, `error` haptic) unless tone is 'success' (green,
+  // `success` haptic — e.g. link copied). The haptic plays inside the tap that caused it, so the
+  // tap listener stays quiet for that tap.
+  const showToast = useCallback((message, tone = 'error') => {
+    haptic[tone === 'success' ? 'success' : 'error']()
+    setToast({ id: Date.now(), message, tone })
   }, [])
   const requestClose = useCallback(() => setCloseOpen(true), [])
 
@@ -310,6 +311,25 @@ export default function AddKidFlow({ onExit, onComplete, initialStep }) {
 
   // Footer rides above the drawn keyboard
   const kbHeight = keyboard ? KEYBOARD_HEIGHT[keyboard] : 0
+  // The scroller's room for it. Rising: at once. Dropping: dropping the room at once would clamp
+  // a page scrolled near the bottom and snap everything down by the keyboard's height, so the page
+  // first glides to where the clamp would leave it, in step with the keyboard (PP Move), then the
+  // room goes
+  const [kbRoom, setKbRoom] = useState(kbHeight)
+  useLayoutEffect(() => {
+    if (kbHeight >= kbRoom) {
+      if (kbHeight !== kbRoom) setKbRoom(kbHeight)
+      return
+    }
+    const s = scroller.current
+    const to = Math.min(s.scrollTop, s.scrollHeight - s.clientHeight - (kbRoom - kbHeight))
+    if (prefersReducedMotion() || to >= s.scrollTop - 1) {
+      setKbRoom(kbHeight)
+      return
+    }
+    const tween = gsap.to(s, { scrollTop: to, ...MOVE, onComplete: () => setKbRoom(kbHeight) })
+    return () => tween.kill()
+  }, [kbHeight]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const hero = { ...chromeStep.hero, ...(heroOverride ?? {}) }
   // Read the step's footer handlers at click time: the step refreshes its handler ref when it
@@ -348,14 +368,20 @@ export default function AddKidFlow({ onExit, onComplete, initialStep }) {
           <div
             ref={scroller}
             className="add-kid__scroll"
-            style={{ '--kb-height': `${kbHeight}px` }}
+            style={{ '--kb-height': `${kbRoom}px` }}
           >
             {/* Pinned head: background + top bar + hero; the hero collapses to Compact as the page
                 scrolls and the Scroll fade (layer-blurred white gradient) appears under it (Figma 57:2431) */}
             <div ref={head} className="add-kid__head">
               {/* First, so it paints beneath the background image and the hero: it only ever
                   fades the content scrolling up underneath, never the background */}
-              <div className="add-kid__fade" data-scroll-fade aria-hidden="true" />
+              <div className="add-kid__fade" data-scroll-fade aria-hidden="true">
+                {/* Progressive blur: stacked layers, each fading out further down */}
+                <span className="add-kid__fade-blur" />
+                <span className="add-kid__fade-blur" />
+                <span className="add-kid__fade-blur" />
+                <span className="add-kid__fade-blur" />
+              </div>
               <OnboardingBackground />
               <div className="add-kid__top">
                 <AddKidHeader step={pendingProgress ?? chromeStep.progress} onClose={requestClose} />

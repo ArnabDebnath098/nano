@@ -28,8 +28,9 @@
   justify-content: flex-end;
   gap: var(--space-8);
   width: 100%;
-  height: 128px;
-  padding-bottom: var(--space-16);
+  /* 128 + 20 more breathing room under the name (padding 16 → 36, height grows with it) */
+  height: 148px;
+  padding-bottom: calc(var(--space-16) + var(--space-20));
   border-radius: 0 0 var(--radius-24) var(--radius-24);
 }
 

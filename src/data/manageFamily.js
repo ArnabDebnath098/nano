@@ -130,3 +130,25 @@ export const kidTabs = [
   { id: 'tasks', label: 'Tasks', width: 67 },
   { id: 'orders', label: 'Orders', width: 84 },
 ]
+
+// Kid profile · Approvals tab (Figma 56:32549) — the kid's own requests, newest first.
+//   status: pending (no pill) · approved (awaiting checkout) · in-cart · completed · declined
+// Filters: Active = pending / approved / in-cart · Completed = completed · Not now = declined
+const kidRequest = {
+  message: 'You have 4 unfinished lego sets, not buying more till you finish them',
+  storeLogo: '/figma/supermall-logo.svg',
+}
+export const kidRequests = [
+  { id: 'kr-1', ...kidRequest, date: 'Today', itemCount: 3, products: ['/figma/product-1.png', '/figma/product-2.png', '/figma/product-1.png'], amount: 190, status: 'pending' },
+  { id: 'kr-2', ...kidRequest, date: '30 Sep 26', itemCount: 3, products: ['/figma/product-1.png', '/figma/product-2.png', '/figma/product-1.png'], amount: 64, status: 'approved' },
+  { id: 'kr-3', ...kidRequest, date: '28 Sep 26', itemCount: 2, products: ['/figma/product-1.png', '/figma/product-2.png'], amount: 38, status: 'in-cart' },
+  { id: 'kr-4', ...kidRequest, date: '25 Sep 26', itemCount: 3, products: ['/figma/product-1.png', '/figma/product-2.png', '/figma/product-1.png'], amount: 27, status: 'completed' },
+  { id: 'kr-5', ...kidRequest, date: '21 Sep 26', itemCount: 1, products: ['/figma/product-1.png'], amount: 249, status: 'declined' },
+]
+
+export const requestFilters = [
+  { id: 'all', label: 'All', match: () => true },
+  { id: 'active', label: 'Active', match: (r) => ['pending', 'approved', 'in-cart'].includes(r.status) },
+  { id: 'completed', label: 'Completed', match: (r) => r.status === 'completed' },
+  { id: 'declined', label: 'Not now', match: (r) => r.status === 'declined' },
+]

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import FlowPicker, { FlowsHomeButton } from './screens/FlowPicker/FlowPicker.jsx'
 import Accounts from './screens/Accounts/Accounts.jsx'
 import ManageFamily from './screens/ManageFamily.jsx'
 import KidProfile from './screens/KidProfile.jsx'
@@ -10,13 +11,13 @@ import { getKid } from './data/manageFamily.js'
 import { goBack, navigate, replace, useRoute } from './lib/router.js'
 
 // Which base screen each route sits on; overlay routes (invite, add-kid) keep the current one
-const BASE = { accounts: 'accounts', family: 'family', kid: 'family' }
+const BASE = { flows: 'flows', accounts: 'accounts', family: 'family', kid: 'family' }
 
 function App() {
   const route = useRoute()
   const kid = route.name === 'kid' ? getKid(route.id) : null
 
-  const [base, setBase] = useState(BASE[route.name] ?? 'accounts')
+  const [base, setBase] = useState(BASE[route.name] ?? 'flows')
   if (BASE[route.name] && BASE[route.name] !== base) setBase(BASE[route.name])
 
   // Keep the last kid rendered while the page animates out
@@ -25,12 +26,16 @@ function App() {
 
   return (
     <div className="app">
-      {base === 'accounts' ? (
+      {base === 'flows' ? (
+        // Prototype landing — pick a flow to test
+        <FlowPicker />
+      ) : base === 'accounts' ? (
         // First screen: noon Accounts, no child yet → "Invite your child" plays the intro
         <Accounts onInviteChild={() => navigate('/invite')} />
       ) : (
         <ManageFamily
-          onBack={() => goBack('/')} // back to noon Accounts
+          onBack={() => goBack('/')} // back to where it was opened from (Accounts or the flow list)
+          focus={route.name === 'family' ? route.focus : null}
           onOpenKid={(profile) => navigate(`/kid/${profile.id}`)}
           onAddKid={() => navigate('/add-kid')}
         />
@@ -54,6 +59,9 @@ function App() {
         cues={ONBOARDING_CUES}
         onDone={() => replace('/add-kid?intro=1')}
       />
+
+      {/* Jump back to the flow list from anywhere in a flow (hidden during the intro video) */}
+      {route.name !== 'flows' && route.name !== 'invite' && <FlowsHomeButton />}
     </div>
   )
 }

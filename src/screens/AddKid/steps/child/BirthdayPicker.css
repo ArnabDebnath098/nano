@@ -10,8 +10,8 @@
 .birthday-picker__head {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
-  padding: var(--space-20) var(--space-16) var(--space-4);
+  gap: var(--space-2);
+  padding: var(--space-20) var(--space-20) 0;
 }
 
 .birthday-picker__title {
@@ -38,20 +38,22 @@
   color: var(--colour-text-error);
 }
 
-/* Columns over one selection band */
+/* Columns over one selection band. The band spans the sheet's 16px content edges; the columns
+   sit 12px inside it, so day and year aren't flush against its ends */
 .birthday-picker__wheels {
   position: relative;
   display: flex;
-  gap: var(--space-4);
-  padding: 0 var(--space-16);
+  gap: var(--space-8);
+  margin-top: var(--space-8);
+  padding: 0 calc(var(--space-16) + var(--space-12));
 }
 
 .birthday-picker__band {
   position: absolute;
   top: 50%;
-  left: var(--space-12);
-  right: var(--space-12);
-  height: 40px;
+  left: var(--space-16);
+  right: var(--space-16);
+  height: var(--row, 44px);
   translate: 0 -50%;
   border-radius: var(--radius-12);
   pointer-events: none;
@@ -62,15 +64,21 @@
 
 .birthday-wheel-col {
   position: relative;
-  flex: 0 0 64px;
+  flex: 0 0 56px;
+}
+
+/* Year needs the room for four digits */
+.birthday-wheel-col:last-child {
+  flex-basis: 64px;
 }
 
 .birthday-wheel-col--grow {
   flex: 1 1 0;
 }
 
-/* Each column is a drum: perspective on the scroll container keeps the vanishing point fixed
-   at the wheel's centre while its content scrolls (rows are placed by BirthdayPicker.jsx).
+/* Each column is a drum: rows stack at its centre and BirthdayPicker.jsx places each on the
+   cylinder every frame (the wheel never scrolls natively — it owns its drag, fling and springs).
+   Perspective here keeps the vanishing point fixed at the wheel's centre.
    The mask fades the drum out top and bottom and cuts it out of the band, where the lens
    shows the flat, bold copy instead. */
 .birthday-wheel {
@@ -79,10 +87,9 @@
   height: var(--wheel-h);
   perspective: 700px;
   perspective-origin: 50% 50%;
-  overflow-y: auto;
-  scroll-snap-type: y mandatory;
-  overscroll-behavior: contain;
-  scrollbar-width: none;
+  overflow: hidden;
+  touch-action: none; /* the wheel handles the drag itself */
+  cursor: grab;
   outline: none;
   -webkit-tap-highlight-color: transparent;
   --wheel-mask: linear-gradient(
@@ -102,16 +109,12 @@
   mask-image: var(--wheel-mask);
 }
 
-.birthday-wheel::-webkit-scrollbar {
-  display: none;
+.birthday-wheel:active {
+  cursor: grabbing;
 }
 
 .birthday-wheel:focus-visible + .birthday-wheel__lens {
   box-shadow: inset 0 0 0 2px var(--colour-primary);
-}
-
-.birthday-wheel__spacer {
-  height: calc((var(--wheel-h) - var(--row)) / 2);
 }
 
 .birthday-wheel__row,
@@ -129,10 +132,12 @@
 }
 
 .birthday-wheel__row {
-  scroll-snap-align: center;
+  position: absolute;
+  top: calc(50% - var(--row) / 2);
+  left: 0;
+  right: 0;
   font-weight: var(--font-weight-medium);
   color: var(--colour-text-tertiary);
-  cursor: pointer;
   backface-visibility: hidden;
   will-change: transform, opacity;
 }
@@ -160,5 +165,5 @@
 
 .birthday-picker__actions {
   display: flex;
-  padding: var(--space-12) var(--space-16);
+  padding: var(--space-12) var(--space-16) var(--space-16);
 }

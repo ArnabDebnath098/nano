@@ -1,0 +1,145 @@
+.flow-picker {
+  min-height: 100dvh;
+  padding-bottom: var(--space-32);
+  background: var(--colour-surface-secondary);
+}
+
+.flow-picker__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-12) var(--space-16) var(--space-20);
+  text-align: center;
+}
+
+.flow-picker__logo {
+  width: 112px;
+  height: auto;
+  margin-bottom: var(--space-12);
+}
+
+.flow-picker__title {
+  font-size: 26px;
+  line-height: 32px;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.01em;
+  color: var(--colour-text-primary);
+  text-wrap: balance;
+}
+
+.flow-picker__list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  padding: 0 var(--space-16);
+}
+
+.flow-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-14);
+  width: 100%;
+  min-height: 72px;
+  padding: var(--space-14) var(--space-16);
+  border: 1px solid var(--colour-border-primary);
+  border-radius: var(--radius-16);
+  background: var(--colour-surface-primary);
+  text-align: left;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1), background-color 160ms ease;
+}
+
+.flow-card:active {
+  transform: scale(0.98);
+  background: var(--colour-surface-tertiary);
+}
+
+.flow-card:focus-visible {
+  outline: 2px solid var(--colour-text-action);
+  outline-offset: 2px;
+}
+
+.flow-card__index {
+  flex-shrink: 0;
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: var(--font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+  color: var(--colour-text-tertiary);
+}
+
+.flow-card__text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.flow-card__title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-6) var(--space-8);
+  font-size: 16px;
+  line-height: 22px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--colour-text-primary);
+}
+
+.flow-card__tag {
+  padding: 1px var(--space-6);
+  border-radius: var(--radius-pill);
+  background: var(--colour-surface-muted);
+  font-size: 11px;
+  line-height: 16px;
+  font-weight: var(--font-weight-medium);
+  color: var(--colour-text-secondary);
+}
+
+.flow-card__steps {
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--colour-text-secondary);
+}
+
+.flow-card__chevron {
+  flex-shrink: 0;
+  color: var(--colour-text-tertiary);
+}
+
+/* "Flows" pill — sits in the status bar's centre gap (where the Dynamic Island is) on every flow */
+.flows-home {
+  position: fixed;
+  top: calc(env(safe-area-inset-top) + 18px);
+  left: 50%;
+  z-index: 1000;
+  translate: -50% 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  height: 28px;
+  padding: 0 var(--space-12);
+  border-radius: var(--radius-pill);
+  background: rgb(0 0 0 / 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #fff;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: var(--font-weight-semibold);
+  transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Bigger hit area than the visible pill */
+.flows-home::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+}
+
+.flows-home:active {
+  transform: scale(0.94);
+}

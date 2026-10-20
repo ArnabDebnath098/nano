@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { gsap, useGSAP } from '../../../lib/gsap.js'
 import { FADE, MOVE, POP_FROM, SETTLE, STAGGER, prefersReducedMotion } from '../../../lib/motion.js'
 import { useAddKid } from '../AddKidContext.js'
@@ -18,10 +18,14 @@ import './InviteQR.css'
 const ASSETS = '/figma/add-kid/invite'
 const COPIED_MS = 1800
 const SENT_HOLD_MS = 900 // "Invite sent" reads before the flow hands over to Manage Family
+// The holo frame image has a soft glow around the card: its visible edges, in stage px
+const CARD_VISIBLE_TOP = 228
+const CARD_VISIBLE_BOTTOM = 597.5
+const CARD_GAP = 12 // = the OR row → link gap (.invite__link-area gap)
 
 // Figma: Invite · Share QR (18:16204) — full screen with its own BG (900:47847, Figma's render),
-// a plain top bar (✕ only — no progress), "Share Invite" (H40 gradient with the white sticker
-// outline, like every step title) + subtitle, the holographic card with a real QR
+// a plain top bar (✕ only — no progress), "All set!" (H40 gradient with the white sticker
+// outline, like every step title) + "Send the invite to {name} to start using nano", the holographic card with a real QR
 // for a single-use link (valid for 7 days) and the child's name, then "OR" + the link field
 // (tap to copy) and "Share invite". Share invite (prototype: no system share sheet) confirms with
 // "Invite sent", then takes the parent to Manage Family after a beat. No Done button. ✕ also exits straight away — the child is already created, so there is nothing
@@ -34,7 +38,7 @@ const SENT_HOLD_MS = 900 // "Invite sent" reads before the flow hands over to Ma
 // (and the copy glyph → a check) through a 2px blur on PP Fade; Share runs the same morph on its
 // own label → "Invite sent". Reduced motion: fades only.
 export default function InviteQR() {
-  const { data, exit, complete, requestClose } = useAddKid()
+  const { data, exit, complete, requestClose, showToast } = useAddKid()
   const root = useRef(null)
   const name = data.firstName?.trim() || 'Kiaan'
   const invite = useMemo(() => makeInvite(name), [name])
@@ -43,6 +47,30 @@ export default function InviteQR() {
   const closePress = usePress(0.94) // same press as the flow's close button
 
   useEffect(() => () => clearTimeout(timer.current), [])
+
+  // Keep the card → OR → link rhythm even (12px each) on any screen height: the card stage is
+  // laid out on Figma's 812 frame from the top while the footer sits on the bottom, so slide the
+  // stage until the card's visible bottom sits CARD_GAP above the OR row. Never up into the
+  // subtitle on a short screen.
+  useLayoutEffect(() => {
+    const el = root.current
+    if (!el) return
+    const place = () => {
+      const or = el.querySelector('.invite__or')
+      const texts = el.querySelector('.invite__texts')
+      if (!or || !texts) return
+      // offsets, not rects — the arrival tweens transform these elements
+      let orTop = or.offsetTop
+      for (let n = or.offsetParent; n && n !== el; n = n.offsetParent) orTop += n.offsetTop
+      const want = orTop - CARD_GAP - CARD_VISIBLE_BOTTOM
+      const floor = texts.offsetTop + texts.offsetHeight + CARD_GAP - CARD_VISIBLE_TOP
+      el.style.setProperty('--stage-y', `${Math.max(floor, want).toFixed(1)}px`)
+    }
+    place()
+    const ro = new ResizeObserver(place)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
   useGyroTilt(root, { card: '.invite__tilt', sheen: '.invite__sheen-band', sparkles: '.invite__spark-drift' })
 
   const finish = () => (exit ? exit() : requestClose?.())
@@ -53,7 +81,7 @@ export default function InviteQR() {
   }
 
   const flash = (where) => {
-    haptic.success() // link copied / invite sent
+    if (where !== 'field') haptic.success() // invite sent (the copy snackbar plays its own)
     setCopied(where)
     clearTimeout(timer.current)
     timer.current = setTimeout(() => setCopied(null), COPIED_MS)
@@ -66,6 +94,7 @@ export default function InviteQR() {
       // Clipboard can be blocked (insecure origin / permissions) — the feedback still shows
     }
     flash(where)
+    if (where === 'field') showToast?.('Link copied successfully', 'success')
   }
 
   const share = () => {
@@ -127,10 +156,10 @@ export default function InviteQR() {
 
       <div className="invite__texts">
         <h1 className="invite__title onboarding-hero__title" data-invite-text>
-          <StickerText>Share Invite</StickerText>
+          <StickerText>All set!</StickerText>
         </h1>
         <p className="invite__subtitle" data-invite-text>
-          Download the app, then scan to get started
+          Send the invite to {name} to start using nano
         </p>
       </div>
 

@@ -28,7 +28,8 @@ const RADIUS = 14
 // The wrapper keeps the pill's real size (layout + tap target); the blob is drawn behind it.
 // Interruptible: a new message while one is showing retargets the pill (no new drop), and a
 // stale exit can never clear the new message. Reduced motion: a plain 200ms fade.
-// `toast` = { id, message, tone } — a new id re-shows it. Tap to dismiss early.
+// `toast` = { id, message, tone } — tone 'error' (default, red + warning) or 'success' (green +
+// tick). A new id re-shows it. Tap to dismiss early.
 export default function Toast({ toast, onDone }) {
   const root = useRef(null)
   const exitTween = useRef(null)
@@ -131,7 +132,14 @@ export default function Toast({ toast, onDone }) {
         <div ref={root} className={`add-kid-toast add-kid-toast--${shown.tone || 'error'}`} role="alert" onClick={dismiss}>
           <span className="add-kid-toast__blob" data-toast-blob aria-hidden="true" />
           <span className="add-kid-toast__content" data-toast-content>
-            <img src="/figma/add-kid/warning-triangle.svg" width="24" height="24" alt="" />
+            {shown.tone === 'success' ? (
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="12" cy="12" r="9" fill="#fff" />
+                <path d="M8.2 12.3l2.6 2.6 5-5.2" stroke="#108757" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            ) : (
+              <img src="/figma/add-kid/warning-triangle.svg" width="24" height="24" alt="" />
+            )}
             <span className="add-kid-toast__text">{shown.message}</span>
           </span>
         </div>

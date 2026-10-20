@@ -1,0 +1,80 @@
+/* 714:28568 — white panel, 12 bottom padding */
+.approvals-tab {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: var(--space-12);
+  background: var(--colour-surface-primary);
+}
+
+/* Header (714:28569) — 8 top / 12 bottom, 20 sides, 8 gap; scrolls sideways on narrow screens */
+.approvals-tab__filters {
+  display: flex;
+  gap: var(--space-8);
+  padding: var(--space-8) var(--space-20) var(--space-12);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.approvals-tab__filters::-webkit-scrollbar {
+  display: none;
+}
+
+/* M-NeutralRoundButton — 32 tall, radius 8, 16 sides, A14 */
+.approvals-chip {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 var(--space-16);
+  border: 1px solid var(--colour-border-primary);
+  border-radius: var(--radius-8);
+  background: var(--colour-surface-primary);
+  font-weight: var(--font-weight-medium);
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--colour-text-tertiary);
+  white-space: nowrap;
+  transition:
+    background-color var(--nn-pp-fade-ms) var(--nn-pp-fade),
+    border-color var(--nn-pp-fade-ms) var(--nn-pp-fade),
+    color var(--nn-pp-fade-ms) var(--nn-pp-fade),
+    scale var(--nn-pp-move-ms) var(--nn-pp-move);
+}
+
+.approvals-chip:active {
+  scale: 0.96;
+  transition-duration: var(--nn-pp-fade-ms), var(--nn-pp-fade-ms), var(--nn-pp-fade-ms), var(--nn-dur-press);
+}
+
+.approvals-chip.is-selected {
+  border-color: #b48cff;
+  background: var(--colour-tertiary);
+  color: var(--colour-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.approvals-chip:focus-visible {
+  outline: 2px solid var(--colour-primary);
+  outline-offset: 2px;
+}
+
+/* Kiaan · stack (714:28578) — 8 top / 16 bottom, 16 sides, 8 gap */
+.approvals-tab__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  padding: var(--space-8) var(--space-16) var(--space-16);
+}
+
+/* Cards in the tab take the Figma #eaecf0 border */
+.approvals-tab .request-card {
+  border-color: var(--colour-border-primary);
+}
+
+.approvals-tab__empty {
+  padding: var(--space-32) 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--colour-text-tertiary);
+  text-align: center;
+}

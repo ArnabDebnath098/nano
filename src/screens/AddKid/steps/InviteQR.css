@@ -69,7 +69,8 @@
   top: 0;
   width: 375px;
   height: 640px;
-  translate: -50% 0;
+  /* --stage-y (InviteQR.jsx) slides the card down to sit 12px above the OR row */
+  translate: -50% var(--stage-y, 0px);
   pointer-events: none;
   /* gyro tilt: perspective centred on the card */
   perspective: 900px;
@@ -291,7 +292,8 @@
   scale: -1 1;
 }
 
-/* Box (18:16670) — white pill 52 tall, 18 / 16 padding (15 inside the 1px border), inner shadow */
+/* Box (18:16670) — #f2f3f7 pill 52 tall, #eaecf0 border, 18 / 16 padding (15 inside the 1px
+   border), soft inner shadow at the bottom */
 .invite__link {
   display: flex;
   align-items: center;
@@ -300,7 +302,7 @@
   padding: 15px 17px;
   border: 1px solid var(--colour-border-primary);
   border-radius: var(--radius-pill);
-  background: var(--colour-surface-primary);
+  background: var(--colour-surface-tertiary);
   box-shadow: inset 0 -3px 6px 0 rgba(152, 159, 179, 0.18);
   color: var(--colour-text-primary);
   font: inherit;

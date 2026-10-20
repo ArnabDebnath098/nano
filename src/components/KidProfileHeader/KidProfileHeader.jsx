@@ -7,7 +7,7 @@ import './KidProfileHeader.css'
 const A = '/figma/kid-profile'
 
 // Figma: Kid profile header (94:5047), state=Expanded —
-// status bar 62 + nav header 56 + profile block 128 = 246px
+// status bar 62 + nav header 56 + profile block 148 (Figma 128 + 20px more under the name) = 266px
 export default function KidProfileHeader({ kid, titleId, showStatusBar = true, onBack, onMenu }) {
   return (
     <div className={`kid-header ${showStatusBar ? '' : 'kid-header--native'}`}>

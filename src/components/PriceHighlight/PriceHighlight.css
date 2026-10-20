@@ -26,3 +26,7 @@
   color: var(--colour-text-on-surface-bold);
   white-space: nowrap;
 }
+
+.price-highlight--muted .price-highlight__view {
+  background: var(--colour-text-muted);
+}

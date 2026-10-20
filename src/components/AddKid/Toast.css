@@ -39,6 +39,11 @@
   will-change: transform, width, height;
 }
 
+/* Success (link copied) — the same pill in noon's verified green */
+.add-kid-toast--success .add-kid-toast__blob {
+  background: #108757;
+}
+
 .add-kid-toast__content {
   position: relative;
   display: flex;

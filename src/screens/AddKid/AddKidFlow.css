@@ -5,7 +5,12 @@
   /* While typing on a phone: the visible area above the keyboard (useKeyboardViewport) */
   height: var(--vv-height, 100dvh);
   translate: 0 var(--vv-top, 0px);
+  /* clip, not hidden: an overflow: hidden box can still be scrolled by the browser (focus, a
+     smooth scrollBy, scroll-into-view), and the drawn keyboard parked below the bottom edge gave
+     it room to — expanding Set rules' manual card shoved the whole flow up under the footer,
+     where wheel / touch no longer reached the scroller. clip is never a scroll container. */
   overflow: hidden;
+  overflow: clip;
   background: var(--colour-surface-primary);
   isolation: isolate;
 }
@@ -26,11 +31,14 @@
   inset: 0;
   overflow-x: hidden;
   overflow-y: auto;
-  overscroll-behavior: contain;
+  /* none, not contain: contain still lets iOS / macOS rubber-band this scroller, and the bounce at
+     the top dragged the pinned head (background, ✕, hero) down with the content */
+  overscroll-behavior: none;
   -webkit-overflow-scrolling: touch;
   /* room for the footer (76 + home bar 24) and its shadow, or the keyboard; --typing-room lets a
-     short page scroll far enough to collapse the hero when a field is tapped (useCollapsingHero) */
-  padding-bottom: calc(132px + var(--kb-height, 0px) + var(--typing-room, 0px));
+     short page scroll far enough to collapse the hero when a field is tapped, --collapse-room lets
+     a page that scrolls a little scroll the whole collapse (both from useCollapsingHero) */
+  padding-bottom: calc(132px + var(--kb-height, 0px) + var(--typing-room, 0px) + var(--collapse-room, 0px));
 }
 
 /* Head (background + top bar + hero) pins while the page scrolls; content slides under it.
@@ -49,7 +57,9 @@
   pointer-events: auto;
 }
 
-/* Hero morphs from its top edge (useCollapsingHero sets scale / translate) */
+/* Hero morphs from its top edge (useCollapsingHero sets scale / translate; the background
+   squashes to the compact height) */
+.add-kid__head .onboarding-bg,
 .add-kid__head .onboarding-hero__illustration,
 .add-kid__head .onboarding-hero__title,
 .add-kid__head .onboarding-hero__subtitle {
@@ -57,42 +67,55 @@
 }
 
 /* Scroll fade (66:2550) — under the compact hero, content dissolves into white instead of
-   being cut. An eased (scrim-curve) white gradient that starts fully opaque, so it meets the
-   solid head with no step, and a LAYER blur on the gradient itself to feather it — no
-   backdrop-filter, whose blurred band ends on a hard line (and smudges what's behind).
-   Overscanned left/right and 8px up so the blur never shows an edge. It paints BENEATH the
-   Onboarding background (first in the head), so it never tints the background image — it
-   only shows where the content scrolls out from under it.
-   `top` and opacity come from useCollapsingHero. */
+   being cut: white 95% → clear (as Figma) over a PROGRESSIVE background blur — four stacked
+   layers (1 / 2 / 4 / 8px), each masked to fade out further down, so the blur compounds to its
+   strongest right under the head and melts to nothing at the bottom, with no hard edge. 48px
+   (Figma's 40 + a tail for the blur to run out in). It paints BENEATH the Onboarding background
+   (first in the head), so it never tints the background image — it only shows where the
+   content scrolls out from under it.
+   `top` and --fade (0 → 1) come from useCollapsingHero; each layer takes the opacity itself. */
 .add-kid__fade {
   position: absolute;
-  left: -16px;
-  right: -16px;
-  height: 64px;
-  margin-top: -8px;
-  opacity: 0;
-  background: linear-gradient(
-    to bottom,
-    #fff 0%,
-    #fff 12%,
-    rgba(255, 255, 255, 0.987) 19%,
-    rgba(255, 255, 255, 0.951) 26%,
-    rgba(255, 255, 255, 0.896) 32%,
-    rgba(255, 255, 255, 0.825) 38%,
-    rgba(255, 255, 255, 0.741) 44%,
-    rgba(255, 255, 255, 0.648) 49%,
-    rgba(255, 255, 255, 0.55) 54%,
-    rgba(255, 255, 255, 0.45) 59%,
-    rgba(255, 255, 255, 0.352) 64%,
-    rgba(255, 255, 255, 0.259) 69%,
-    rgba(255, 255, 255, 0.175) 75%,
-    rgba(255, 255, 255, 0.104) 81%,
-    rgba(255, 255, 255, 0.049) 87%,
-    rgba(255, 255, 255, 0.013) 94%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  filter: blur(6px);
+  left: 0;
+  right: 0;
+  height: 48px;
   pointer-events: none;
+}
+
+.add-kid__fade-blur,
+.add-kid__fade::after {
+  position: absolute;
+  inset: 0;
+  opacity: var(--fade, 0);
+}
+
+.add-kid__fade-blur {
+  --blur: 1px;
+  --reach: 100%;
+  -webkit-backdrop-filter: blur(var(--blur));
+  backdrop-filter: blur(var(--blur));
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent var(--reach));
+  mask-image: linear-gradient(to bottom, #000 0%, transparent var(--reach));
+}
+
+.add-kid__fade-blur:nth-child(2) {
+  --blur: 2px;
+  --reach: 75%;
+}
+
+.add-kid__fade-blur:nth-child(3) {
+  --blur: 4px;
+  --reach: 50%;
+}
+
+.add-kid__fade-blur:nth-child(4) {
+  --blur: 8px;
+  --reach: 28%;
+}
+
+.add-kid__fade::after {
+  content: '';
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0) 85%);
 }
 
 /* Body (57:1191) — 16 side padding, 20 top/bottom, radius 20 top */

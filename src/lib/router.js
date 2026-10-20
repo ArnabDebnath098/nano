@@ -1,6 +1,7 @@
 // Minimal hash router — keeps browser/hardware back working without a dependency.
-//   #/              → { name: 'accounts' }   noon Accounts (no child yet) — the first screen
-//   #/family        → { name: 'family' }     Manage Family home
+//   #/              → { name: 'flows' }      prototype landing — pick a flow to test
+//   #/accounts      → { name: 'accounts' }   noon Accounts (no child yet)
+//   #/family        → { name: 'family', focus }  Manage Family home (?focus=approvals scrolls to them)
 //   #/kid/:id       → { name: 'kid', id }
 //   #/invite        → { name: 'invite' }     parent-onboarding intro video
 //   #/add-kid       → { name: 'add-kid', step, intro }
@@ -10,13 +11,14 @@ function parse(hash) {
   const [path, query = ''] = hash.replace(/^#/, '').split('?')
   const [, section, id] = path.split('/')
   const params = new URLSearchParams(query)
-  if (section === 'family') return { name: 'family' }
+  if (section === 'accounts') return { name: 'accounts' }
+  if (section === 'family') return { name: 'family', focus: params.get('focus') }
   if (section === 'kid' && id) return { name: 'kid', id }
   if (section === 'invite') return { name: 'invite' }
   // ?step=<id> deep-links a step (prototype review / screenshots);
   // ?intro=1 = arrived from the intro video (the page is revealed under it, no slide-up)
   if (section === 'add-kid') return { name: 'add-kid', step: params.get('step'), intro: params.get('intro') === '1' }
-  return { name: 'accounts' }
+  return { name: 'flows' }
 }
 
 const subscribe = (cb) => {

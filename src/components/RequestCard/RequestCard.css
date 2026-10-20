@@ -225,3 +225,107 @@
 .request-card__amount > img {
   flex-shrink: 0;
 }
+
+/* ---- Request Status pill (56:32549) — 32 tall, radius 40, 6 / 8 padding, icon chip + B12 ---- */
+.request-status {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  height: 32px;
+  padding: var(--space-8) var(--space-8) var(--space-8) var(--space-6);
+  border-radius: 40px;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--b12-size);
+  line-height: var(--b12-lh);
+  letter-spacing: var(--b12-ls);
+  white-space: nowrap;
+}
+
+.request-status__icon {
+  display: flex;
+  padding: var(--space-4);
+  border-radius: var(--radius-12);
+}
+
+.request-status--approved,
+.request-status--completed {
+  background: #e3fcf2;
+  color: #0f8857;
+}
+
+.request-status--approved .request-status__icon,
+.request-status--completed .request-status__icon {
+  background: #0f8857;
+}
+
+.request-status--in-cart {
+  background: var(--colour-surface-action-subtle);
+  color: var(--colour-text-action);
+}
+
+.request-status--in-cart .request-status__icon {
+  background: #0f7eff;
+}
+
+.request-status--declined {
+  background: #fff0f0;
+  color: var(--colour-text-error);
+}
+
+.request-status--declined .request-status__icon {
+  background: #d92626;
+}
+
+/* ---- Soft speech bubble (_Bubble Mask) — 283 wide, radius 20, light gradient with an inner
+   bevel; the tail (Figma's mask, flipped with the bubble) points up-left at the avatar ---- */
+.request-bubble {
+  position: relative;
+  isolation: isolate;
+  width: 283px;
+  max-width: 100%;
+  min-height: 64px;
+  padding: 12px 21px 12px 22px;
+  border-radius: 20px;
+  background: linear-gradient(178.36deg, #e8e8e8 42.8%, #fff 119.65%);
+  filter: drop-shadow(0 -6px 6px rgba(255, 255, 255, 0.8));
+}
+
+/* Inner bevel over the fill AND the tail (as Figma stacks it), so the tail's base is shaded
+   into the bubble instead of showing as a pale notch */
+.request-bubble::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  box-shadow:
+    inset 0 -4px 2px 0 #fff,
+    inset 0 4px 7px 0 rgba(0, 0, 0, 0.18);
+  pointer-events: none;
+}
+
+.request-bubble__tail {
+  position: absolute;
+  top: -6.86px;
+  left: 7.3px;
+  max-width: none;
+  rotate: 180deg;
+  /* Figma's #f0f0f0 toned to the bubble's #e8e8e8 top, so the part under the fill disappears
+     into it; only the tip plus a few px into the rounded corner are kept (local bottom = top
+     once rotated), so its square base never shows past the corner */
+  filter: brightness(0.967);
+  clip-path: inset(6px 0 0 0);
+}
+
+.request-bubble__text {
+  position: relative;
+  z-index: 2;
+  /* B13 Medium 13/20 (the --b13 token is 14px) */
+  font-weight: var(--font-weight-medium);
+  font-size: 13px;
+  line-height: 20px;
+  letter-spacing: -0.1px;
+  color: var(--colour-text-primary);
+  opacity: 0.9;
+}

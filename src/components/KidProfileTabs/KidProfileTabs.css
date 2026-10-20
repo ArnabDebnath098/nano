@@ -15,6 +15,7 @@
   height: 66px;
   transform-origin: 0 0;
   scale: var(--tabs-scale, 1);
+  isolation: isolate;
 }
 
 /* Recess at top 7 — a single live path, morphed in step with the pill */
@@ -22,6 +23,7 @@
   position: absolute;
   top: 7px;
   left: 0;
+  z-index: 0;
   display: block;
   overflow: hidden;
 }
@@ -31,9 +33,13 @@
   position: absolute;
   top: 0;
   left: 0;
+  z-index: 2;
   display: flex;
   gap: var(--space-8);
   padding-left: var(--space-16);
+  /* Own compositing layer above the pill's: iOS Safari otherwise draws the moving pill
+     (will-change: transform) over the label, so the selected tab reads as a blank white pill */
+  transform: translateZ(0);
 }
 
 /* 44px pill-sized hit area, centred in the 58px slot */
@@ -79,6 +85,7 @@
   position: absolute;
   top: 7px;
   left: 0;
+  z-index: 1;
   height: 44px;
   will-change: transform;
   border: 1px solid #fff;

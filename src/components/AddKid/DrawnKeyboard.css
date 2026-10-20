@@ -7,13 +7,15 @@
   pointer-events: none;
 }
 
-.drawn-keyboard__img {
+/* One keyboard: the image plus the redrawn keys over it, sized as one (labels scale with the
+   width via container units) */
+.drawn-keyboard__pad {
   position: absolute;
   left: 50%;
   bottom: 0;
   width: 100%;
   max-width: 480px;
-  height: auto;
+  container-type: inline-size;
   translate: -50% 100%;
   visibility: hidden;
   transition:
@@ -21,7 +23,7 @@
     visibility 0s linear var(--nn-kb-dur);
 }
 
-.drawn-keyboard__img.is-up {
+.drawn-keyboard__pad.is-up {
   translate: -50% 0;
   visibility: visible;
   transition:
@@ -29,8 +31,57 @@
     visibility 0s;
 }
 
+.drawn-keyboard__pad img {
+  width: 100%;
+  height: auto;
+}
+
+/* Wipes a row of the image before its keys are redrawn */
+.drawn-keyboard__strip {
+  position: absolute;
+}
+
+.drawn-keyboard__strip--numpad {
+  background: rgb(224 227 231);
+}
+
+/* A redrawn key: white, centred label — covers the image's off-centre glyph */
+.drawn-keyboard__key {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: calc(8.5 / 375 * 100cqw);
+  background: #fff;
+  font-family: 'SF Pro', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  font-size: calc(25 / 375 * 100cqw);
+  font-variant-numeric: tabular-nums;
+  font-weight: 400;
+  line-height: 1;
+  color: #595959;
+  /* iOS sits lowercase letters a touch above centre */
+  padding-bottom: calc(3 / 375 * 100cqw);
+}
+
+.drawn-keyboard__key--num {
+  color: #000;
+  padding-bottom: 0;
+}
+
+/* Sits on the numpad background (delete has no key cap) */
+.drawn-keyboard__key--bare {
+  background: none;
+  color: #3c3c43;
+  padding-bottom: 0;
+}
+
+.drawn-keyboard__key--bare svg {
+  width: calc(23 / 375 * 100cqw);
+  height: auto;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .drawn-keyboard__img {
+  .drawn-keyboard__pad {
     transition: none;
   }
 }

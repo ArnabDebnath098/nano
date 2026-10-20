@@ -10,7 +10,7 @@ import { requestMotionPermission } from '../../../../lib/motionPermission.js'
 // iOS motion permission is requested by the tap that opens this screen (AddKidFlow); if that
 // didn't happen, a tap on the card asks (on click — iOS rejects requests from pointerdown).
 // Reduced motion: off.
-const MAX_TILT = 9 // deg
+const MAX_TILT = 4 // deg — a subtle lean (3–4°), not a swing
 const RANGE = 22 // deg of phone tilt for full lean
 const FOLLOW = 0.1 // per-frame approach factor
 

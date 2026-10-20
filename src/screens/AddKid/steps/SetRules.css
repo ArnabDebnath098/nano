@@ -5,7 +5,7 @@
   gap: var(--space-16);
 }
 
-/* Option card: white, 1px subtle border, radius 16, 12 padding */
+/* Option card: white, 1px subtle border, radius 16, 20 padding */
 .rule-card {
   position: relative;
   overflow: hidden;
@@ -52,7 +52,7 @@
   width: 100%;
   flex-direction: column;
   gap: var(--space-12);
-  padding: var(--space-12);
+  padding: var(--space-20);
   border: 0;
   background: none;
   color: inherit;
@@ -133,7 +133,7 @@
 .rule-card__more {
   display: flex;
   flex-direction: column;
-  padding: var(--space-12) var(--space-12) var(--space-12);
+  padding: 0 var(--space-20) var(--space-20); /* the head's 20 bottom padding sits above */
   opacity: 0;
   translate: 0 -8px;
   filter: blur(2px);
@@ -230,6 +230,20 @@
     filter var(--nn-pp-fade-ms) var(--nn-pp-fade) 80ms;
 }
 
+/* Mirrors .rule-limit-collapse: open (PP Move) here is the field closing (300ms ease-out) */
+.set-rules__hold {
+  flex-shrink: 0;
+  height: 0;
+  margin-top: calc(-1 * var(--space-16)); /* no .set-rules gap of its own */
+  pointer-events: none;
+  transition: height var(--nn-pp-move-ms) var(--nn-pp-move);
+}
+
+.set-rules__hold.is-holding {
+  height: var(--hold);
+  transition: height 300ms var(--nn-ease-out-cubic);
+}
+
 .rule-inputs__divider {
   display: block;
   width: 100%;
@@ -312,7 +326,9 @@
 /* Reduced motion keeps the press scale (no travel) */
 @media (prefers-reduced-motion: reduce) {
   .rule-limit-collapse,
-  .rule-limit-collapse.is-open {
+  .rule-limit-collapse.is-open,
+  .set-rules__hold,
+  .set-rules__hold.is-holding {
     transition: none;
   }
   .rule-limit-collapse .rule-limit,

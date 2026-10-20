@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { gsap, useGSAP } from '../lib/gsap.js'
 import { RISE, RISE_FADE, STAGGER } from '../lib/motion.js'
 import TopBar from '../components/TopBar/TopBar.jsx'
@@ -12,7 +12,7 @@ import { parent, children, approvalRequests, tasks, profiles } from '../data/man
 import './ManageFamily.css'
 
 // Figma: Manage Family · Tasks added (2:2858)
-export default function ManageFamily({ onBack, onOpenKid, onAddKid }) {
+export default function ManageFamily({ onBack, onOpenKid, onAddKid, focus }) {
   const root = useRef(null)
   const [switchOpen, setSwitchOpen] = useState(false)
   const closeSwitch = useCallback(() => setSwitchOpen(false), [])
@@ -37,6 +37,15 @@ export default function ManageFamily({ onBack, onOpenKid, onAddKid }) {
     },
     { scope: root },
   )
+
+  // ?focus=approvals (Approval request flow from the flow list) → bring the requests into view
+  useEffect(() => {
+    if (focus !== 'approvals') return
+    const t = setTimeout(() => {
+      root.current?.querySelector('.approval-requests')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 400)
+    return () => clearTimeout(t)
+  }, [focus])
 
   return (
     <div ref={root} className="manage-family">

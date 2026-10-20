@@ -10,7 +10,12 @@
   height: 52px;
   padding: var(--space-14);
   overflow: hidden;
+  /* The stroke is the button's own 2px border (colour per variant) and the fill stops inside it
+     (padding-box). Drawn as an overlay, the fill and shadows ran under the stroke's anti-aliased
+     corners and showed as a fringe. overflow: hidden clips the inner layers to the inner curve. */
+  border: 2px solid transparent;
   border-radius: var(--radius-16);
+  background-clip: padding-box;
   font-weight: var(--font-weight-semibold);
   font-size: var(--a16-size);
   line-height: var(--a16-lh);
@@ -21,16 +26,16 @@
   transition:
     scale var(--nn-pp-move-ms) var(--nn-pp-move),
     background-color var(--nn-pp-fade-ms) var(--nn-pp-fade),
+    border-color var(--nn-pp-fade-ms) var(--nn-pp-fade),
     color var(--nn-pp-fade-ms) var(--nn-pp-fade);
 }
 
-/* Stroke (2px inside) and inner shadows — faded out when disabled */
-.nano-btn::before,
+/* Inner shadows — faded out when disabled. Inside the border, so on the inner curve (16 − 2) */
 .nano-btn::after {
   content: '';
   position: absolute;
   inset: 0;
-  border-radius: inherit;
+  border-radius: calc(var(--radius-16) - 2px);
   pointer-events: none;
   transition: opacity var(--nn-pp-fade-ms) var(--nn-pp-fade);
 }
@@ -45,7 +50,7 @@
 .nano-btn__press {
   position: absolute;
   inset: 0;
-  border-radius: inherit;
+  border-radius: calc(var(--radius-16) - 2px);
   opacity: 0;
   pointer-events: none;
   transition: opacity var(--nn-pp-fade-ms) var(--ease-out);
@@ -53,13 +58,9 @@
 
 /* Primary — #212121, #efefef stroke, sculpted inner shadow */
 .nano-btn--primary {
+  border-color: #efefef;
   background-color: #212121;
   color: var(--colour-text-on-surface-bold);
-}
-
-.nano-btn--primary::before {
-  z-index: 1; /* the rim stays on top of the pressed layer */
-  border: 2px solid #efefef;
 }
 
 .nano-btn--primary::after {
@@ -68,24 +69,30 @@
     inset 0 4px 8px 0 rgba(210, 210, 210, 0.4);
 }
 
-/* Primary pressed — light falls from the bottom now, shadow pools under the top edge */
+/* Primary pressed (Kids-Side 1707:25155) — #1a1a1a, shadow pools under the top edge, a faint
+   light rim at the bottom */
 .nano-btn--primary .nano-btn__press {
-  background: linear-gradient(to bottom, #000 0%, #141414 40%, #353535 100%);
+  background: #1a1a1a;
   box-shadow:
-    inset 0 7px 9px 0 #000,
-    inset 0 -3px 6px 0 rgba(210, 210, 210, 0.22);
+    inset 0 -3px 6px 0 rgba(210, 210, 210, 0.35),
+    inset 0 2px 3px 0 rgba(0, 0, 0, 0.7),
+    inset 0 7px 14px 0 rgba(0, 0, 0, 0.95);
 }
 
-/* Secondary — white, white stroke, soft grey inner shadow */
+/* Secondary — white, white stroke, soft grey inner shadow. As in Figma, the shadows sit over the
+   (white-on-white) stroke and run to the outer edge — that shading is what outlines the button —
+   so there's no border box here (white fill, so nothing dark to fringe the corners); the padding
+   keeps the 2px the stroke took. */
 .nano-btn--secondary {
   background-color: var(--colour-surface-primary);
   color: var(--colour-text-primary);
-  padding: var(--space-16) var(--space-18);
+  padding: calc(var(--space-16) + 2px) calc(var(--space-18) + 2px);
+  border-width: 0;
 }
 
-.nano-btn--secondary::before {
-  z-index: 1;
-  border: 2px solid #fff;
+.nano-btn--secondary::after,
+.nano-btn--secondary .nano-btn__press {
+  border-radius: var(--radius-16);
 }
 
 .nano-btn--secondary::after {
@@ -94,18 +101,43 @@
     inset 0 -6px 6px 0 rgba(152, 159, 179, 0.22);
 }
 
-/* Secondary pressed — a soft grey well, shaded from the top */
+/* Secondary pressed (Kids-Side 1871:30701) — #f3f4f7 well, white glow at the bottom, a soft
+   shade under the top edge */
 .nano-btn--secondary .nano-btn__press {
-  background: linear-gradient(to bottom, #eceef3 0%, #f6f7fa 55%, #fff 100%);
+  background: #f3f4f7;
   box-shadow:
-    inset 0 4px 8px 0 rgba(152, 159, 179, 0.38),
-    inset 0 -2px 4px 0 rgba(255, 255, 255, 0.9);
+    inset 0 -3px 6px 0 #fff,
+    inset 0 1.5px 3px 0 rgba(152, 159, 179, 0.21);
+}
+
+/* Tertiary (Kids-Side 884:15810) — text only: #7924ff, 15px, 8 × 12 padding, no fill or stroke.
+   Hugs its label instead of filling the row. Pressed: the label dims. */
+.nano-btn--tertiary {
+  flex: 0 0 auto;
+  height: auto;
+  padding: var(--space-8) var(--space-12);
+  border: none;
+  color: #7924ff;
+  font-size: 15px;
+}
+
+.nano-btn--tertiary .nano-btn__press {
+  display: none;
+}
+
+.nano-btn--tertiary .nano-btn__label {
+  transition: opacity var(--nn-pp-fade-ms) var(--ease-out);
+}
+
+.nano-btn--tertiary:active:not(:disabled) .nano-btn__label {
+  opacity: 0.6;
+  translate: none;
 }
 
 /* Press: scale under the finger (noon NANO .nano-btn:active .98) and sink in, in 90ms */
 .nano-btn:active:not(:disabled) {
   scale: var(--nn-press-nano-btn);
-  transition-duration: var(--nn-dur-press), var(--nn-pp-fade-ms), var(--nn-pp-fade-ms);
+  transition-duration: var(--nn-dur-press), var(--nn-pp-fade-ms), var(--nn-pp-fade-ms), var(--nn-pp-fade-ms);
 }
 
 .nano-btn:active:not(:disabled) .nano-btn__press {
@@ -134,16 +166,20 @@
   color: var(--colour-text-muted);
 }
 
+/* Flat: the border takes the fill colour, so the button keeps its size with no visible stroke */
 .nano-btn--primary:disabled {
+  border-color: var(--colour-surface-muted);
   background-color: var(--colour-surface-muted);
 }
 
+/* 1px ring as the border itself; padding takes the other 1px so the label stays put */
 .nano-btn--secondary:disabled {
+  border-width: 1px;
+  border-color: var(--colour-border-primary);
+  padding: calc(var(--space-16) + 1px) calc(var(--space-18) + 1px);
   background-color: var(--colour-surface-secondary);
-  box-shadow: inset 0 0 0 1px var(--colour-border-primary);
 }
 
-.nano-btn:disabled::before,
 .nano-btn:disabled::after {
   opacity: 0;
 }

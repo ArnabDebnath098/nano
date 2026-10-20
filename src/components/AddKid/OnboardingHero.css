@@ -50,10 +50,13 @@
   --sticker-fill: linear-gradient(28.68deg, #000 52.835%, #7924ff 104.2%);
 }
 
-/* 55:1172 — B14 Medium, 311 wide */
+/* 55:1172 — B14 Medium, one line (Figma truncates it): it takes the screen width less the 16px
+   gutters, and a long kid's name ellipsises rather than wrapping to a second line */
 .onboarding-hero__subtitle {
-  width: 311.28px;
   max-width: calc(100% - 32px);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   font-weight: var(--font-weight-medium);
   font-size: var(--b14-size);
   line-height: var(--b14-lh);

@@ -109,7 +109,7 @@
   white-space: nowrap;
 }
 
-/* Circular checkbox H24 in an 8px side-padded slot */
+/* M-Checkbox H24 (squircle) in an 8px side-padded slot */
 .address-card__check {
   display: grid;
   flex-shrink: 0;
@@ -121,15 +121,15 @@
   overflow: visible;
 }
 
-/* Unchecked: 1.5px ring (Figma M-Checkbox off #666D85) */
+/* Unchecked: white box, 1px #D0D4DD outline — as Set rules' options (radio-off) */
 .address-check__ring {
   fill: var(--colour-surface-primary);
-  stroke: #666d85;
-  stroke-width: 1.5;
+  stroke: var(--colour-border-medium);
+  stroke-width: 1;
   transition: stroke var(--nn-pp-fade-ms) var(--nn-pp-fade);
 }
 
-/* Checked disc (#9B3DFF) — pops from 0.9, never from 0 */
+/* Checked fill (#9B3DFF) — pops from 0.9, never from 0 */
 .address-check__disc {
   fill: #9b3dff;
   transform-box: fill-box;
@@ -146,7 +146,7 @@
 .address-check__tick {
   fill: none;
   stroke: #fff;
-  stroke-width: 1.6;
+  stroke-width: 1.5;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-dasharray: 1;
