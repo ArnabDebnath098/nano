@@ -1,0 +1,19 @@
+.device-frame {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  background: #000;
+}
+
+/* The clip-path would cut a box-shadow off, so the shadow sits on a wrapper and follows the
+   clipped shape via drop-shadow */
+.device-frame__shadow {
+  filter: drop-shadow(0 24px 48px rgb(16 24 40 / 0.18)) drop-shadow(0 2px 6px rgb(16 24 40 / 0.08));
+}
+
+.device-frame__screen {
+  display: block;
+  border: 0;
+  transform-origin: top left;
+  background: var(--colour-surface-secondary);
+}
