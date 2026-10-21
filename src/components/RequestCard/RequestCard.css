@@ -9,6 +9,23 @@
   background: var(--colour-surface-primary);
 }
 
+/* Tappable card (opens the request detail) — NANO card press */
+.request-card--link {
+  cursor: pointer;
+  transition: scale var(--nn-pp-move-ms) var(--nn-pp-move);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.request-card--link:active {
+  scale: var(--press-scale-card);
+  transition-duration: var(--nn-dur-press);
+}
+
+.request-card--link:focus-visible {
+  outline: 2px solid var(--colour-primary);
+  outline-offset: 2px;
+}
+
 /* ---- Request Status ---- */
 .request-card__status {
   display: flex;
@@ -97,32 +114,6 @@
   border-radius: 50%;
   background: currentColor;
   translate: 0 -50%;
-}
-
-.request-card__bubble {
-  position: relative;
-  flex-shrink: 0;
-  width: 281px;
-  height: 65px;
-}
-
-.request-card__bubble-shape {
-  position: absolute;
-  top: 0;
-  left: 0;
-  max-width: none;
-}
-
-.request-card__message {
-  position: absolute;
-  left: 14.83px;
-  top: 17.04px;
-  width: 251.34px;
-  font-weight: var(--font-weight-regular);
-  font-size: 14px;
-  line-height: 20px;
-  letter-spacing: -0.1px;
-  color: #000;
 }
 
 /* ---- Divider ---- */
@@ -277,8 +268,9 @@
   background: #d92626;
 }
 
-/* ---- Soft speech bubble (_Bubble Mask) — 283 wide, radius 20, light gradient with an inner
-   bevel; the tail (Figma's mask, flipped with the bubble) points up-left at the avatar ---- */
+/* ---- Soft speech bubble (_Bubble Mask) — 283 wide, radius 16, a near-white gradient with a
+   soft inner bevel (Figma's values as written: lit from the top, shaded at the bottom); the tail
+   (Figma's mask) points up-left at the avatar ---- */
 .request-bubble {
   position: relative;
   isolation: isolate;
@@ -286,13 +278,15 @@
   max-width: 100%;
   min-height: 64px;
   padding: 12px 21px 12px 22px;
-  border-radius: 20px;
-  background: linear-gradient(178.36deg, #e8e8e8 42.8%, #fff 119.65%);
-  filter: drop-shadow(0 -6px 6px rgba(255, 255, 255, 0.8));
+  border-radius: 16px;
+  background: linear-gradient(352.76deg, #e8e8e8 -42.8%, #fff 119.65%);
+  /* Figma's 0 6 12 white glow — drop-shadow so it wraps the tail too */
+  filter: drop-shadow(0 6px 6px rgba(255, 255, 255, 0.8));
 }
 
 /* Inner bevel over the fill AND the tail (as Figma stacks it), so the tail's base is shaded
-   into the bubble instead of showing as a pale notch */
+   into the bubble instead of showing as a notch: white lip at the top, faint shade at the
+   bottom */
 .request-bubble::after {
   content: '';
   position: absolute;
@@ -300,8 +294,8 @@
   z-index: 1;
   border-radius: inherit;
   box-shadow:
-    inset 0 -4px 2px 0 #fff,
-    inset 0 4px 7px 0 rgba(0, 0, 0, 0.18);
+    inset 0 4px 2px 0 #fff,
+    inset 0 -4px 7px 0 rgba(0, 0, 0, 0.08);
   pointer-events: none;
 }
 
@@ -311,10 +305,9 @@
   left: 7.3px;
   max-width: none;
   rotate: 180deg;
-  /* Figma's #f0f0f0 toned to the bubble's #e8e8e8 top, so the part under the fill disappears
-     into it; only the tip plus a few px into the rounded corner are kept (local bottom = top
-     once rotated), so its square base never shows past the corner */
-  filter: brightness(0.967);
+  /* Shaded #f0f0f0 tip → white base (see BubbleTail); only the tip plus a few px into the rounded
+     corner are kept (local bottom = top once rotated), so its square base never shows past the
+     corner */
   clip-path: inset(6px 0 0 0);
 }
 

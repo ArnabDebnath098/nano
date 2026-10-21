@@ -3,6 +3,8 @@
 //   #/accounts      → { name: 'accounts' }   noon Accounts (no child yet)
 //   #/family        → { name: 'family', focus }  Manage Family home (?focus=approvals scrolls to them)
 //   #/kid/:id       → { name: 'kid', id }
+//   #/request/:id   → { name: 'request', id, kid }  request detail (?kid=<id> keeps that kid's
+//                                                  profile open under it)
 //   #/invite        → { name: 'invite' }     parent-onboarding intro video
 //   #/add-kid       → { name: 'add-kid', step, intro }
 import { useSyncExternalStore } from 'react'
@@ -14,6 +16,7 @@ function parse(hash) {
   if (section === 'accounts') return { name: 'accounts' }
   if (section === 'family') return { name: 'family', focus: params.get('focus') }
   if (section === 'kid' && id) return { name: 'kid', id }
+  if (section === 'request' && id) return { name: 'request', id, kid: params.get('kid') }
   if (section === 'invite') return { name: 'invite' }
   // ?step=<id> deep-links a step (prototype review / screenshots);
   // ?intro=1 = arrived from the intro video (the page is revealed under it, no slide-up)

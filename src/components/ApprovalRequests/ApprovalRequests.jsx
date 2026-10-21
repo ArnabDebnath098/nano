@@ -1,4 +1,5 @@
 import RequestCard from '../RequestCard/RequestCard.jsx'
+import { navigate } from '../../lib/router.js'
 import './ApprovalRequests.css'
 
 // Figma: Task Widget (2:2920) — "Approval requests" section
@@ -13,7 +14,7 @@ export default function ApprovalRequests({ requests }) {
 
       <div className="approval-requests__list">
         {requests.map((request) => (
-          <RequestCard key={request.id} request={request} />
+          <RequestCard key={request.id} request={request} onOpen={() => navigate(`/request/${request.id}`)} />
         ))}
       </div>
     </section>

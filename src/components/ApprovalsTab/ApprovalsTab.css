@@ -6,8 +6,13 @@
   background: var(--colour-surface-primary);
 }
 
-/* Header (714:28569) — 8 top / 12 bottom, 20 sides, 8 gap; scrolls sideways on narrow screens */
+/* Header (714:28569) — 8 top / 12 bottom, 20 sides, 8 gap; scrolls sideways on narrow screens.
+   Sticks under the kid profile's header + tabs (--kid-bar-h / --kid-tabs-h from KidProfile). */
 .approvals-tab__filters {
+  position: sticky;
+  top: calc(var(--kid-bar-h, 0px) + var(--kid-tabs-h, 0px));
+  z-index: 1;
+  background: var(--colour-surface-primary);
   display: flex;
   gap: var(--space-8);
   padding: var(--space-8) var(--space-20) var(--space-12);

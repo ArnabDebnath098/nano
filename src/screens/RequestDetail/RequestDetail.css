@@ -1,0 +1,794 @@
+/* Figma: Request detail · Not within balance (Parent-Side 56:31669), 375 wide.
+   Type sizes are Figma's own (12 / 13px included — this screen is built 1:1), not the
+   bumped-to-14 --b12 / --b13 tokens. */
+.request-detail {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  background: var(--colour-surface-tertiary);
+}
+
+/* ---- 71:2303 Top bar — status bar 62 + nav 56. Sticky at the top inside the (also sticky)
+   header, which never scrolls its last 118px away, so the bar stays put. No fill of its own. ---- */
+.request-detail__top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+}
+
+.request-detail__nav {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  height: 56px;
+  padding: var(--space-8) var(--space-16);
+}
+
+/* M-IconButton H40, Emphasis=Default — white, border/subtle, 20px chevron */
+.request-detail__back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: var(--space-10);
+  border: 1px solid var(--colour-border-subtle);
+  border-radius: 9999px;
+  background: var(--colour-surface-primary);
+  transition: scale var(--nn-pp-move-ms) var(--nn-pp-move);
+}
+
+.request-detail__back img {
+  width: 20px;
+  height: 20px;
+}
+
+.request-detail__back:active {
+  scale: var(--press-scale);
+  transition-duration: var(--nn-dur-press);
+}
+
+/* ---- 71:16000 Request summary header ---- */
+/* Collapses on scroll (useCollapsingSummary), all by CSS sticky: top = −collapse (set from JS), so
+   it stops with the top bar + 8px of it left and the cards scroll under it. Its box runs
+   --overhang (= collapse) further down, as padding cancelled by a negative margin and cut off by
+   the clip-path (which also rounds the bottom), so the sticky image has room to stay put. No
+   overflow clip: it would stop the top bar sticking inside it. */
+.request-summary {
+  position: sticky;
+  z-index: 2;
+  padding-bottom: var(--overhang, 0px);
+  margin-bottom: calc(-1 * var(--overhang, 0px));
+  clip-path: inset(0 0 var(--overhang, 0px) 0 round 0 0 var(--radius-24) var(--radius-24));
+}
+
+/* Header-height image, sticky at the top so it doesn't move while the header scrolls over it.
+   Height and a matching negative bottom margin (out of the flow) are set from JS. */
+.request-summary__bg {
+  position: sticky;
+  top: 0;
+  display: block;
+  width: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: 50% 0;
+  pointer-events: none;
+}
+
+.request-summary__avatar {
+  display: flex;
+}
+
+/* The header's 16px bottom padding is the wallet card's margin: as padding (on the header or
+   here) it would shrink the boxes the sticky top bar and amount are held in, and they'd ride up
+   once the header had collapsed */
+.request-summary__stack {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 0 var(--space-16);
+}
+
+/* B12 SemiBold, uppercase, white — 2px above the amount (the stack's 24px gap, less 22) */
+.request-summary__label {
+  margin-bottom: -22px;
+  white-space: nowrap;
+  font-weight: var(--font-weight-semibold);
+  font-size: 12px;
+  line-height: 18px;
+  letter-spacing: -0.1px;
+  text-transform: uppercase;
+  color: var(--colour-text-on-surface-bold);
+}
+
+/* H40 Bold — white → 75% white fill with a 0 2 2 shadow (drop-shadow: text-shadow would paint
+   over a background-clip:text fill) */
+.request-summary__value {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--h40-size);
+  line-height: var(--h40-lh);
+  letter-spacing: var(--h40-ls);
+  background: linear-gradient(to bottom, #fff 21.25%, rgba(255, 255, 255, 0.75) 77.5%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 2px 1px rgba(0, 0, 0, 0.45));
+  /* sticky in the nav (top set from JS), above the top bar; shrinks on scroll */
+  position: sticky;
+  z-index: 4;
+  white-space: nowrap;
+  will-change: transform;
+}
+
+/* 79:3217 — Wallet balance card: 94 tall, radius 20, 16 / 24 / 20 padding */
+.wallet-short {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-4);
+  width: 100%;
+  height: 94px;
+  margin-bottom: var(--space-16);
+  padding: var(--space-16) 24px var(--space-20);
+  overflow: hidden;
+  border-radius: var(--radius-20);
+  background: linear-gradient(-1.99deg, #e8e8e8 42.796%, #fff 119.65%);
+}
+
+.wallet-short::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow:
+    inset 0 4px 6px 0 rgba(152, 159, 179, 0.1),
+    inset 0 -4px 7px 0 #989fb3;
+  pointer-events: none;
+}
+
+.wallet-short__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.wallet-short__col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.wallet-short__col--end {
+  align-items: flex-end;
+}
+
+.wallet-short__caption {
+  font-size: 12px;
+  line-height: 18px;
+  letter-spacing: -0.1px;
+  color: var(--colour-text-tertiary);
+  white-space: nowrap;
+}
+
+.wallet-short__col--end .wallet-short__caption {
+  padding-bottom: var(--space-1);
+}
+
+.wallet-short__value {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--h16-size);
+  line-height: var(--h16-lh);
+  letter-spacing: var(--h16-ls);
+  color: var(--colour-text-primary);
+  white-space: nowrap;
+}
+
+.wallet-short__value--short {
+  color: #e5641a; /* text-n-icon/warning */
+}
+
+/* Linear-determinate progress — balance and short tracks split by amount, 4px apart */
+.wallet-short__bar {
+  display: flex;
+  gap: var(--space-4);
+  padding: var(--space-4) 0;
+}
+
+.wallet-short__balance,
+.wallet-short__short {
+  flex-basis: 0;
+  min-width: 6px;
+  height: 6px;
+}
+
+.wallet-short__balance {
+  border-radius: 64px;
+  background: linear-gradient(to right, #b892ff, #6e34da);
+  box-shadow:
+    inset 0 -2px 1px 0 rgba(0, 0, 0, 0.2),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.65);
+}
+
+.wallet-short__short {
+  border-radius: 56px;
+  background: #e5641a;
+  box-shadow:
+    inset 0 -1px 1px 0 rgba(137, 60, 16, 0.2),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.65);
+}
+
+/* ---- 56:31698 Body — 12 sides, 10 gap (16 top less the header's 4px overlap in Figma) ---- */
+.request-detail__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-10);
+  padding: var(--space-12) var(--space-12) var(--space-16);
+}
+
+.request-panel {
+  border-radius: var(--radius-16);
+  background: var(--colour-surface-primary);
+}
+
+/* 40px tertiary circle holding a 24px icon (message / shop) */
+.request-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-20);
+  background: var(--colour-surface-tertiary);
+}
+
+/* 80:3057 — Message from kid */
+.request-message {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  padding: var(--space-16) var(--space-12);
+}
+
+.request-message__text {
+  flex: 1 0 0;
+  min-width: 1px;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--b14-size);
+  line-height: var(--b14-lh);
+  letter-spacing: var(--b14-ls);
+  color: var(--colour-text-primary);
+}
+
+/* ---- 56:31703 Requested products ---- */
+.request-products {
+  overflow: hidden;
+}
+
+.request-products__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+  padding: var(--space-12);
+}
+
+.request-products__title {
+  padding: var(--space-4) 0;
+  font-weight: var(--font-weight-bold);
+  font-size: 16px;
+  line-height: var(--h16-lh);
+  letter-spacing: var(--h16-ls);
+  color: var(--colour-text-primary);
+}
+
+.request-products__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+}
+
+.request-products__divider {
+  width: 100%;
+  height: 1px;
+}
+
+.request-product {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+}
+
+.request-product__media {
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* 88 × 112 tile, radius 10 */
+.request-product__tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 88px;
+  height: 112px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: var(--colour-surface-secondary);
+}
+
+.request-product__tile img {
+  flex-shrink: 0;
+  max-width: none;
+  object-fit: contain;
+}
+
+.request-product__qty {
+  position: absolute;
+  right: 8.5px;
+  bottom: 31px;
+  padding: var(--space-4);
+  overflow: hidden;
+  border: 0.5px solid var(--colour-border-subtle);
+  border-radius: 5px;
+  background: var(--colour-surface-primary);
+  font-weight: var(--font-weight-semibold);
+  font-size: 13px;
+  line-height: 20px;
+  letter-spacing: -0.1px;
+  color: var(--colour-text-secondary);
+}
+
+.request-product__check {
+  position: absolute;
+  top: 7px;
+  left: 8px;
+}
+
+.request-product__info {
+  flex: 1 0 0;
+  min-width: 1px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-10);
+}
+
+/* B14 Medium, two lines then an ellipsis */
+.request-product__name {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  font-weight: var(--font-weight-medium);
+  font-size: 14px;
+  line-height: var(--b14-lh);
+  letter-spacing: var(--b14-ls);
+  color: var(--colour-text-primary);
+  font-feature-settings: 'case' 1;
+}
+
+.request-product__secondary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-8);
+}
+
+.request-product__price {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-4);
+  white-space: nowrap;
+  font-feature-settings: 'case' 1;
+}
+
+.request-product__now {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--h16-size);
+  line-height: var(--h16-lh);
+  letter-spacing: var(--h16-ls);
+  color: var(--colour-text-primary);
+}
+
+.request-product__was {
+  padding-bottom: var(--space-1);
+  font-size: 12px;
+  line-height: 18px;
+  letter-spacing: -0.1px;
+  color: var(--colour-text-tertiary);
+}
+
+.request-product__off {
+  padding-bottom: var(--space-1);
+  font-weight: var(--font-weight-semibold);
+  font-size: 12px;
+  line-height: 18px;
+  letter-spacing: -0.1px;
+  color: #0f8857; /* text-n-icon/success */
+}
+
+/* ETAs — 13px, regular lead + bold time */
+.request-eta {
+  font-size: 13px;
+  line-height: 20px;
+  letter-spacing: -0.1px;
+  white-space: nowrap;
+}
+
+.request-eta b {
+  font-weight: var(--font-weight-bold);
+}
+
+.request-eta--express {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--space-4) var(--space-6);
+  border-radius: 6px;
+  background: linear-gradient(to right, #f5f5fc, #fff);
+  color: #2122b8;
+}
+
+.request-eta--express .request-eta__text {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+/* 56:31731 — supermall pill, 54 × 16 */
+.request-eta__tag {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 16px;
+  padding: var(--space-6) 6.75px 4.5px;
+  border-radius: 9999px;
+  background: #2122b8; /* surface/supermall-bold */
+}
+
+.request-eta__tag-text {
+  display: inline-grid;
+  place-items: start;
+}
+
+.request-eta__tag-text img {
+  grid-area: 1 / 1;
+}
+
+.request-eta__tag-mall {
+  margin-top: 2.04px;
+}
+
+.request-eta__tag-super {
+  margin-left: 25.98px;
+}
+
+/* 56:31765 — Marketplace ETA: 148 × 24 clip of the yellow shape, text 8px in */
+.request-eta--market {
+  position: relative;
+  width: 148px;
+  height: 24px;
+  overflow: hidden;
+  border-radius: 6px;
+  color: var(--colour-text-primary);
+}
+
+.request-eta__shape {
+  position: absolute;
+  top: -2.46px;
+  left: -4.87px;
+  max-width: none;
+}
+
+.request-eta--market .request-eta__text {
+  position: absolute;
+  top: 12px;
+  left: 8px;
+  translate: 0 -50%;
+}
+
+/* 56:31768 — Price description: 4px inset, green wash, 6 / 14 radii */
+.request-savings {
+  padding: var(--space-4);
+}
+
+.request-savings__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-12);
+  border-radius: 6px 6px 14px 14px;
+  background:
+    linear-gradient(90deg, #ebfff4 0%, rgba(235, 255, 244, 0.1) 100%),
+    #f6fefb;
+}
+
+.request-savings__text {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  white-space: nowrap;
+  font-weight: var(--font-weight-semibold);
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: -0.1px;
+  color: var(--colour-text-primary);
+}
+
+/* FIRSTORDER chip — green gradient, white stroke, flipped tag icon; 4 + 2px (the text's own
+   padding) top and bottom */
+.request-coupon {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  padding: var(--space-6) var(--space-8);
+  border: 1px solid var(--colour-surface-primary);
+  border-radius: var(--radius-8);
+  background: linear-gradient(to right, #e3fcf2, #cbf6e5);
+  font-weight: var(--font-weight-semibold);
+  font-size: 12px;
+  line-height: 18px;
+  letter-spacing: -0.1px;
+  color: #0b623f; /* text-n-icon/success-bold */
+  font-feature-settings: 'case' 1;
+}
+
+.request-coupon img {
+  transform: scaleX(-1);
+}
+
+/* 56:31782 — Address header, 70 tall */
+.request-address {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  height: 70px;
+  padding: var(--space-12);
+}
+
+.request-address__text {
+  flex: 1 0 0;
+  min-width: 1px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.request-address__label,
+.request-address__line {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.request-address__label {
+  font-weight: var(--font-weight-bold);
+  font-size: 16px;
+  line-height: var(--h16-lh);
+  letter-spacing: var(--h16-ls);
+  color: var(--colour-text-primary);
+  text-shadow: 0 8.043px 16.086px rgba(0, 0, 0, 0.07);
+}
+
+.request-address__line {
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: -0.1px;
+  color: var(--colour-text-tertiary);
+}
+
+/* ---- 56:31790 Payment summary ---- */
+.request-payment {
+  overflow: hidden;
+}
+
+.request-payment__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+  padding: var(--space-16) 0;
+}
+
+.request-payment__title {
+  padding: 0 var(--space-12);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--h16-size);
+  line-height: var(--h16-lh);
+  letter-spacing: var(--h16-ls);
+  color: var(--colour-text-primary);
+}
+
+.request-payment__breakdown {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-12);
+}
+
+.request-payment__lines {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  width: 100%;
+  padding: 0 var(--space-12) var(--space-4);
+}
+
+.request-payment__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 28px;
+  white-space: nowrap;
+  color: var(--colour-text-primary);
+  font-feature-settings: 'case' 1;
+}
+
+.request-payment__row--pad {
+  padding: 0 var(--space-12);
+}
+
+.request-payment__label {
+  font-weight: var(--font-weight-medium);
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: -0.1px;
+}
+
+.request-payment__label--dotted {
+  text-decoration: underline dotted;
+  text-underline-position: from-font;
+}
+
+.request-payment__label--secondary {
+  color: var(--colour-text-secondary);
+}
+
+/* Delivery fee — 15px medium, blue-gray 700 */
+.request-payment__fee {
+  font-weight: var(--font-weight-medium);
+  font-size: 15px;
+  line-height: 18px;
+  letter-spacing: -0.26px;
+  color: var(--colour-text-secondary);
+}
+
+.request-payment__right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-6) 0;
+  font-feature-settings: 'case' 1, 'lnum' 1, 'tnum' 1;
+}
+
+.request-payment__was {
+  font-weight: var(--font-weight-medium);
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: -0.1px;
+}
+
+.request-payment__amount {
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--h16-size);
+  line-height: var(--h16-lh);
+  letter-spacing: var(--h16-ls);
+  color: var(--colour-text-primary);
+  font-feature-settings: 'case' 1, 'lnum' 1, 'tnum' 1;
+}
+
+.request-payment__free {
+  font-weight: var(--font-weight-medium);
+  font-size: 12px;
+  line-height: 18px;
+  letter-spacing: -0.1px;
+  color: var(--colour-text-action);
+}
+
+.request-payment__divider {
+  width: 327px;
+  max-width: calc(100% - 24px);
+  height: 1px;
+}
+
+.request-payment__total {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 var(--space-12);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--h16-size);
+  line-height: var(--h16-lh);
+  letter-spacing: var(--h16-ls);
+  color: var(--colour-text-primary);
+  font-feature-settings: 'case' 1;
+}
+
+/* 56:31855 — Savings strip: green, a 5px scalloped edge on top */
+.request-cashback {
+  display: flex;
+  flex-direction: column;
+  background: #cbf6e5;
+}
+
+.request-cashback__edge {
+  width: 100%;
+  height: 5px;
+}
+
+.request-cashback__row {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-12);
+  font-size: var(--h16-size);
+  line-height: var(--h16-lh);
+  letter-spacing: var(--h16-ls);
+  color: var(--colour-text-primary);
+  font-feature-settings: 'case' 1;
+}
+
+.request-cashback__label {
+  font-weight: var(--font-weight-semibold);
+}
+
+.request-cashback__value {
+  font-weight: var(--font-weight-bold);
+}
+
+/* ---- 56:31861 Bottom section — pinned to the bottom of the page's scroll ---- */
+.request-detail__bottom {
+  position: sticky;
+  bottom: 0;
+  z-index: 3;
+  margin-top: auto;
+  padding: var(--space-4) var(--space-4) 0;
+  overflow: hidden;
+  border-radius: var(--radius-16) var(--radius-16) 0 0;
+  background: var(--colour-surface-primary);
+  box-shadow: 0 -2px 12px 0 rgba(0, 0, 0, 0.06);
+}
+
+/* "You need to add dhm20…" — orange 100, 12 / 6 radii */
+.request-detail__notice {
+  padding: var(--space-8) 0;
+  border-radius: 12px 12px 6px 6px;
+  background: #fff1e0;
+  text-align: center;
+  white-space: nowrap;
+  font-weight: var(--font-weight-semibold);
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: -0.1px;
+  color: #a36200; /* text-n-icon/yellow-dark */
+}
+
+/* M-RowActionBar — 12 padding, 12 gap (the bottom section's 4px inset is undone here so the
+   buttons sit 12px from the screen edge) */
+.request-detail__actions {
+  display: flex;
+  gap: var(--space-12);
+  margin: 0 calc(-1 * var(--space-4));
+  padding: var(--space-12);
+}
+
+/* Home bar — 24 tall, 124 × 5 indicator */
+.request-detail__home-bar {
+  display: flex;
+  justify-content: center;
+  height: 24px;
+  padding-top: 10px;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.request-detail__home-bar span {
+  width: 124px;
+  height: 5px;
+  border-radius: var(--radius-8);
+  background: var(--colour-surface-secondary-inverted);
+}

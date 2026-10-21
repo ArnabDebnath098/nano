@@ -7,15 +7,19 @@ import PushPage from './components/PushPage/PushPage.jsx'
 import IntroVideo from './components/IntroVideo/IntroVideo.jsx'
 import { ONBOARDING_CUES } from './components/IntroVideo/onboardingCues.js'
 import AddKidFlow from './screens/AddKid/AddKidFlow.jsx'
-import { getKid } from './data/manageFamily.js'
+import RequestDetail from './screens/RequestDetail/RequestDetail.jsx'
+import { getKid, getRequest } from './data/manageFamily.js'
 import { goBack, navigate, replace, useRoute } from './lib/router.js'
 
 // Which base screen each route sits on; overlay routes (invite, add-kid) keep the current one
-const BASE = { flows: 'flows', accounts: 'accounts', family: 'family', kid: 'family' }
+const BASE = { flows: 'flows', accounts: 'accounts', family: 'family', kid: 'family', request: 'family' }
 
 function App() {
   const route = useRoute()
-  const kid = route.name === 'kid' ? getKid(route.id) : null
+  // A request opened from a kid's profile keeps that profile open underneath it
+  const kidId = route.name === 'kid' ? route.id : route.name === 'request' ? route.kid : null
+  const kid = kidId ? getKid(kidId) : null
+  const request = route.name === 'request' ? getRequest(route.id, route.kid) : null
 
   const [base, setBase] = useState(BASE[route.name] ?? 'flows')
   if (BASE[route.name] && BASE[route.name] !== base) setBase(BASE[route.name])
@@ -23,6 +27,8 @@ function App() {
   // Keep the last kid rendered while the page animates out
   const [shownKid, setShownKid] = useState(kid)
   if (kid && kid.id !== shownKid?.id) setShownKid(kid)
+  const [shownRequest, setShownRequest] = useState(request)
+  if (request && request.id !== shownRequest?.id) setShownRequest(request)
 
   return (
     <div className="app">
@@ -44,6 +50,20 @@ function App() {
       <PushPage open={Boolean(kid)} labelledBy="kid-profile-title">
         {shownKid && (
           <KidProfile key={shownKid.id} kid={shownKid} titleId="kid-profile-title" onBack={() => goBack('/family')} />
+        )}
+      </PushPage>
+
+      <PushPage open={Boolean(request)} labelledBy="request-detail-title">
+        {shownRequest && (
+          <RequestDetail
+            key={shownRequest.id}
+            request={shownRequest}
+            titleId="request-detail-title"
+            onBack={() => goBack(route.kid ? `/kid/${route.kid}` : '/family')}
+            // Prototype: either answer just closes the request
+            onDecline={() => goBack(route.kid ? `/kid/${route.kid}` : '/family')}
+            onApprove={() => goBack(route.kid ? `/kid/${route.kid}` : '/family')}
+          />
         )}
       </PushPage>
 

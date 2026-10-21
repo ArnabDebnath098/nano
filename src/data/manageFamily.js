@@ -152,3 +152,52 @@ export const requestFilters = [
   { id: 'completed', label: 'Completed', match: (r) => r.status === 'completed' },
   { id: 'declined', label: 'Not now', match: (r) => r.status === 'declined' },
 ]
+
+// Request detail (Figma Parent-Side 56:31669 · "Request detail · Not within balance") — opened
+// from a request card. The child, their note and the order amount come from the card; the rest
+// is the design's mock order.
+const RD = '/figma/request-detail'
+
+const SHORT_BY = 20 // "Not within balance": the kid's wallet is dhm20 short of every order
+
+const requestOrder = {
+  products: [
+    {
+      id: 'p-1',
+      name: 'Apple Watch Series 9 GPS 41mm Silver Aluminium Case With Storm Blue Sport Band',
+      image: `${RD}/product-airpods.png`,
+      imageSize: 88,
+      quantity: 2,
+      price: 109,
+      oldPrice: 209,
+      off: 47,
+      eta: { type: 'express', lead: 'Get in ', time: '1 hour 12 mins' },
+      checkbox: `${RD}/checkbox.svg`,
+    },
+    {
+      id: 'p-2',
+      name: 'Sony PlayStation Portal Remote Player',
+      image: `${RD}/product-ps-portal.png`,
+      imageSize: 76,
+      flip: true,
+      quantity: 1,
+      price: 92,
+      oldPrice: 209,
+      off: 47,
+      eta: { type: 'market', lead: 'Get it by ', time: 'Tomorrow' },
+      checkbox: `${RD}/checkbox-2.svg`,
+    },
+  ],
+  saved: 123,
+  coupon: 'FIRSTORDER',
+  address: { label: 'Delivering to Home', line: 'BDA Complex, 100 Feet Rd 3rd Block, Koramangla' },
+  summary: { subtotalWas: 'AED 80.60', subtotal: '45.60', deliveryFee: '7.00', couponDiscount: '2.00', total: '45.60', cashback: '30' },
+}
+
+export function getRequest(id, kidId) {
+  const card = approvalRequests.find((r) => r.id === id) ?? kidRequests.find((r) => r.id === id)
+  if (!card) return null
+  const kid = getKid(kidId ?? profiles.find((p) => p.name.startsWith(card.childName))?.id ?? 'kiaan')
+  // The card's own thumbnails give way to the order's full product rows
+  return { ...card, ...requestOrder, kid, walletBalance: Math.max(0, card.amount - SHORT_BY) }
+}

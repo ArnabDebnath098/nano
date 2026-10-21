@@ -16,14 +16,16 @@
   --surface-fill: var(--colour-surface-primary);
 }
 
-/* Fixed 72px with bottom alignment — the avatar intentionally overflows above the card */
+/* Fixed 80px with bottom alignment — the avatar intentionally overflows above the card.
+   Avatar → name gap 20 (12 + 8 more on request); the height grew by the same 8 so the avatar
+   keeps its overhang and the card grows instead. */
 .child-card__identity {
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  gap: var(--space-12);
-  height: 72px;
+  gap: var(--space-20);
+  height: 80px;
   width: 100%;
 }
 

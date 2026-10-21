@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { gsap, useGSAP } from '../../lib/gsap.js'
 import { RISE, RISE_FADE, STAGGER } from '../../lib/motion.js'
 import RequestCard from '../RequestCard/RequestCard.jsx'
+import { navigate } from '../../lib/router.js'
 import { kidRequests, requestFilters } from '../../data/manageFamily.js'
 import './ApprovalsTab.css'
 
@@ -51,7 +52,7 @@ export default function ApprovalsTab({ kid }) {
       <div className="approvals-tab__list">
         {requests.map((r) => (
           <div key={r.id} data-request>
-            <RequestCard request={r} bubble="soft" />
+            <RequestCard request={r} onOpen={() => navigate(`/request/${r.id}?kid=${kid.id}`)} />
           </div>
         ))}
         {requests.length === 0 && <p className="approvals-tab__empty">No requests here yet</p>}

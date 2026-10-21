@@ -3,18 +3,22 @@
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
-  overflow: hidden;
+  /* clip, not hidden: hidden would make this a scroll box and stop the header bar sticking */
+  overflow: clip;
   background: var(--colour-surface-primary);
 }
 
 /* Wallet-skin background frame (375 × 580, its dark top overlay baked in), pinned to the top
-   at full width; the body's white surface covers its lower part. */
+   at full width; the body's white surface covers its lower part. Sticky, so it stays put while
+   the header scrolls over it (a negative bottom margin of its own height keeps it out of the
+   flow — % margins resolve against the width). */
 .kid-profile__bg {
-  position: absolute;
+  position: sticky;
   top: 0;
-  left: 0;
+  flex-shrink: 0;
   width: 100%;
   aspect-ratio: 375 / 580;
+  margin-bottom: calc(-100% * 580 / 375);
   overflow: hidden;
 }
 
@@ -27,6 +31,13 @@
 
 .kid-profile > :not(.kid-profile__bg) {
   position: relative;
+}
+
+/* Tabs stick under the header bar (heights published by useStickyStack) */
+.kid-profile > .kid-tabs {
+  position: sticky;
+  top: var(--kid-bar-h, 0px);
+  z-index: 2;
 }
 
 /* 56:42137 */
