@@ -7,6 +7,7 @@
 //                                                  profile open under it)
 //   #/invite        → { name: 'invite' }     parent-onboarding intro video
 //   #/add-kid       → { name: 'add-kid', step, intro }
+//   #/button-lab    → { name: 'button-lab' }  test page for the button loading state
 import { useSyncExternalStore } from 'react'
 
 function parse(hash) {
@@ -18,6 +19,7 @@ function parse(hash) {
   if (section === 'kid' && id) return { name: 'kid', id }
   if (section === 'request' && id) return { name: 'request', id, kid: params.get('kid') }
   if (section === 'invite') return { name: 'invite' }
+  if (section === 'button-lab') return { name: 'button-lab' }
   // ?step=<id> deep-links a step (prototype review / screenshots);
   // ?intro=1 = arrived from the intro video (the page is revealed under it, no slide-up)
   if (section === 'add-kid') return { name: 'add-kid', step: params.get('step'), intro: params.get('intro') === '1' }

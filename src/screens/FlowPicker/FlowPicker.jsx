@@ -51,6 +51,13 @@ const FLOWS = [
     path: '/kid/kiaan',
     status: 'entry',
   },
+  {
+    id: 'button-loading',
+    title: 'Button loading',
+    steps: ['Tap a button', 'Goo loader', 'Back to label'],
+    path: '/button-lab',
+    status: 'ready',
+  },
 ]
 
 export default function FlowPicker() {

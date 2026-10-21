@@ -1,0 +1,62 @@
+/* Goo — a continuous flow to the right, 42 × 14. Three r3.6 blobs travel the width at one
+   constant speed (linear, no easing, so nothing ever stops), a third of a cycle apart. Each grows
+   in at the left, swells and stretches through the middle, where it reaches into its neighbours
+   and the beads, and shrinks away at the right. The bead track slides right too, slower than the
+   blobs, and both ends fade so nothing pops in or out. Size changes ride their own eased
+   animation, separate from the linear travel. */
+.goo-loader {
+  display: block;
+  width: 42px;
+  height: 14px;
+  fill: currentColor;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+}
+
+.goo-loader__track {
+  animation: goo-loader-track 0.6s linear infinite;
+}
+
+.goo-loader__blob {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation:
+    goo-loader-travel 1.8s linear infinite,
+    goo-loader-swell 1.8s ease-in-out infinite;
+  animation-delay: calc(var(--i) * -0.6s);
+}
+
+@keyframes goo-loader-track {
+  from {
+    translate: 0 0;
+  }
+  to {
+    translate: 4px 0;
+  }
+}
+
+@keyframes goo-loader-travel {
+  from {
+    translate: 0 0;
+  }
+  to {
+    translate: 48px 0;
+  }
+}
+
+@keyframes goo-loader-swell {
+  0%,
+  100% {
+    scale: 0.2;
+  }
+  30% {
+    scale: 1.05 0.95;
+  }
+  50% {
+    scale: 1.45 0.9;
+  }
+  70% {
+    scale: 1.05 0.95;
+  }
+}

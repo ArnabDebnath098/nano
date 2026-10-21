@@ -8,10 +8,11 @@ import IntroVideo from './components/IntroVideo/IntroVideo.jsx'
 import { ONBOARDING_CUES } from './components/IntroVideo/onboardingCues.js'
 import AddKidFlow from './screens/AddKid/AddKidFlow.jsx'
 import RequestDetail from './screens/RequestDetail/RequestDetail.jsx'
+import ButtonLab from './screens/ButtonLab.jsx'
 import { getKid, getRequest } from './data/manageFamily.js'
 import { goBack, navigate, replace, useRoute } from './lib/router.js'
 
-// Which base screen each route sits on; overlay routes (invite, add-kid) keep the current one
+// Which base screen each route sits on; overlay routes (invite, add-kid, button-lab) keep the current one
 const BASE = { flows: 'flows', accounts: 'accounts', family: 'family', kid: 'family', request: 'family' }
 
 function App() {
@@ -72,6 +73,11 @@ function App() {
         <AddKidFlow initialStep={route.step} onExit={() => goBack('/')} onComplete={() => replace('/family')} />
       </PushPage>
 
+      {/* Button lab — try the nano button's loading state */}
+      <PushPage open={route.name === 'button-lab'} labelledBy="button-lab-title">
+        <ButtonLab titleId="button-lab-title" onBack={() => goBack('/')} />
+      </PushPage>
+
       {/* Parent onboarding intro → replaces itself with the Add a child flow when it ends */}
       <IntroVideo
         open={route.name === 'invite'}
@@ -80,8 +86,9 @@ function App() {
         onDone={() => replace('/add-kid?intro=1')}
       />
 
-      {/* Jump back to the flow list from anywhere in a flow (hidden during the intro video) */}
-      {route.name !== 'flows' && route.name !== 'invite' && <FlowsHomeButton />}
+      {/* Jump back to the flow list from anywhere in a flow (hidden during the intro video, and on
+          the button lab, which has its own back button) */}
+      {!['flows', 'invite', 'button-lab'].includes(route.name) && <FlowsHomeButton />}
     </div>
   )
 }

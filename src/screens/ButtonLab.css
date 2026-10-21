@@ -1,0 +1,122 @@
+.lab {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  background: var(--colour-surface-secondary);
+}
+
+.lab__header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding: calc(env(safe-area-inset-top) + var(--space-12)) var(--space-16) var(--space-12);
+  background: var(--colour-surface-secondary);
+}
+
+.lab__back {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin-left: calc(-1 * var(--space-8));
+  border-radius: var(--radius-12);
+  color: var(--colour-text-primary);
+}
+
+.lab__back:active {
+  background: var(--colour-surface-muted);
+}
+
+.lab__title {
+  font-size: var(--h18-size);
+  font-weight: var(--font-weight-bold);
+}
+
+.lab__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-20);
+  padding: var(--space-4) var(--space-16) var(--space-32);
+}
+
+/* Stage — the loader at 3× on the dark and the white button surface */
+.lab__stage {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-8);
+}
+
+.lab__tile {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  border-radius: var(--radius-20);
+}
+
+.lab__tile--dark {
+  background: #212121;
+  color: #fff;
+}
+
+.lab__tile--light {
+  background: #fff;
+  color: var(--colour-text-primary);
+  box-shadow: inset 0 0 0 1px var(--colour-border-primary);
+}
+
+.lab__big {
+  scale: 3;
+}
+
+.lab__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.lab__field-label {
+  font-size: var(--b14-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--colour-text-secondary);
+}
+
+/* Segmented control */
+.lab__seg {
+  display: flex;
+  padding: 3px;
+  border-radius: var(--radius-12);
+  background: var(--colour-surface-muted);
+}
+
+.lab__seg-item {
+  flex: 1;
+  height: 34px;
+  border-radius: 9px;
+  font-size: var(--b14-size);
+  font-weight: var(--font-weight-medium);
+  color: var(--colour-text-secondary);
+  transition:
+    background-color var(--nn-pp-fade-ms) var(--nn-pp-fade),
+    color var(--nn-pp-fade-ms) var(--nn-pp-fade);
+}
+
+.lab__seg-item--on {
+  background: var(--colour-surface-primary);
+  color: var(--colour-text-primary);
+  box-shadow: 0 1px 3px rgba(29, 37, 57, 0.12);
+}
+
+.lab__footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+}
+
+.lab__hint {
+  font-size: var(--b12-size);
+  color: var(--colour-text-tertiary);
+}

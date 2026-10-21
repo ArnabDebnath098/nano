@@ -43,7 +43,9 @@
 .nano-btn__label {
   position: relative;
   z-index: 1;
-  transition: translate var(--nn-pp-fade-ms) var(--ease-out);
+  transition:
+    translate var(--nn-pp-fade-ms) var(--ease-out),
+    filter var(--nn-pp-fade-ms) var(--nn-pp-fade);
 }
 
 /* Sunken pressed layer (per variant below) — shown only while held */
@@ -126,31 +128,34 @@
 }
 
 .nano-btn--tertiary .nano-btn__label {
-  transition: opacity var(--nn-pp-fade-ms) var(--ease-out);
+  transition:
+    opacity var(--nn-pp-fade-ms) var(--ease-out),
+    translate var(--nn-pp-fade-ms) var(--ease-out),
+    filter var(--nn-pp-fade-ms) var(--nn-pp-fade);
 }
 
-.nano-btn--tertiary:active:not(:disabled) .nano-btn__label {
+.nano-btn--tertiary:active:not(:disabled, .nano-btn--loading) .nano-btn__label {
   opacity: 0.6;
   translate: none;
 }
 
 /* Press: scale under the finger (noon NANO .nano-btn:active .98) and sink in, in 90ms */
-.nano-btn:active:not(:disabled) {
+.nano-btn:active:not(:disabled, .nano-btn--loading) {
   scale: var(--nn-press-nano-btn);
   transition-duration: var(--nn-dur-press), var(--nn-pp-fade-ms), var(--nn-pp-fade-ms), var(--nn-pp-fade-ms);
 }
 
-.nano-btn:active:not(:disabled) .nano-btn__press {
+.nano-btn:active:not(:disabled, .nano-btn--loading) .nano-btn__press {
   opacity: 1;
   transition-duration: var(--nn-dur-press);
 }
 
-.nano-btn:active:not(:disabled)::after {
+.nano-btn:active:not(:disabled, .nano-btn--loading)::after {
   opacity: 0;
   transition-duration: var(--nn-dur-press);
 }
 
-.nano-btn:active:not(:disabled) .nano-btn__label {
+.nano-btn:active:not(:disabled, .nano-btn--loading) .nano-btn__label {
   translate: 0 1px;
   transition-duration: var(--nn-dur-press);
 }
@@ -182,4 +187,64 @@
 
 .nano-btn:disabled::after {
   opacity: 0;
+}
+
+/* Loading — the label lifts 4px out into a blur while the Goo loader pops in from 0.6× on
+   PP Move; leaving, the two swap back. The label keeps its box, so the button never changes
+   size. The label fades with filter: opacity() so it doesn't fight the press/tertiary
+   `opacity` transitions. */
+.nano-btn--loading {
+  cursor: progress;
+}
+
+.nano-btn--loading .nano-btn__label {
+  translate: 0 -4px;
+  filter: blur(3px) opacity(0);
+}
+
+.nano-btn__loader {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  scale: 0.6;
+  filter: blur(2px);
+  pointer-events: none;
+  transition:
+    opacity 240ms var(--nn-pp-fade),
+    scale 240ms var(--nn-pp-fade),
+    filter 240ms var(--nn-pp-fade);
+}
+
+.nano-btn--loading .nano-btn__loader {
+  opacity: 1;
+  scale: 1;
+  filter: blur(0);
+  transition:
+    opacity var(--nn-pp-fade-ms) var(--nn-pp-fade),
+    scale var(--nn-pp-move-ms) var(--nn-pp-move),
+    filter var(--nn-pp-fade-ms) var(--nn-pp-fade);
+}
+
+@starting-style {
+  .nano-btn--loading .nano-btn__loader {
+    opacity: 0;
+    scale: 0.6;
+    filter: blur(2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nano-btn--loading .nano-btn__label {
+    translate: none;
+    filter: opacity(0);
+  }
+
+  .nano-btn__loader,
+  .nano-btn--loading .nano-btn__loader {
+    scale: 1;
+    filter: none;
+  }
 }
